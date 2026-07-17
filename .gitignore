@@ -1,0 +1,21 @@
+# WordPress export (source material, not needed in repo)
+simply-static-1-1784234744/
+simply-static-1-1784234744.zip
+
+# Raw/uncompressed video source
+homescreen-loop.mp4
+
+# Astro build output
+site/dist/
+site/.astro/
+
+# Dependencies
+site/node_modules/
+
+# Environment
+site/.env
+.env
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,126 @@
+---
+const navLinks = [
+  { href: '/', label: 'Home' },
+  { href: '/about/', label: 'About' },
+  { href: '/research/', label: 'Research' },
+  { href: '/team/', label: 'Team' },
+  { href: '/events/', label: 'Events' },
+  { href: '/contact/', label: 'Contact' },
+];
+
+const pathname = Astro.url.pathname;
+function isActive(href: string) {
+  if (href === '/') return pathname === '/';
+  return pathname.startsWith(href);
+}
+---
+
+<header class="sticky top-0 z-50 bg-[#1B4332]/95 backdrop-blur-sm border-b border-[#2D6A4F]">
+  <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-3 shrink-0" aria-label="Loudoun Nature Conservation Project home">
+        <img
+          src="/assets/lncp-logo.png"
+          alt="LNCP Logo"
+          width="40"
+          height="40"
+          class="w-10 h-10 object-contain"
+          loading="eager"
+        />
+        <span class="hidden sm:block font-display font-bold text-white text-sm leading-tight">
+          Loudoun Nature<br />Conservation Project
+        </span>
+      </a>
+
+      <!-- Desktop nav -->
+      <ul class="hidden md:flex items-center gap-1" role="list">
+        {navLinks.map(({ href, label }) => (
+          <li>
+            <a
+              href={href}
+              class:list={[
+                'px-3 py-2 rounded-md text-sm font-medium transition-colors',
+                isActive(href)
+                  ? 'text-white bg-[#2D6A4F]'
+                  : 'text-green-100 hover:text-white hover:bg-[#2D6A4F]/60',
+              ]}
+              aria-current={isActive(href) ? 'page' : undefined}
+            >
+              {label}
+            </a>
+          </li>
+        ))}
+        <li class="ml-3">
+          <a
+            href="/volunteer/"
+            class="px-4 py-2 rounded-md text-sm font-bold bg-[#52b788] text-[#0d2118] hover:bg-[#74c69d] transition-colors"
+          >
+            Volunteer
+          </a>
+        </li>
+      </ul>
+
+      <!-- Mobile menu button -->
+      <button
+        id="mobile-menu-btn"
+        class="md:hidden p-2 rounded-md text-green-100 hover:text-white hover:bg-[#2D6A4F] transition-colors"
+        aria-controls="mobile-menu"
+        aria-expanded="false"
+        aria-label="Toggle navigation menu"
+      >
+        <svg id="icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <svg id="icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile menu -->
+    <div id="mobile-menu" class="hidden md:hidden pb-4" aria-label="Mobile navigation">
+      <ul class="flex flex-col gap-1" role="list">
+        {navLinks.map(({ href, label }) => (
+          <li>
+            <a
+              href={href}
+              class:list={[
+                'block px-3 py-2 rounded-md text-sm font-medium transition-colors',
+                isActive(href)
+                  ? 'text-white bg-[#2D6A4F]'
+                  : 'text-green-100 hover:text-white hover:bg-[#2D6A4F]/60',
+              ]}
+              aria-current={isActive(href) ? 'page' : undefined}
+            >
+              {label}
+            </a>
+          </li>
+        ))}
+        <li class="mt-2">
+          <a
+            href="/volunteer/"
+            class="block px-4 py-2 rounded-md text-sm font-bold text-center bg-[#52b788] text-[#0d2118] hover:bg-[#74c69d] transition-colors"
+          >
+            Volunteer
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</header>
+
+<script>
+  const btn = document.getElementById('mobile-menu-btn')!;
+  const menu = document.getElementById('mobile-menu')!;
+  const iconOpen = document.getElementById('icon-open')!;
+  const iconClose = document.getElementById('icon-close')!;
+
+  btn.addEventListener('click', () => {
+    const expanded = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', String(!expanded));
+    menu.classList.toggle('hidden');
+    iconOpen.classList.toggle('hidden');
+    iconClose.classList.toggle('hidden');
+  });
+</script>

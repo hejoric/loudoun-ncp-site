@@ -1,0 +1,84 @@
+---
+import Base from '@/layouts/Base.astro';
+import reader from '@/lib/reader';
+
+const settings = await reader.singletons.siteSettings.read();
+const formUrl = settings?.volunteerFormUrl ?? null;
+---
+
+<Base
+  title="Volunteer"
+  description="Volunteer with Loudoun Nature Conservation Project - join student-led cleanups, restoration events, and conservation efforts across Loudoun County, Virginia."
+>
+  <div class="bg-[#1B4332] text-white py-16 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto text-center">
+      <p class="text-[#74c69d] text-sm uppercase tracking-widest font-semibold mb-3">Join the Movement</p>
+      <h1 class="font-display font-black text-4xl sm:text-5xl">Volunteer</h1>
+      <p class="mt-4 text-green-200 max-w-xl mx-auto">
+        Young hearts, green minds, hands-on action. Join hundreds of student volunteers already protecting Loudoun County's natural spaces.
+      </p>
+    </div>
+  </div>
+
+  <!-- Why volunteer -->
+  <section class="py-14 bg-[#f0faf4]">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="font-display font-bold text-2xl text-[#1B4332] mb-8 flex items-center gap-3">
+        <span class="w-8 h-0.5 bg-[#52b788] shrink-0" aria-hidden="true"></span>
+        Why Volunteer With Us?
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        {[
+          { icon: '🌱', title: 'Real Impact', body: 'We\'ve cleaned 3,122 acres and counting. Every cleanup makes a measurable difference in Loudoun County.' },
+          { icon: '🎓', title: 'Student-Led', body: 'Every role is led by students - for students. Build leadership skills, earn service hours, and make connections.' },
+          { icon: '🤝', title: 'Community', body: 'Join a network of 270+ members across 7 school and college branches.' },
+        ].map(({ icon, title, body }) => (
+          <div class="bg-white rounded-xl p-6 border border-[#d8f3dc]">
+            <p class="text-3xl mb-3" aria-hidden="true">{icon}</p>
+            <h3 class="font-display font-bold text-[#1B4332] mb-2">{title}</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">{body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Form -->
+  <section class="py-14 bg-white" aria-labelledby="form-heading">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 id="form-heading" class="font-display font-bold text-2xl text-[#1B4332] mb-2 flex items-center gap-3">
+        <span class="w-8 h-0.5 bg-[#52b788] shrink-0" aria-hidden="true"></span>
+        Sign Up to Volunteer
+      </h2>
+      <p class="text-gray-500 text-sm mb-8 pl-11">Fill out the form below and we'll connect you with your nearest branch.</p>
+
+      {formUrl ? (
+        <div class="rounded-xl overflow-hidden border border-[#d8f3dc] shadow-sm">
+          <iframe
+            src={formUrl}
+            width="100%"
+            height="800"
+            frameborder="0"
+            marginheight="0"
+            marginwidth="0"
+            title="LNCP Volunteer Sign-Up Form"
+            loading="lazy"
+            class="w-full"
+          >
+            Loading form...
+          </iframe>
+        </div>
+      ) : (
+        <div class="bg-[#f0faf4] rounded-xl border border-[#d8f3dc] p-10 text-center">
+          <p class="text-gray-600 mb-4">Volunteer sign-up form coming soon!</p>
+          <p class="text-sm text-gray-500">
+            In the meantime, email us at{' '}
+            <a href="mailto:directors@loudounnatureconservation.org" class="text-[#2D6A4F] hover:underline font-medium">
+              directors@loudounnatureconservation.org
+            </a>
+          </p>
+        </div>
+      )}
+    </div>
+  </section>
+</Base>

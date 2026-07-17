@@ -1,0 +1,49 @@
+---
+import Base from '@/layouts/Base.astro';
+import PublicationCard from '@/components/PublicationCard.astro';
+import reader from '@/lib/reader';
+
+const pubs = await reader.collections.publications.all();
+const sorted = pubs.sort((a, b) => {
+  if (!a.entry.date) return 1;
+  if (!b.entry.date) return -1;
+  return new Date(b.entry.date).getTime() - new Date(a.entry.date).getTime();
+});
+---
+
+<Base
+  title="Research"
+  description="Research publications from Loudoun Nature Conservation Project's student research division - water quality, dissolved oxygen, nitrogen dynamics, and environmental impact studies."
+>
+  <div class="bg-[#1B4332] text-white py-16 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto text-center">
+      <p class="text-[#74c69d] text-sm uppercase tracking-widest font-semibold mb-3">Science & Data</p>
+      <h1 class="font-display font-black text-4xl sm:text-5xl">Research</h1>
+      <p class="mt-4 text-green-200 max-w-2xl mx-auto">
+        Original environmental science research conducted by LNCP's student research division, investigating water quality and ecosystem health across Loudoun County and Northern Virginia.
+      </p>
+    </div>
+  </div>
+
+  <section class="py-16 bg-[#f0faf4]">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      {sorted.length > 0 ? (
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {sorted.map((pub) => (
+            <PublicationCard
+              title={pub.entry.title}
+              authors={pub.entry.authors}
+              date={pub.entry.date ?? ''}
+              abstract={pub.entry.abstract}
+              slug={pub.slug}
+              pdfFile={pub.entry.pdfFile ?? undefined}
+              pdfLink={pub.entry.pdfLink ?? undefined}
+            />
+          ))}
+        </div>
+      ) : (
+        <p class="text-center text-gray-500 py-20">Publications loading soon. Check back shortly.</p>
+      )}
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,119 @@
+---
+import Base from '@/layouts/Base.astro';
+import reader from '@/lib/reader';
+
+const events = await reader.collections.events.all();
+const now = new Date();
+const upcoming = events
+  .filter((e) => e.entry.date && new Date(e.entry.date) >= now)
+  .sort((a, b) => new Date(a.entry.date!).getTime() - new Date(b.entry.date!).getTime());
+const past = events
+  .filter((e) => e.entry.date && new Date(e.entry.date) < now)
+  .sort((a, b) => new Date(b.entry.date!).getTime() - new Date(a.entry.date!).getTime());
+---
+
+<Base
+  title="Events"
+  description="Upcoming and past events from Loudoun Nature Conservation Project - cleanups, restoration events, workshops, and volunteer opportunities in Loudoun County, Virginia."
+>
+  <div class="bg-[#1B4332] text-white py-16 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto text-center">
+      <p class="text-[#74c69d] text-sm uppercase tracking-widest font-semibold mb-3">Get Involved</p>
+      <h1 class="font-display font-black text-4xl sm:text-5xl">Events</h1>
+    </div>
+  </div>
+
+  <section class="py-16 bg-[#f0faf4]" aria-labelledby="upcoming-heading">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 id="upcoming-heading" class="font-display font-bold text-2xl text-[#1B4332] mb-8">Upcoming Events</h2>
+
+      {upcoming.length > 0 ? (
+        <ol class="space-y-4" role="list">
+          {upcoming.map((event) => {
+            const date = new Date(event.entry.date!);
+            const displayDate = date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            return (
+              <li class="bg-white rounded-xl border border-[#d8f3dc] p-6 flex flex-col sm:flex-row gap-4">
+                <div class="shrink-0 text-center bg-[#1B4332] text-white rounded-lg p-3 w-16">
+                  <p class="text-xs uppercase tracking-wide">{date.toLocaleDateString('en-US', { month: 'short' })}</p>
+                  <p class="font-display font-black text-2xl leading-none">{date.getDate()}</p>
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-display font-bold text-[#1B4332] text-lg">{event.entry.title}</h3>
+                  <p class="text-gray-500 text-sm mt-0.5">
+                    {displayDate}
+                    {event.entry.location && ` · ${event.entry.location}`}
+                  </p>
+                  {event.entry.description && (
+                    <p class="text-gray-600 text-sm mt-2 leading-relaxed">{event.entry.description}</p>
+                  )}
+                  {event.entry.signupLink && (
+                    <a
+                      href={event.entry.signupLink}
+                      class="inline-flex items-center gap-2 mt-3 px-4 py-2 rounded-lg bg-[#52b788] text-[#0d2118] text-sm font-bold hover:bg-[#74c69d] transition-colors"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Sign Up / RSVP
+                    </a>
+                  )}
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      ) : (
+        <div class="bg-white rounded-2xl border border-[#d8f3dc] p-12 text-center">
+          <div class="w-16 h-16 rounded-full bg-[#f0faf4] flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-[#52b788]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h3 class="font-display font-bold text-xl text-[#1B4332] mb-2">No upcoming events right now</h3>
+          <p class="text-gray-500 text-sm max-w-md mx-auto">
+            We're planning our next cleanup - check back soon, or follow us on Instagram for the latest announcements.
+          </p>
+          <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a
+              href="https://instagram.com/loudounncp"
+              class="px-5 py-2.5 rounded-lg bg-[#1B4332] text-white text-sm font-semibold hover:bg-[#2D6A4F] transition-colors"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Follow on Instagram
+            </a>
+            <a
+              href="/volunteer/"
+              class="px-5 py-2.5 rounded-lg border border-[#1B4332] text-[#1B4332] text-sm font-semibold hover:bg-[#f0faf4] transition-colors"
+            >
+              Stay in touch
+            </a>
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+
+  {past.length > 0 && (
+    <section class="py-12 bg-white" aria-labelledby="past-heading">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 id="past-heading" class="font-display font-bold text-xl text-[#1B4332] mb-6">Past Events</h2>
+        <ol class="space-y-3" role="list">
+          {past.map((event) => {
+            const date = new Date(event.entry.date!);
+            const displayDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            return (
+              <li class="flex items-start gap-4 py-3 border-b border-gray-100 last:border-0">
+                <time class="text-xs text-gray-400 shrink-0 mt-0.5 w-28">{displayDate}</time>
+                <div>
+                  <p class="font-semibold text-sm text-[#1c2b22]">{event.entry.title}</p>
+                  {event.entry.location && <p class="text-xs text-gray-500 mt-0.5">{event.entry.location}</p>}
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+    </section>
+  )}
+</Base>

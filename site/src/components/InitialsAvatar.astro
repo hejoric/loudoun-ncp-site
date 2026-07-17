@@ -1,0 +1,39 @@
+---
+interface Props {
+  name: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  class?: string;
+  bgColor?: string;
+}
+
+const { name, size = 'md', class: className = '', bgColor } = Astro.props;
+
+const initials = name
+  .split(' ')
+  .filter(Boolean)
+  .slice(0, 2)
+  .map((w) => w[0].toUpperCase())
+  .join('');
+
+const sizeClasses = {
+  sm:  'w-8 h-8 text-xs',
+  md:  'w-12 h-12 text-sm',
+  lg:  'w-20 h-20 text-xl',
+  xl:  'w-full h-full text-4xl',
+};
+
+const colors = [
+  '#1B4332', '#2D6A4F', '#40916C',
+  '#3730a3', '#134e4a', '#7c2d12', '#4c0519',
+];
+const colorIndex = name.charCodeAt(0) % colors.length;
+const bg = bgColor ?? colors[colorIndex];
+---
+
+<span
+  class:list={['initials-avatar', sizeClasses[size], className]}
+  style={`background:${bg};`}
+  aria-hidden="true"
+>
+  {initials}
+</span>

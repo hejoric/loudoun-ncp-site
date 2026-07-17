@@ -1,0 +1,91 @@
+---
+import Nav from '@/components/Nav.astro';
+import Footer from '@/components/Footer.astro';
+import '@/styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+  canonicalUrl?: string;
+  jsonLd?: object | object[];
+}
+
+const {
+  title,
+  description = 'Loudoun Nature Conservation Project - A student-led 501(c)(3) nonprofit advancing sustainability and ecological health across Loudoun County, Virginia.',
+  ogImage = '/assets/og-default.jpg',
+  canonicalUrl,
+  jsonLd,
+} = Astro.props;
+
+const siteUrl = 'https://loudounnatureconservation.org';
+const canonical = canonicalUrl ?? `${siteUrl}${Astro.url.pathname}`;
+const fullTitle = title === 'Home'
+  ? 'Loudoun Nature Conservation Project'
+  : `${title} | Loudoun Nature Conservation Project`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={`${siteUrl}${ogImage}`} />
+    <meta property="og:site_name" content="Loudoun Nature Conservation Project" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={`${siteUrl}${ogImage}`} />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/assets/lncp-logo.png" />
+
+    <!-- JSON-LD -->
+    {jsonLd && (
+      <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    )}
+
+    <!-- Org JSON-LD on every page -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Loudoun Nature Conservation Project",
+      "alternateName": "LNCP",
+      "url": siteUrl,
+      "logo": `${siteUrl}/assets/lncp-logo.png`,
+      "description": "A student-led 501(c)(3) nonprofit advancing sustainability and ecological health across Loudoun County, Virginia.",
+      "email": "directors@loudounnatureconservation.org",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Loudoun County",
+        "addressRegion": "VA",
+        "addressCountry": "US"
+      },
+      "sameAs": [
+        "https://www.instagram.com/loudounncp",
+        "https://www.linkedin.com/company/loudounncp"
+      ]
+    })} />
+  </head>
+  <body class="flex flex-col min-h-screen">
+    <Nav />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

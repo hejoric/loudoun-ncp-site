@@ -1,0 +1,64 @@
+---
+import Base from '@/layouts/Base.astro';
+
+const docs = [
+  {
+    title: 'Certificate of Incorporation',
+    description: 'Virginia State Corporation Commission certificate, issued April 26, 2024.',
+    file: '/research/BE19421135-20180647-CERT.pdf',
+  },
+  {
+    title: 'Articles of Incorporation (Miscellaneous Filing)',
+    description: 'Virginia SCC miscellaneous filing accompanying the incorporation.',
+    file: '/research/BE19421135-20180647-MISC.pdf',
+  },
+  {
+    title: 'Bylaws of Loudoun Nature Conservation Project',
+    description: 'Nonprofit bylaws governing the organization\'s structure and operations.',
+    file: '/research/Loudoun-Nature-Conservation-Project.docx-1.pdf',
+  },
+];
+---
+
+<Base
+  title="Proof of Corporation"
+  description="Loudoun Nature Conservation Project 501(c)(3) incorporation documents - Virginia Certificate of Incorporation and Bylaws."
+>
+  <div class="bg-[#1B4332] text-white py-16 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto text-center">
+      <p class="text-[#74c69d] text-sm uppercase tracking-widest font-semibold mb-3">Legal</p>
+      <h1 class="font-display font-black text-4xl sm:text-5xl">Proof of Corporation</h1>
+      <p class="mt-4 text-green-200 max-w-2xl mx-auto">
+        Loudoun Nature Conservation Project is a legally incorporated 501(c)(3) nonprofit organization in the Commonwealth of Virginia, effective April 26, 2024.
+      </p>
+    </div>
+  </div>
+
+  <section class="py-16 bg-[#f0faf4]">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+      {docs.map((doc) => (
+        <div class="bg-white rounded-xl border border-[#d8f3dc] p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="font-display font-bold text-[#1B4332] text-base">{doc.title}</h2>
+            <p class="text-gray-500 text-sm mt-1">{doc.description}</p>
+          </div>
+          <a
+            href={doc.file}
+            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#1B4332] text-white text-sm font-semibold hover:bg-[#2D6A4F] transition-colors shrink-0"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            View PDF
+          </a>
+        </div>
+      ))}
+
+      <p class="text-xs text-gray-400 mt-6 text-center">
+        EIN and additional legal documentation available upon request at directors@loudounnatureconservation.org
+      </p>
+    </div>
+  </section>
+</Base>

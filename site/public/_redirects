@@ -1,0 +1,11 @@
+# Note: Cloudflare Pages _redirects does not support query-string matching.
+# WordPress /?page_id=NNN URLs cannot be redirected here.
+# Those redirects are handled at the edge via a Worker if needed.
+
+# Old WP asset paths - catch-all
+/wp-content/*    /    301
+/wp-includes/*   /    301
+
+# History page (moved to About section)
+/history/        /about/#history    301
+/our-history/    /about/#history    301

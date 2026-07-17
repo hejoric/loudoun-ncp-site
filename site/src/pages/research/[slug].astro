@@ -1,0 +1,117 @@
+---
+import Base from '@/layouts/Base.astro';
+import reader from '@/lib/reader';
+
+export async function getStaticPaths() {
+  const pubs = await reader.collections.publications.all();
+  return pubs.map((pub) => ({ params: { slug: pub.slug } }));
+}
+
+const { slug } = Astro.params;
+const pub = await reader.collections.publications.read(slug);
+
+if (!pub) return Astro.redirect('/research/');
+
+const displayDate = pub.date
+  ? new Date(pub.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+  : '';
+const pdfHref = pub.pdfFile ?? pub.pdfLink;
+
+const personJsonLd = pub.authors.map((author) => ({
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: author,
+}));
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ScholarlyArticle',
+  headline: pub.title,
+  author: pub.authors.map((name) => ({ '@type': 'Person', name })),
+  datePublished: pub.date ?? undefined,
+  description: pub.abstract,
+  publisher: {
+    '@type': 'Organization',
+    name: 'Loudoun Nature Conservation Project',
+  },
+  ...(pdfHref ? { url: pdfHref } : {}),
+};
+---
+
+<Base
+  title={pub.title}
+  description={pub.abstract.slice(0, 200)}
+  jsonLd={[articleJsonLd, ...personJsonLd]}
+>
+  <!-- Header -->
+  <div class="bg-[#1B4332] text-white py-16 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto">
+      <a href="/research/" class="inline-flex items-center gap-2 text-[#74c69d] text-sm mb-6 hover:text-white transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Back to Research
+      </a>
+      {displayDate && <p class="text-[#74c69d] text-sm font-semibold mb-3">{displayDate}</p>}
+      <h1 class="font-display font-black text-3xl sm:text-4xl leading-tight">{pub.title}</h1>
+      <p class="mt-4 text-green-200 text-sm">{pub.authors.join(', ')}</p>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <article class="py-14 bg-white" aria-label={pub.title}>
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      <!-- Abstract -->
+      <section aria-labelledby="abstract-heading">
+        <h2 id="abstract-heading" class="font-display font-bold text-xl text-[#1B4332] mb-4">Abstract</h2>
+        <p class="text-gray-700 text-base leading-relaxed">{pub.abstract}</p>
+      </section>
+
+      <!-- Authors -->
+      <section aria-labelledby="authors-heading">
+        <h2 id="authors-heading" class="font-display font-bold text-xl text-[#1B4332] mb-4">Authors</h2>
+        <ul class="space-y-1" role="list">
+          {pub.authors.map((author) => (
+            <li class="text-gray-700 text-sm flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#52b788] shrink-0" aria-hidden="true"></span>
+              {author}
+            </li>
+          ))}
+        </ul>
+        <p class="text-xs text-gray-400 mt-3">Research Division, Loudoun Nature Conservation Project</p>
+      </section>
+
+      <!-- PDF Download -->
+      {pdfHref && (
+        <div class="rounded-xl bg-[#f0faf4] border border-[#d8f3dc] p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <p class="font-display font-bold text-[#1B4332] text-sm">Full Paper (PDF)</p>
+            <p class="text-gray-500 text-xs mt-0.5">Self-published, Loudoun Nature Conservation Project</p>
+          </div>
+          <a
+            href={pdfHref}
+            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#1B4332] text-white text-sm font-semibold hover:bg-[#2D6A4F] transition-colors shrink-0"
+            target={pub.pdfLink ? '_blank' : undefined}
+            rel={pub.pdfLink ? 'noopener noreferrer' : undefined}
+            download={pub.pdfFile ? true : undefined}
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Download PDF
+          </a>
+        </div>
+      )}
+
+      <!-- Back link -->
+      <div class="pt-4 border-t border-gray-100">
+        <a href="/research/" class="inline-flex items-center gap-2 text-[#2D6A4F] text-sm font-medium hover:text-[#1B4332] transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          All Publications
+        </a>
+      </div>
+    </div>
+  </article>
+</Base>
