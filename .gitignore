@@ -2,6 +2,10 @@
 simply-static-1-1784234744/
 simply-static-1-1784234744.zip
 
+# npm lockfile at root (run npm inside site/ only)
+package-lock.json
+node_modules/
+
 # Raw/uncompressed video source
 homescreen-loop.mp4
 

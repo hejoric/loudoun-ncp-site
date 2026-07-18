@@ -9,7 +9,7 @@ export default defineConfig({
   site: 'https://loudounnatureconservation.org',
   output: 'static',
   integrations: [
-    react({ include: ['**/keystatic/**', '**/KeystaticApp.tsx'] }),
+    react(),
     sitemap(),
     // Keystatic admin UI is only needed in dev (local file editing).
     // Excluding it from production builds keeps output fully static.
