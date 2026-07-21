@@ -8,11 +8,11 @@ const allMembers = await reader.collections.teamMembers.all();
 const allBranches = await reader.collections.branches.all();
 
 const bySection = {
-  executive:      allMembers.filter((m) => m.entry.section === 'executive').sort((a, b) => a.entry.sortOrder - b.entry.sortOrder),
-  directors:      allMembers.filter((m) => m.entry.section === 'directors').sort((a, b) => a.entry.sortOrder - b.entry.sortOrder),
-  executiveStaff: allMembers.filter((m) => m.entry.section === 'executiveStaff').sort((a, b) => a.entry.sortOrder - b.entry.sortOrder),
-  branchPresidents: allMembers.filter((m) => m.entry.section === 'branchPresidents').sort((a, b) => a.entry.sortOrder - b.entry.sortOrder),
-  branchStaff:    allMembers.filter((m) => m.entry.section === 'branchStaff').sort((a, b) => a.entry.sortOrder - b.entry.sortOrder),
+  executive:      allMembers.filter((m) => m.entry.section === 'executive').sort((a, b) => (a.entry.sortOrder ?? 99) - (b.entry.sortOrder ?? 99)),
+  directors:      allMembers.filter((m) => m.entry.section === 'directors').sort((a, b) => (a.entry.sortOrder ?? 99) - (b.entry.sortOrder ?? 99)),
+  executiveStaff: allMembers.filter((m) => m.entry.section === 'executiveStaff').sort((a, b) => (a.entry.sortOrder ?? 99) - (b.entry.sortOrder ?? 99)),
+  branchPresidents: allMembers.filter((m) => m.entry.section === 'branchPresidents').sort((a, b) => (a.entry.sortOrder ?? 99) - (b.entry.sortOrder ?? 99)),
+  branchStaff:    allMembers.filter((m) => m.entry.section === 'branchStaff').sort((a, b) => (a.entry.sortOrder ?? 99) - (b.entry.sortOrder ?? 99)),
 };
 
 function getBranchFor(member: (typeof allMembers)[0]) {

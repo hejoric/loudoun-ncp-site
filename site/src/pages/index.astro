@@ -7,7 +7,7 @@ const home = await reader.singletons.home.read();
 const allTeam = await reader.collections.teamMembers.all();
 const featuredTeam = allTeam
   .filter((m) => m.entry.featuredOnHome)
-  .sort((a, b) => a.entry.sortOrder - b.entry.sortOrder);
+  .sort((a, b) => (a.entry.sortOrder ?? 99) - (b.entry.sortOrder ?? 99));
 const ryan = allTeam.find((m) => m.slug === 'ryan-nisay') ?? null;
 
 const stats = [
