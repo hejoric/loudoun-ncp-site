@@ -1,11 +1,20 @@
-name: Jose Herrera
+name: Jose R. Herrera
 role: Webmaster
 section: executiveStaff
 branch: ''
-bio: Bio coming soon.
-headshot: /assets/team/placeholder-male.svg
-email: ''
+bio: >-
+  Jose joined LNCP in July 2026 after the organization's WUSA9 feature caught
+  his attention and resonated with a goal of his own: putting his technical
+  skills toward something bigger than profit. Coming from a background of
+  freelance work for his family's businesses, he serves as webmaster - running
+  LNCP's website, email, and Google Workspace, and keeping the organization's
+  digital operations running smoothly. A rising fourth-year Computer Science
+  major at UVA (class of 2027), Jose builds and maintains the digital backbone
+  of a mission he believes in.
+headshot: /assets/team/jose-herrera.jpg
+email: hejoric@outlook.com
 instagram: ''
-linkedin: ''
+linkedin: 'https://www.linkedin.com/in/hejoric/'
+website: 'https://hejoric.com'
 featuredOnHome: false
 sortOrder: 1

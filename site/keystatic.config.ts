@@ -53,6 +53,10 @@ export default config({
           label: 'LinkedIn profile URL',
           validation: { isRequired: false },
         }),
+        website: fields.url({
+          label: 'Personal website URL',
+          validation: { isRequired: false },
+        }),
         featuredOnHome: fields.checkbox({
           label: 'Feature on Home Page',
           defaultValue: false,
