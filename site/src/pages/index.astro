@@ -1,7 +1,6 @@
 ---
 import Base from '@/layouts/Base.astro';
 import FlipCard from '@/components/FlipCard.astro';
-import InitialsAvatar from '@/components/InitialsAvatar.astro';
 import reader from '@/lib/reader';
 
 const home = await reader.singletons.home.read();
@@ -10,13 +9,6 @@ const featuredTeam = allTeam
   .filter((m) => m.entry.featuredOnHome)
   .sort((a, b) => a.entry.sortOrder - b.entry.sortOrder);
 const ryan = allTeam.find((m) => m.slug === 'ryan-nisay') ?? null;
-
-const pressLogos: Record<string, string> = {
-  WTOP: '/assets/press/wtop.svg',
-  'LOUDOUN NOW': '/assets/press/loudoun-now.svg',
-  'INSIDE NOVA': '/assets/press/insidenova.svg',
-  'NEWS SPRY': '/assets/press/newsspry.svg',
-};
 
 const stats = [
   { value: home?.statsAcresCleaned?.toLocaleString() ?? '3,122', label: 'Acres Cleaned' },
@@ -42,127 +34,239 @@ const orgJsonLd = {
   description="Loudoun Nature Conservation Project - A student-led 501(c)(3) nonprofit empowering youth, restoring nature, and fostering community through environmental stewardship in Loudoun County, Virginia."
   jsonLd={orgJsonLd}
 >
-  <!-- Hero: full viewport, video background, founder quote strip pinned to bottom -->
-  <section class="relative h-screen flex flex-col overflow-hidden bg-[#0d2118]" aria-label="Hero">
-    <!-- Video - full bleed, no opacity tint (gradient handles contrast) -->
-    <video
-      class="absolute inset-0 w-full h-full object-cover"
-      autoplay
-      muted
-      loop
-      playsinline
-      preload="none"
-      poster="/assets/hero-poster.jpg"
-      aria-hidden="true"
-    >
-      <source src="/assets/hero.mp4" type="video/mp4" />
-    </video>
+  <!-- Announcement: back for the new school year -->
+  <a
+    href="/team/#branches"
+    class="block bg-forest-900 text-paper text-center text-sm px-4 py-2.5 hover:bg-forest-800 transition-colors"
+  >
+    We're coming back, Loudoun. New school branches announced for the upcoming year
+    <span aria-hidden="true">&rarr;</span>
+  </a>
 
-    <!-- Gradient: lighter center for readability, strong dark at bottom for quote strip -->
-    <div class="absolute inset-0 bg-gradient-to-b from-black/55 via-black/35 to-black/80 pointer-events-none" aria-hidden="true"></div>
-
-    <!-- Main content - grows to fill available space, centers text vertically -->
-    <div class="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
-      <div class="max-w-4xl w-full text-center text-white">
-        <p class="text-[#74c69d] font-semibold text-sm uppercase tracking-widest mb-5">
-          Loudoun Nature Conservation Project
-        </p>
-        <h1 class="font-display font-black text-4xl sm:text-6xl lg:text-7xl leading-tight mb-6">
-          {home?.heroHeadline ?? 'Youth unite for Earth; inspire change piece by piece'}
-        </h1>
-        <p class="text-base sm:text-xl text-white/80 max-w-2xl mx-auto mb-10 leading-relaxed">
-          {home?.heroSubtext ?? 'Made by Students, for Students. Young hearts, green minds, hands-on action — empowering youth, restoring nature, and fostering community through non-profit (501c3) environmental stewardship in Loudoun County, Virginia.'}
-        </p>
+  <!-- Hero: centered editorial headline on paper -->
+  <section class="bg-paper" aria-label="Hero">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-28 pb-16 sm:pb-20 text-center">
+      <p class="font-display italic text-clay text-lg sm:text-xl">Loudoun County, Virginia</p>
+      <h1 class="font-display font-medium text-4xl sm:text-6xl lg:text-7xl leading-[1.06] tracking-tight text-ink mt-6 mb-8 text-balance">
+        {home?.heroHeadline ?? 'Youth unite for Earth; inspire change piece by piece'}
+      </h1>
+      <p class="text-base sm:text-lg text-ink-soft max-w-2xl mx-auto mb-10 leading-relaxed">
+        {home?.heroSubtext ?? 'Made by Students, for Students. Young hearts, green minds, hands-on action - empowering youth, restoring nature, and fostering community through non-profit (501c3) environmental stewardship in Loudoun County, Virginia.'}
+      </p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
         <a
           href="/volunteer/"
-          class="inline-flex items-center gap-2 px-10 py-4 rounded-lg font-bold text-lg bg-[#52b788] text-[#0d2118] hover:bg-[#74c69d] transition-colors shadow-xl"
+          class="px-8 py-4 font-semibold text-sm bg-forest-900 text-paper hover:bg-forest-800 transition-colors"
         >
           Join Now
         </a>
+        <a
+          href="/about/"
+          class="text-sm text-ink border-b border-ink pb-0.5 hover:text-ink-soft hover:border-ink-soft transition-colors"
+        >
+          Read our story
+        </a>
       </div>
     </div>
+  </section>
 
-    <!-- Founder quote strip - pinned to bottom of hero -->
-    {ryan && (
-      <div class="relative z-10 border-t border-white/10 bg-black/40 backdrop-blur-sm px-4 sm:px-8 py-4">
-        <div class="max-w-4xl mx-auto flex items-center gap-4">
-          {ryan.entry.headshot ? (
+  <!-- Hero video: expands as you scroll -->
+  <section class="bg-paper pb-24" aria-label="LNCP in the field">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div data-scroll-expand class="border hairline overflow-hidden">
+        <video
+          class="w-full aspect-video object-cover block"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="none"
+          poster="/assets/hero-poster.jpg"
+          aria-hidden="true"
+        >
+          <source src="/assets/hero.mp4" type="video/mp4" />
+        </video>
+      </div>
+    </div>
+  </section>
+
+  <!-- Founder quote: italic serif pull-quote -->
+  {ryan && (
+    <section class="bg-paper pb-24" aria-label="A word from our founder">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <blockquote class="font-display italic font-medium text-2xl sm:text-3xl leading-snug text-ink text-balance">
+          &ldquo;{home?.founderQuote ?? "LNCP was born from a simple belief - students don't have to wait to protect our environment. We can lead that change right now, in our own community."}&rdquo;
+        </blockquote>
+        <div class="flex items-center justify-center gap-3 mt-8">
+          {ryan.entry.headshot && (
             <img
               src={ryan.entry.headshot}
               alt={ryan.entry.name}
-              width="48"
-              height="48"
-              class="w-12 h-12 rounded-full object-cover ring-2 ring-[#52b788] shrink-0"
-              loading="eager"
+              width="44"
+              height="44"
+              class="w-11 h-11 rounded-full object-cover"
+              loading="lazy"
             />
-          ) : (
-            <div
-              class="w-12 h-12 rounded-full bg-[#1B4332] ring-2 ring-[#52b788] shrink-0 flex items-center justify-center text-white font-bold text-sm"
-              aria-hidden="true"
-            >
-              RN
-            </div>
           )}
-          <div class="min-w-0">
-            <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-              <span class="text-white font-bold text-sm">{ryan.entry.name}</span>
-              <span class="text-[#74c69d] text-xs">{ryan.entry.role}</span>
-            </div>
-            <p class="text-white/75 text-sm italic mt-0.5 line-clamp-2">
-              "{home?.founderQuote ?? 'LNCP was born from a simple belief - students don\'t have to wait to protect our environment. We can lead that change right now, in our own community.'}"
-            </p>
+          <div class="text-left">
+            <p class="text-sm font-semibold text-ink">{ryan.entry.name}</p>
+            <p class="text-xs text-ink-soft">{ryan.entry.role}</p>
           </div>
         </div>
       </div>
-    )}
+    </section>
+  )}
+
+  <!-- Congressional Record recognition -->
+  <section class="bg-paper pb-24" aria-labelledby="recognition-heading">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="border hairline p-8 sm:p-14 grid md:grid-cols-[0.9fr_1.3fr] gap-8 md:gap-16 items-start bg-paper-2">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">Recognition</p>
+          <h2 id="recognition-heading" class="font-display font-medium text-2xl sm:text-3xl leading-snug text-ink text-balance">
+            Recognized in the United States Congressional Record
+          </h2>
+        </div>
+        <div>
+          <p class="text-base text-ink-soft leading-relaxed">
+            LNCP has been honored in the U.S. Congressional Record by Representative Suhas Subramanyam of Virginia's 10th Congressional District. What began in 2024 as a student-led effort has grown into a community of more than 270 members, partnerships with 17 parks and schools, over 3,100 acres of restored land, and three published research studies on local water quality, including the Potomac River basin.
+          </p>
+          <p class="text-base text-ink-soft leading-relaxed mt-4">
+            This recognition belongs to every volunteer who showed up for a cleanup, every partner who opened their gates, and everyone who believed that young people can protect the places we call home.
+          </p>
+          <div class="flex flex-wrap gap-x-8 gap-y-3 mt-7">
+            <a
+              href="https://www.congress.gov/congressional-record/volume-172/issue-115/extensions-of-remarks-section/article/E694-2"
+              class="text-sm text-ink border-b border-ink pb-0.5 hover:text-ink-soft hover:border-ink-soft transition-colors"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Read the entry on Congress.gov
+            </a>
+            <a
+              href="/assets/lncp-congressional-record.pdf"
+              class="text-sm text-ink border-b border-ink pb-0.5 hover:text-ink-soft hover:border-ink-soft transition-colors"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View the record (PDF)
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 
-  <!-- Stats bar -->
-  <section class="bg-[#1B4332] py-10" aria-label="Impact statistics">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <dl class="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+  <!-- Mission: two-column editorial -->
+  <section class="bg-paper border-t hairline py-24" aria-labelledby="mission-heading">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-[0.9fr_1.3fr] gap-10 md:gap-20 items-start">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">Conservation</p>
+        <h2 id="mission-heading" class="font-display font-medium text-2xl sm:text-3xl leading-snug text-ink text-balance">
+          {home?.missionHeading ?? 'The deliberate act of preserving, protecting, and restoring our natural environment for the benefit of future generations.'}
+        </h2>
+      </div>
+      <div>
+        <p class="text-base sm:text-lg text-ink-soft leading-relaxed">
+          {home?.missionBody ?? 'Loudoun Nature Conservation Project is a student-led nonprofit working to advance sustainability and ecological health across Loudoun County. We engage our community through education, hands-on restoration, and advocacy, empowering young people to become lifelong stewards of the environment.'}
+        </p>
+        <a
+          href="/about/"
+          class="inline-block mt-7 text-sm text-ink border-b border-ink pb-0.5 hover:text-ink-soft hover:border-ink-soft transition-colors"
+        >
+          Learn more about our mission
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats: hairline grid -->
+  <section class="bg-paper pb-24" aria-label="Impact statistics">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <dl class="grid grid-cols-2 lg:grid-cols-4 border-t border-l hairline">
         {stats.map(({ value, label }) => (
-          <div>
-            <dt class="text-[#74c69d] font-display font-black text-3xl sm:text-4xl">{value}</dt>
-            <dd class="text-green-200 text-xs uppercase tracking-wide mt-1">{label}</dd>
+          <div class="border-r border-b hairline p-6 sm:p-9">
+            <dt class="sr-only">{label}</dt>
+            <dd class="font-display text-3xl sm:text-5xl text-forest-900">{value}</dd>
+            <dd class="text-xs uppercase tracking-wider text-ink-soft mt-2">{label}</dd>
           </div>
         ))}
       </dl>
     </div>
   </section>
 
-  <!-- Mission -->
-  <section class="py-20 bg-[#f0faf4]" aria-labelledby="mission-heading">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <p class="text-[#40916C] font-semibold text-sm uppercase tracking-widest text-center mb-4">Conservation</p>
-      <h2 id="mission-heading" class="font-display font-black text-3xl sm:text-4xl text-center text-[#1B4332] mb-4">
-        {home?.missionHeading ?? 'The deliberate act of preserving, protecting, and restoring our natural environment for the benefit of future generations.'}
-      </h2>
-      <p class="text-gray-600 text-base sm:text-lg leading-relaxed text-center max-w-3xl mx-auto mb-8">
-        {home?.missionBody ?? 'Loudoun Nature Conservation Project is a student-led nonprofit working to advance sustainability and ecological health across Loudoun County. We engage our community through education, hands-on restoration, and advocacy, empowering young people to become lifelong stewards of the environment.'}
-      </p>
-      <div class="text-center">
-        <a
-          href="/about/"
-          class="inline-flex items-center gap-2 text-[#2D6A4F] font-semibold hover:text-[#1B4332] transition-colors"
-        >
-          Learn more about our mission
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-          </svg>
-        </a>
+  <!-- Field gallery: scroll-expand photos -->
+  <section class="bg-paper pb-24" aria-label="In the field">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+      <figure data-scroll-expand class="m-0">
+        <img
+          src="/assets/large-group-cleanup.jpg"
+          alt="A large group of LNCP student volunteers gathered after a park cleanup"
+          width="1440"
+          height="1085"
+          class="w-full object-cover border hairline"
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption class="text-xs uppercase tracking-wider text-ink-soft mt-3">
+          Student volunteers after a Loudoun County park cleanup
+        </figcaption>
+      </figure>
+      <figure data-scroll-expand class="m-0">
+        <img
+          src="/assets/8-people-cleanup-done.jpg"
+          alt="LNCP volunteers with collected trash bags at the end of a cleanup"
+          width="2048"
+          height="1536"
+          class="w-full object-cover border hairline"
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption class="text-xs uppercase tracking-wider text-ink-soft mt-3">
+          Bags collected, piece by piece
+        </figcaption>
+      </figure>
+      <div class="grid sm:grid-cols-2 gap-6 sm:gap-8">
+        <figure class="m-0">
+          <img
+            src="/assets/outdoor7peoplecrew.jpg"
+            alt="An LNCP cleanup crew posing together outdoors"
+            width="1600"
+            height="2133"
+            class="w-full h-105 object-cover border hairline"
+            loading="lazy"
+            decoding="async"
+          />
+          <figcaption class="text-xs uppercase tracking-wider text-ink-soft mt-3">
+            Crew day in the field
+          </figcaption>
+        </figure>
+        <figure class="m-0">
+          <img
+            src="/assets/outdoor3people.jpg"
+            alt="Three LNCP volunteers working outdoors"
+            width="1440"
+            height="1080"
+            class="w-full h-105 object-cover border hairline"
+            loading="lazy"
+            decoding="async"
+          />
+          <figcaption class="text-xs uppercase tracking-wider text-ink-soft mt-3">
+            Hands-on restoration
+          </figcaption>
+        </figure>
       </div>
     </div>
   </section>
 
   <!-- Featured Team -->
   {featuredTeam.length > 0 && (
-    <section class="py-20 bg-white" aria-labelledby="team-heading">
+    <section class="bg-paper border-t hairline py-24" aria-labelledby="team-heading">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-          <p class="text-[#40916C] font-semibold text-sm uppercase tracking-widest mb-2">Meet Our Team</p>
-          <h2 id="team-heading" class="font-display font-black text-3xl sm:text-4xl text-[#1B4332]">Leading Staff</h2>
-          <p class="text-gray-500 mt-3 max-w-2xl mx-auto text-sm sm:text-base">
+        <div class="max-w-2xl mb-14">
+          <p class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">Meet Our Team</p>
+          <h2 id="team-heading" class="font-display font-medium text-3xl sm:text-4xl text-ink">Leading Staff</h2>
+          <p class="text-ink-soft mt-4 text-base leading-relaxed">
             Our staff is made up of passionate student leaders dedicated to environmental advocacy and community engagement. Hover or tap a card to learn more.
           </p>
         </div>
@@ -180,15 +284,12 @@ const orgJsonLd = {
             />
           ))}
         </div>
-        <div class="text-center mt-10">
+        <div class="mt-12">
           <a
             href="/team/"
-            class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#1B4332] text-white font-semibold hover:bg-[#2D6A4F] transition-colors"
+            class="text-sm text-ink border-b border-ink pb-0.5 hover:text-ink-soft hover:border-ink-soft transition-colors"
           >
-            View full team
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
+            View the full team
           </a>
         </div>
       </div>
@@ -196,26 +297,26 @@ const orgJsonLd = {
   )}
 
   <!-- Press -->
-  <section class="py-16 bg-[#f0faf4]" aria-labelledby="press-heading">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 id="press-heading" class="font-display font-bold text-center text-[#1B4332] text-lg mb-8 uppercase tracking-widest">
+  <section class="bg-paper border-t hairline py-16" aria-labelledby="press-heading">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 id="press-heading" class="text-xs font-semibold uppercase tracking-widest text-ink-soft text-center mb-10">
         News on Loudoun Nature Conservation Project
       </h2>
-      <div class="flex flex-wrap items-center justify-center gap-8 sm:gap-12">
+      <div class="flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
         {(home?.pressLinks ?? [
-          { publication: 'WTOP', headline: 'Coverage on WTOP', url: '#' },
-          { publication: 'Loudoun Now', headline: 'Coverage in Loudoun Now', url: '#' },
-          { publication: 'InsideNOVA', headline: 'Coverage on InsideNOVA', url: '#' },
-          { publication: 'News Spry', headline: 'Coverage on News Spry', url: '#' },
+          { publication: 'WTOP', headline: 'Still in high school, Loudoun County students look to clean up the environment for future generations', url: 'https://wtop.com/loudoun-county/2024/11/still-in-high-school-loudon-county-students-look-to-clean-up-the-environment-for-future-generations/' },
+          { publication: 'Loudoun Now', headline: 'Sterling teens create conservation nonprofit, offer weekly park cleanups', url: 'https://www.loudounnow.com/giving_back/sterling-teens-create-conservation-nonprofit-offer-weekly-park-cleanups/article_f54fbbc6-777a-11ef-a63e-a7c6205f9ce0.html' },
+          { publication: 'InsideNOVA', headline: 'Loudoun high school students are trying to clean up the environment for future generations', url: 'https://www.insidenova.com/headlines/loudoun-high-school-students-are-trying-to-clean-up-the-environment-for-future-generations/article_c7e18406-a369-11ef-a330-23b6f26e801e.html' },
+          { publication: 'U.S. Congressional Record', headline: 'Recognizing the Loudoun Nature Conservation Project', url: 'https://www.congress.gov/congressional-record/volume-172/issue-115/extensions-of-remarks-section/article/E694-2' },
         ]).map((link) => (
           <a
             href={link.url}
-            class="text-[#1B4332] font-display font-black text-lg sm:text-2xl hover:text-[#40916C] transition-colors"
+            class="font-display text-xl sm:text-2xl text-ink hover:text-clay transition-colors"
             target="_blank"
             rel="noopener noreferrer"
             title={link.headline}
           >
-            {link.publication.toUpperCase()}
+            {link.publication}
           </a>
         ))}
       </div>
@@ -223,24 +324,24 @@ const orgJsonLd = {
   </section>
 
   <!-- CTA -->
-  <section class="py-20 bg-[#1B4332] text-center" aria-labelledby="cta-heading">
+  <section class="bg-forest-900 py-24 text-center" aria-labelledby="cta-heading">
     <div class="max-w-2xl mx-auto px-4 sm:px-6">
-      <h2 id="cta-heading" class="font-display font-black text-3xl sm:text-4xl text-white mb-4">
+      <h2 id="cta-heading" class="font-display font-medium text-3xl sm:text-4xl text-paper mb-5 text-balance">
         Ready to make a difference?
       </h2>
-      <p class="text-green-200 text-base mb-8">
+      <p class="text-paper/70 text-base mb-10">
         Join hundreds of students already protecting Loudoun County's natural spaces. Volunteer, collaborate, or reach out.
       </p>
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
         <a
           href="/volunteer/"
-          class="px-8 py-3.5 rounded-lg font-bold bg-[#52b788] text-[#0d2118] hover:bg-[#74c69d] transition-colors"
+          class="px-8 py-4 font-semibold text-sm bg-paper text-forest-900 hover:bg-paper-2 transition-colors"
         >
           Volunteer Now
         </a>
         <a
           href="/contact/"
-          class="px-8 py-3.5 rounded-lg font-semibold border-2 border-white/30 text-white hover:bg-white/10 transition-colors"
+          class="text-sm text-paper border-b border-paper/60 pb-0.5 hover:border-paper transition-colors"
         >
           Contact Us
         </a>
@@ -248,3 +349,30 @@ const orgJsonLd = {
     </div>
   </section>
 </Base>
+
+<script>
+  const expandEls = document.querySelectorAll<HTMLElement>('[data-scroll-expand]');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (expandEls.length > 0 && !reduced) {
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const vh = window.innerHeight;
+      expandEls.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        const progress = Math.min(1, Math.max(0, (vh - rect.top) / (vh * 0.85)));
+        el.style.setProperty('--expand', progress.toFixed(3));
+      });
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    update();
+  }
+</script>

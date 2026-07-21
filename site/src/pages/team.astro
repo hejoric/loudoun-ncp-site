@@ -2,7 +2,6 @@
 import Base from '@/layouts/Base.astro';
 import FlipCard from '@/components/FlipCard.astro';
 import BranchCard from '@/components/BranchCard.astro';
-import InitialsAvatar from '@/components/InitialsAvatar.astro';
 import reader from '@/lib/reader';
 
 const allMembers = await reader.collections.teamMembers.all();
@@ -25,13 +24,7 @@ function schoolInitials(name: string) {
   return name.split(/\s+/).filter(Boolean).map((w) => w[0]).join('').toUpperCase().slice(0, 3);
 }
 
-const sectionMeta = {
-  executive:      { label: 'Executive',       color: '#3730a3', textColor: 'white' },
-  directors:      { label: 'Directors',       color: '#134e4a', textColor: 'white' },
-  executiveStaff: { label: 'Executive Staff', color: '#7c2d12', textColor: 'white' },
-  branchPresidents: { label: 'Branch Presidents', color: '#4c0519', textColor: 'white' },
-  branchStaff:    { label: 'Branch Staff',    color: '#111827', textColor: 'white' },
-};
+const ACCENT = '#1B4332';
 
 const personJsonLd = allMembers.map((m) => ({
   '@context': 'https://schema.org',
@@ -52,12 +45,12 @@ const personJsonLd = allMembers.map((m) => ({
   description="Meet the student leaders of Loudoun Nature Conservation Project - our executive team, directors, executive staff, and branch presidents driving conservation across Loudoun County."
   jsonLd={personJsonLd}
 >
-  <!-- Header -->
-  <div class="bg-[#1B4332] text-white py-16 px-4 sm:px-6 lg:px-8">
+  <!-- Page header -->
+  <div class="bg-paper border-b hairline py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto text-center">
-      <p class="text-[#74c69d] text-sm uppercase tracking-widest font-semibold mb-3">Who We Are</p>
-      <h1 class="font-display font-black text-4xl sm:text-5xl">Our Team</h1>
-      <p class="mt-4 text-green-200 max-w-2xl mx-auto">
+      <p class="font-display italic text-clay text-lg mb-4">Who We Are</p>
+      <h1 class="font-display font-medium text-4xl sm:text-5xl text-ink">Our Team</h1>
+      <p class="mt-5 text-ink-soft max-w-2xl mx-auto">
         Hover or tap any card to learn more about a team member. All members are student volunteers dedicated to conservation.
       </p>
     </div>
@@ -65,24 +58,25 @@ const personJsonLd = allMembers.map((m) => ({
 
   {/* ---- EXECUTIVE ---- */}
   {bySection.executive.length > 0 && (
-    <section aria-labelledby="exec-heading" class="py-14 bg-white">
+    <section aria-labelledby="exec-heading" class="py-16 bg-paper">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header class="flex items-center gap-4 mb-10">
-          <div class="w-3 h-10 rounded-full shrink-0" style={`background:${sectionMeta.executive.color};`} aria-hidden="true"></div>
-          <h2 id="exec-heading" class="font-display font-black text-2xl sm:text-3xl text-[#1c2b22]">Executive</h2>
+        <header class="mb-10 text-center">
+          <h2 id="exec-heading" class="font-display font-medium text-2xl sm:text-3xl text-ink">Executive</h2>
         </header>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div class="flex flex-wrap justify-center gap-4 sm:gap-6">
           {bySection.executive.map((m) => (
-            <FlipCard
-              name={m.entry.name}
-              role={m.entry.role}
-              bio={m.entry.bio}
-              headshot={m.entry.headshot}
-              email={m.entry.email ?? undefined}
-              instagram={m.entry.instagram ?? undefined}
-              linkedin={m.entry.linkedin ?? undefined}
-              accentColor={sectionMeta.executive.color}
-            />
+            <div class="w-[calc(50%-0.5rem)] sm:w-56 lg:w-64">
+              <FlipCard
+                name={m.entry.name}
+                role={m.entry.role}
+                bio={m.entry.bio}
+                headshot={m.entry.headshot}
+                email={m.entry.email ?? undefined}
+                instagram={m.entry.instagram ?? undefined}
+                linkedin={m.entry.linkedin ?? undefined}
+                accentColor={ACCENT}
+              />
+            </div>
           ))}
         </div>
       </div>
@@ -91,24 +85,25 @@ const personJsonLd = allMembers.map((m) => ({
 
   {/* ---- DIRECTORS ---- */}
   {bySection.directors.length > 0 && (
-    <section aria-labelledby="directors-heading" class="py-14 bg-[#f0faf4]">
+    <section aria-labelledby="directors-heading" class="py-16 bg-paper-2 border-y hairline">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header class="flex items-center gap-4 mb-10">
-          <div class="w-3 h-10 rounded-full shrink-0" style={`background:${sectionMeta.directors.color};`} aria-hidden="true"></div>
-          <h2 id="directors-heading" class="font-display font-black text-2xl sm:text-3xl text-[#1c2b22]">Directors</h2>
+        <header class="mb-10 text-center">
+          <h2 id="directors-heading" class="font-display font-medium text-2xl sm:text-3xl text-ink">Directors</h2>
         </header>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div class="flex flex-wrap justify-center gap-4 sm:gap-6">
           {bySection.directors.map((m) => (
-            <FlipCard
-              name={m.entry.name}
-              role={m.entry.role}
-              bio={m.entry.bio}
-              headshot={m.entry.headshot}
-              email={m.entry.email ?? undefined}
-              instagram={m.entry.instagram ?? undefined}
-              linkedin={m.entry.linkedin ?? undefined}
-              accentColor={sectionMeta.directors.color}
-            />
+            <div class="w-[calc(50%-0.5rem)] sm:w-56 lg:w-64">
+              <FlipCard
+                name={m.entry.name}
+                role={m.entry.role}
+                bio={m.entry.bio}
+                headshot={m.entry.headshot}
+                email={m.entry.email ?? undefined}
+                instagram={m.entry.instagram ?? undefined}
+                linkedin={m.entry.linkedin ?? undefined}
+                accentColor={ACCENT}
+              />
+            </div>
           ))}
         </div>
       </div>
@@ -117,16 +112,13 @@ const personJsonLd = allMembers.map((m) => ({
 
   {/* ---- EXECUTIVE STAFF (accordion) ---- */}
   {bySection.executiveStaff.length > 0 && (
-    <section aria-labelledby="exec-staff-heading" class="py-2 bg-white border-y border-gray-100">
+    <section aria-labelledby="exec-staff-heading" class="py-2 bg-paper border-b hairline">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <details class="group">
           <summary class="flex items-center justify-between gap-4 py-6 cursor-pointer list-none">
-            <div class="flex items-center gap-4">
-              <div class="w-3 h-10 rounded-full shrink-0" style={`background:${sectionMeta.executiveStaff.color};`} aria-hidden="true"></div>
-              <h2 id="exec-staff-heading" class="font-display font-black text-2xl sm:text-3xl text-[#1c2b22]">Executive Staff</h2>
-            </div>
+            <h2 id="exec-staff-heading" class="font-display font-medium text-2xl sm:text-3xl text-ink">Executive Staff</h2>
             <svg
-              class="w-6 h-6 text-gray-400 transition-transform group-open:rotate-180"
+              class="w-6 h-6 text-ink-soft transition-transform group-open:rotate-180"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -136,18 +128,20 @@ const personJsonLd = allMembers.map((m) => ({
             </svg>
           </summary>
           <div class="pb-14">
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div class="flex flex-wrap justify-center gap-4 sm:gap-6">
               {bySection.executiveStaff.map((m) => (
-                <FlipCard
-                  name={m.entry.name}
-                  role={m.entry.role}
-                  bio={m.entry.bio}
-                  headshot={m.entry.headshot}
-                  email={m.entry.email ?? undefined}
-                  instagram={m.entry.instagram ?? undefined}
-                  linkedin={m.entry.linkedin ?? undefined}
-                  accentColor={sectionMeta.executiveStaff.color}
-                />
+                <div class="w-[calc(50%-0.5rem)] sm:w-56 lg:w-64">
+                  <FlipCard
+                    name={m.entry.name}
+                    role={m.entry.role}
+                    bio={m.entry.bio}
+                    headshot={m.entry.headshot}
+                    email={m.entry.email ?? undefined}
+                    instagram={m.entry.instagram ?? undefined}
+                    linkedin={m.entry.linkedin ?? undefined}
+                    accentColor={ACCENT}
+                  />
+                </div>
               ))}
             </div>
           </div>
@@ -158,31 +152,32 @@ const personJsonLd = allMembers.map((m) => ({
 
   {/* ---- BRANCH PRESIDENTS ---- */}
   {bySection.branchPresidents.length > 0 && (
-    <section aria-labelledby="branch-presidents-heading" class="py-14 bg-[#f0faf4]">
+    <section id="branches" aria-labelledby="branch-presidents-heading" class="py-16 bg-paper-2 border-b hairline">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header class="flex items-center gap-4 mb-4">
-          <div class="w-3 h-10 rounded-full shrink-0" style={`background:${sectionMeta.branchPresidents.color};`} aria-hidden="true"></div>
-          <h2 id="branch-presidents-heading" class="font-display font-black text-2xl sm:text-3xl text-[#1c2b22]">Branch Presidents</h2>
+        <header class="mb-4 text-center">
+          <h2 id="branch-presidents-heading" class="font-display font-medium text-2xl sm:text-3xl text-ink">Branch Presidents</h2>
         </header>
-        <p class="text-gray-500 text-sm mb-8 pl-7">
-          Each branch president leads LNCP operations at their school or college - organizing cleanups, recruiting members, and representing their community. Adding a new branch requires only a new Keystatic entry - no code changes.
+        <p class="text-ink-soft text-sm mb-10 text-center max-w-2xl mx-auto">
+          Each branch president leads LNCP operations at their school or college - organizing cleanups, recruiting members, and representing their community.
         </p>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div class="flex flex-wrap justify-center gap-4 sm:gap-6">
           {bySection.branchPresidents.map((m) => {
             const branch = getBranchFor(m);
             return (
-              <BranchCard
-                presidentName={m.entry.name}
-                presidentRole={m.entry.role}
-                presidentBio={m.entry.bio}
-                presidentHeadshot={m.entry.headshot}
-                presidentEmail={m.entry.email ?? undefined}
-                presidentInstagram={m.entry.instagram ?? undefined}
-                presidentLinkedin={m.entry.linkedin ?? undefined}
-                branchName={branch?.entry.name ?? m.entry.branch ?? 'Branch'}
-                schoolLogo={branch?.entry.schoolLogo ?? undefined}
-                schoolInitials={branch ? schoolInitials(branch.entry.school) : undefined}
-              />
+              <div class="w-[calc(50%-0.5rem)] sm:w-56 lg:w-64">
+                <BranchCard
+                  presidentName={m.entry.name}
+                  presidentRole={m.entry.role}
+                  presidentBio={m.entry.bio}
+                  presidentHeadshot={m.entry.headshot}
+                  presidentEmail={m.entry.email ?? undefined}
+                  presidentInstagram={m.entry.instagram ?? undefined}
+                  presidentLinkedin={m.entry.linkedin ?? undefined}
+                  branchName={branch?.entry.name ?? m.entry.branch ?? 'Branch'}
+                  schoolLogo={branch?.entry.schoolLogo ?? undefined}
+                  schoolInitials={branch ? schoolInitials(branch.entry.school) : undefined}
+                />
+              </div>
             );
           })}
         </div>
@@ -192,27 +187,28 @@ const personJsonLd = allMembers.map((m) => ({
 
   {/* ---- BRANCH STAFF ---- */}
   {bySection.branchStaff.length > 0 && (
-    <section aria-labelledby="branch-staff-heading" class="py-14 bg-[#111827] text-white">
+    <section aria-labelledby="branch-staff-heading" class="py-16 bg-paper">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header class="flex items-center gap-4 mb-10">
-          <div class="w-3 h-10 rounded-full shrink-0 bg-white/20" aria-hidden="true"></div>
-          <h2 id="branch-staff-heading" class="font-display font-black text-2xl sm:text-3xl">Branch Staff</h2>
+        <header class="mb-4 text-center">
+          <h2 id="branch-staff-heading" class="font-display font-medium text-2xl sm:text-3xl text-ink">Branch Staff</h2>
         </header>
-        <p class="text-gray-400 text-sm mb-8 pl-7">
+        <p class="text-ink-soft text-sm mb-10 text-center max-w-2xl mx-auto">
           Branch staff serve as vice presidents, operations leads, outreach leads, and general members within their school chapters.
         </p>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div class="flex flex-wrap justify-center gap-4 sm:gap-6">
           {bySection.branchStaff.map((m) => (
-            <FlipCard
-              name={m.entry.name}
-              role={m.entry.role}
-              bio={m.entry.bio}
-              headshot={m.entry.headshot}
-              email={m.entry.email ?? undefined}
-              instagram={m.entry.instagram ?? undefined}
-              linkedin={m.entry.linkedin ?? undefined}
-              accentColor={sectionMeta.branchStaff.color}
-            />
+            <div class="w-[calc(50%-0.5rem)] sm:w-56 lg:w-64">
+              <FlipCard
+                name={m.entry.name}
+                role={m.entry.role}
+                bio={m.entry.bio}
+                headshot={m.entry.headshot}
+                email={m.entry.email ?? undefined}
+                instagram={m.entry.instagram ?? undefined}
+                linkedin={m.entry.linkedin ?? undefined}
+                accentColor={ACCENT}
+              />
+            </div>
           ))}
         </div>
       </div>
@@ -221,9 +217,9 @@ const personJsonLd = allMembers.map((m) => ({
 
   {/* Empty state */}
   {Object.values(bySection).every((s) => s.length === 0) && (
-    <div class="py-32 text-center text-gray-500">
+    <div class="py-32 text-center text-ink-soft">
       <p class="font-display text-xl">Team roster coming soon.</p>
-      <p class="text-sm mt-2">Check back shortly or <a href="/contact/" class="text-[#2D6A4F] hover:underline">contact us</a>.</p>
+      <p class="text-sm mt-2">Check back shortly or <a href="/contact/" class="text-forest-800 hover:underline">contact us</a>.</p>
     </div>
   )}
 </Base>

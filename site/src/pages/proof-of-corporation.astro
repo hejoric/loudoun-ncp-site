@@ -17,6 +17,11 @@ const docs = [
     description: 'Nonprofit bylaws governing the organization\'s structure and operations.',
     file: '/research/Loudoun-Nature-Conservation-Project.docx-1.pdf',
   },
+  {
+    title: 'United States Congressional Record Recognition',
+    description: 'Extension of Remarks by Rep. Suhas Subramanyam (VA-10) recognizing LNCP.',
+    file: '/assets/lncp-congressional-record.pdf',
+  },
 ];
 ---
 
@@ -24,27 +29,27 @@ const docs = [
   title="Proof of Corporation"
   description="Loudoun Nature Conservation Project 501(c)(3) incorporation documents - Virginia Certificate of Incorporation and Bylaws."
 >
-  <div class="bg-[#1B4332] text-white py-16 px-4 sm:px-6 lg:px-8">
+  <div class="bg-paper border-b hairline py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto text-center">
-      <p class="text-[#74c69d] text-sm uppercase tracking-widest font-semibold mb-3">Legal</p>
-      <h1 class="font-display font-black text-4xl sm:text-5xl">Proof of Corporation</h1>
-      <p class="mt-4 text-green-200 max-w-2xl mx-auto">
+      <p class="font-display italic text-clay text-lg mb-4">Legal</p>
+      <h1 class="font-display font-medium text-4xl sm:text-5xl text-ink">Proof of Corporation</h1>
+      <p class="mt-5 text-ink-soft max-w-2xl mx-auto">
         Loudoun Nature Conservation Project is a legally incorporated 501(c)(3) nonprofit organization in the Commonwealth of Virginia, effective April 26, 2024.
       </p>
     </div>
   </div>
 
-  <section class="py-16 bg-[#f0faf4]">
+  <section class="py-20 bg-paper-2">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
       {docs.map((doc) => (
-        <div class="bg-white rounded-xl border border-[#d8f3dc] p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="bg-paper border hairline p-6 sm:p-7 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h2 class="font-display font-bold text-[#1B4332] text-base">{doc.title}</h2>
-            <p class="text-gray-500 text-sm mt-1">{doc.description}</p>
+            <h2 class="font-display font-medium text-ink text-lg">{doc.title}</h2>
+            <p class="text-ink-soft text-sm mt-1">{doc.description}</p>
           </div>
           <a
             href={doc.file}
-            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#1B4332] text-white text-sm font-semibold hover:bg-[#2D6A4F] transition-colors shrink-0"
+            class="inline-flex items-center gap-2 px-4 py-2.5 bg-forest-900 text-paper text-sm font-semibold hover:bg-forest-800 transition-colors shrink-0"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -56,7 +61,7 @@ const docs = [
         </div>
       ))}
 
-      <p class="text-xs text-gray-400 mt-6 text-center">
+      <p class="text-xs text-ink-soft mt-8 text-center">
         EIN and additional legal documentation available upon request at directors@loudounnatureconservation.org
       </p>
     </div>

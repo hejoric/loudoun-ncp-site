@@ -1,6 +1,13 @@
 @import "tailwindcss";
 
 @theme {
+  /* Editorial palette */
+  --color-paper: #F6F4EE;
+  --color-paper-2: #EFEBE1;
+  --color-ink: #17281F;
+  --color-ink-soft: #4B5D50;
+  --color-clay: #B4633A;
+
   /* Brand greens */
   --color-forest-950: #0d2118;
   --color-forest-900: #1B4332;
@@ -19,27 +26,11 @@
   --color-tier-branch-staff: #111827;
 
   /* Typography */
-  --font-display: 'Montserrat', system-ui, sans-serif;
+  --font-display: ui-serif, Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Times New Roman', serif;
   --font-body: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   /* Sizing */
-  --radius-card: 0.75rem;
-}
-
-/* Self-hosted Montserrat from theme export */
-@font-face {
-  font-family: 'Montserrat';
-  src: url('/assets/fonts/Montserrat-VariableFont_wght.woff2') format('woff2');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Montserrat';
-  src: url('/assets/fonts/Montserrat-Italic-VariableFont_wght.woff2') format('woff2');
-  font-weight: 100 900;
-  font-style: italic;
-  font-display: swap;
+  --radius-card: 0rem;
 }
 
 /* Base */
@@ -55,13 +46,32 @@ html {
 
 body {
   font-family: var(--font-body);
-  color: #1c2b22;
-  background: #fff;
+  color: var(--color-ink);
+  background: var(--color-paper);
   -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
+}
+
+/* Hairline rules used across the editorial layout */
+.hairline {
+  border-color: rgba(23, 40, 31, 0.14);
+}
+
+/* Scroll-expand media blocks: JS sets --expand from 0 to 1 as the block
+   enters the viewport; without JS (or with reduced motion) it stays at 1. */
+[data-scroll-expand] {
+  width: calc(74% + 26% * var(--expand, 1));
+  margin-inline: auto;
+  will-change: width;
+}
+
+@media (max-width: 640px) {
+  [data-scroll-expand] {
+    width: 100%;
+  }
 }
 
 /* Flip card */
@@ -119,7 +129,7 @@ h1, h2, h3, h4, h5, h6 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-weight: 700;
   color: #fff;
   background: var(--color-forest-800);

@@ -3,6 +3,7 @@ import Base from '@/layouts/Base.astro';
 import reader from '@/lib/reader';
 
 const about = await reader.singletons.about.read();
+const home = await reader.singletons.home.read();
 
 const timeline = about?.historyTimeline?.length
   ? about.historyTimeline
@@ -12,7 +13,7 @@ const timeline = about?.historyTimeline?.length
       { year: 'Fall 2024', event: 'First school branches launched at Potomac Falls High School and other Loudoun schools. Research division established with first water quality study.' },
       { year: 'Winter 2024', event: 'First research publication: "Water Health: Testing and Determining Health of Local Bodies of Water" (Shire & Nisay, Dec 2024).' },
       { year: '2025', event: 'Expanded to seven school and college branches including Independence, Dominion, Rock Ridge, Stone Bridge, NOVA, and GMU. Multiple research papers published on dissolved oxygen and agricultural runoff.' },
-      { year: '2026', event: 'LNCP surpasses 270 members, 3,122 acres cleaned, and 726,000+ social media impressions. New branch leadership structure established with Alyssa Nisay (Potomac Falls), expanded director team, and five active research publications.' },
+      { year: '2026', event: 'LNCP surpasses 270 members, 3,122 acres cleaned, and 726,000+ social media impressions. Recognized in the United States Congressional Record by Representative Suhas Subramanyam of Virginia\'s 10th District. New branches announced for the upcoming school year.' },
     ];
 
 const whatWeDo = about?.whatWeDo?.length
@@ -35,6 +36,8 @@ const whatWeDo = about?.whatWeDo?.length
         body: 'By partnering with local parks, schools, and organizations, we amplify our impact and help shape environmental stewardship culture across Northern Virginia.',
       },
     ];
+
+const pressLinks = home?.pressLinks ?? [];
 ---
 
 <Base
@@ -42,38 +45,41 @@ const whatWeDo = about?.whatWeDo?.length
   description="Learn about Loudoun Nature Conservation Project - our mission, what we do, our impact, and the history of this student-led 501(c)(3) nonprofit in Loudoun County, Virginia."
 >
   <!-- Page header -->
-  <div class="bg-[#1B4332] text-white py-16 px-4 sm:px-6 lg:px-8">
+  <div class="bg-paper border-b hairline py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto text-center">
-      <p class="text-[#74c69d] text-sm uppercase tracking-widest font-semibold mb-3">Who We Are</p>
-      <h1 class="font-display font-black text-4xl sm:text-5xl">About LNCP</h1>
+      <p class="font-display italic text-clay text-lg mb-4">Who We Are</p>
+      <h1 class="font-display font-medium text-4xl sm:text-5xl text-ink">About LNCP</h1>
     </div>
   </div>
 
   <!-- Mission -->
-  <section class="py-16 bg-white" aria-labelledby="mission-heading">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 id="mission-heading" class="font-display font-bold text-2xl text-[#1B4332] mb-6 flex items-center gap-3">
-        <span class="w-8 h-0.5 bg-[#52b788] shrink-0" aria-hidden="true"></span>
-        Our Mission
-      </h2>
-      <p class="text-gray-700 text-lg leading-relaxed">
+  <section class="py-20 bg-paper" aria-labelledby="mission-heading">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-[0.9fr_1.3fr] gap-10 md:gap-20 items-start">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">Our Mission</p>
+        <h2 id="mission-heading" class="font-display font-medium text-2xl sm:text-3xl leading-snug text-ink text-balance">
+          Made by students, for students.
+        </h2>
+      </div>
+      <p class="text-base sm:text-lg text-ink-soft leading-relaxed">
         {about?.mission ?? 'Loudoun Nature Conservation Project is a student-led nonprofit working to advance sustainability and ecological health across Loudoun County. We engage our community through education, hands-on restoration, and advocacy, empowering young people to become lifelong stewards of the environment. Through local cleanups, habitat restoration, and outreach events, we work to restore ecosystems and build a lasting culture of environmental responsibility. Made by students, for students, we\'re proving that the next generation of conservation leaders is already at work.'}
       </p>
     </div>
   </section>
 
   <!-- What We Do -->
-  <section class="py-16 bg-[#f0faf4]" aria-labelledby="what-we-do-heading">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 id="what-we-do-heading" class="font-display font-bold text-2xl text-[#1B4332] mb-10 flex items-center gap-3">
-        <span class="w-8 h-0.5 bg-[#52b788] shrink-0" aria-hidden="true"></span>
-        What We Do
+  <section class="py-20 bg-paper-2 border-y hairline" aria-labelledby="what-we-do-heading">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">What We Do</p>
+      <h2 id="what-we-do-heading" class="font-display font-medium text-2xl sm:text-3xl text-ink mb-12">
+        Four ways we serve Loudoun County
       </h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        {whatWeDo.map((item) => (
-          <div class="bg-white rounded-xl p-6 border border-[#d8f3dc] shadow-sm">
-            <h3 class="font-display font-bold text-[#1B4332] text-base mb-2">{item.heading}</h3>
-            <p class="text-gray-600 text-sm leading-relaxed">{item.body}</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 border-t border-l hairline">
+        {whatWeDo.map((item, i) => (
+          <div class="bg-paper border-r border-b hairline p-8">
+            <p class="font-display italic text-clay text-sm mb-3">{String(i + 1).padStart(2, '0')}</p>
+            <h3 class="font-display font-medium text-ink text-xl mb-3">{item.heading}</h3>
+            <p class="text-ink-soft text-sm leading-relaxed">{item.body}</p>
           </div>
         ))}
       </div>
@@ -81,19 +87,20 @@ const whatWeDo = about?.whatWeDo?.length
   </section>
 
   <!-- Impact -->
-  <section class="py-16 bg-[#1B4332] text-white" aria-labelledby="impact-heading">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h2 id="impact-heading" class="font-display font-bold text-2xl mb-10">Our Impact</h2>
-      <dl class="grid grid-cols-2 sm:grid-cols-4 gap-8">
+  <section class="py-20 bg-paper" aria-labelledby="impact-heading">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">Our Impact</p>
+      <dl class="grid grid-cols-2 sm:grid-cols-4 border-t border-l hairline">
         {(about?.impactStats?.length ? about.impactStats : [
           { value: '3,122', label: 'Acres Cleaned' },
           { value: '270', label: 'Members' },
           { value: '726,022', label: 'Impressions' },
           { value: '17', label: 'Partner Parks & Schools' },
         ]).map(({ value, label }) => (
-          <div>
-            <dt class="text-[#74c69d] font-display font-black text-3xl sm:text-4xl">{value}</dt>
-            <dd class="text-green-200 text-xs uppercase tracking-wide mt-1">{label}</dd>
+          <div class="border-r border-b hairline p-6 sm:p-8">
+            <dt class="sr-only">{label}</dt>
+            <dd class="font-display text-3xl sm:text-4xl text-forest-900">{value}</dd>
+            <dd class="text-xs uppercase tracking-wider text-ink-soft mt-2">{label}</dd>
           </div>
         ))}
       </dl>
@@ -101,21 +108,21 @@ const whatWeDo = about?.whatWeDo?.length
   </section>
 
   <!-- History Timeline -->
-  <section id="history" class="py-16 bg-white" aria-labelledby="history-heading">
+  <section id="history" class="py-20 bg-paper-2 border-y hairline" aria-labelledby="history-heading">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 id="history-heading" class="font-display font-bold text-2xl text-[#1B4332] mb-10 flex items-center gap-3">
-        <span class="w-8 h-0.5 bg-[#52b788] shrink-0" aria-hidden="true"></span>
-        Our History
+      <p class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">Our History</p>
+      <h2 id="history-heading" class="font-display font-medium text-2xl sm:text-3xl text-ink mb-12">
+        From one park to a county-wide movement
       </h2>
-      <ol class="relative border-l-2 border-[#d8f3dc] space-y-8 pl-6">
+      <ol class="relative border-l hairline space-y-10 pl-8">
         {timeline.map((entry) => (
           <li class="relative">
             <span
-              class="absolute -left-[1.85rem] top-1 w-4 h-4 rounded-full bg-[#52b788] border-2 border-white shadow"
+              class="absolute -left-[2.28rem] top-1.5 w-2.5 h-2.5 rounded-full bg-forest-900"
               aria-hidden="true"
             ></span>
-            <time class="text-[#40916C] font-display font-semibold text-sm">{entry.year}</time>
-            <p class="mt-1 text-gray-600 text-sm leading-relaxed">{entry.event}</p>
+            <time class="font-display italic text-clay text-base">{entry.year}</time>
+            <p class="mt-2 text-ink-soft text-sm leading-relaxed">{entry.event}</p>
           </li>
         ))}
       </ol>
@@ -123,23 +130,34 @@ const whatWeDo = about?.whatWeDo?.length
   </section>
 
   <!-- Press -->
-  <section class="py-16 bg-[#f0faf4]" aria-labelledby="press-heading">
+  <section class="py-20 bg-paper" aria-labelledby="press-heading">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 id="press-heading" class="font-display font-bold text-2xl text-[#1B4332] mb-6 flex items-center gap-3">
-        <span class="w-8 h-0.5 bg-[#52b788] shrink-0" aria-hidden="true"></span>
-        Press Coverage
+      <p class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">Press Coverage</p>
+      <h2 id="press-heading" class="font-display font-medium text-2xl sm:text-3xl text-ink mb-10">
+        In the news
       </h2>
-      <p class="text-gray-600 text-sm mb-6">
-        LNCP has been covered by regional media outlets. See links below for articles featuring our work.
-      </p>
-      <div class="flex flex-wrap gap-3">
-        {['WTOP', 'Loudoun Now', 'InsideNOVA', 'News Spry'].map((pub) => (
-          <span class="px-4 py-2 rounded-full bg-[#1B4332] text-white font-display font-semibold text-sm">
-            {pub}
-          </span>
-        ))}
-      </div>
-      <p class="mt-4 text-xs text-gray-400 italic">Press links coming soon. Contact us for press inquiries.</p>
+      {pressLinks.length > 0 ? (
+        <ul class="divide-y hairline border-y hairline" role="list">
+          {pressLinks.map((link) => (
+            <li>
+              <a
+                href={link.url}
+                class="group flex items-baseline justify-between gap-6 py-5 hover:bg-paper-2 transition-colors px-2 -mx-2"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span>
+                  <span class="block font-display text-lg text-ink group-hover:text-forest-900 transition-colors">{link.publication}</span>
+                  <span class="block text-sm text-ink-soft mt-1">{link.headline}</span>
+                </span>
+                <span class="text-ink-soft shrink-0" aria-hidden="true">&rarr;</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="text-ink-soft text-sm">Contact us for press inquiries.</p>
+      )}
     </div>
   </section>
 </Base>

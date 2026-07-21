@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750" role="img" aria-label="Portrait coming soon">
+  <rect width="600" height="750" fill="#EFEBE1"/>
+  <!-- long hair behind -->
+  <path d="M300 160 c-92 0 -142 66 -142 150 l0 158 c0 34 -12 52 -30 68 l344 0 c-18 -16 -30 -34 -30 -68 l0 -158 c0 -84 -50 -150 -142 -150 z" fill="#8FA396"/>
+  <!-- head -->
+  <circle cx="300" cy="300" r="98" fill="#B9C6BC"/>
+  <!-- hair fringe -->
+  <path d="M206 288 a98 98 0 0 1 188 -22 c-28 -18 -64 -26 -94 -26 -38 0 -74 16 -94 48 z" fill="#8FA396"/>
+  <!-- shoulders -->
+  <path d="M300 430 c-114 0 -192 72 -206 168 a8 8 0 0 0 8 9 l396 0 a8 8 0 0 0 8 -9 c-14 -96 -92 -168 -206 -168 z" fill="#9DB0A2"/>
+</svg>

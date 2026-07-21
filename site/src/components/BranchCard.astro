@@ -27,7 +27,7 @@ const {
   schoolInitials,
 } = Astro.props;
 
-const MAROON = '#4c0519';
+const MAROON = '#1B4332';
 ---
 
 <div
@@ -40,7 +40,7 @@ const MAROON = '#4c0519';
 >
   <div class="card-flip-inner">
     <!-- Front: headshot fills card, school logo badge, branch + name below -->
-    <div class="card-flip-front flex flex-col bg-white shadow-md">
+    <div class="card-flip-front flex flex-col bg-paper border hairline">
       <!-- Photo area -->
       <div class="flex-1 relative overflow-hidden bg-gray-200">
         {presidentHeadshot ? (
@@ -52,7 +52,7 @@ const MAROON = '#4c0519';
             decoding="async"
           />
         ) : (
-          <div class="absolute inset-0 flex items-center justify-center bg-[#4c0519]/10">
+          <div class="absolute inset-0 flex items-center justify-center bg-[#1B4332]/10">
             <InitialsAvatar name={presidentName} size="xl" bgColor={MAROON} />
           </div>
         )}
@@ -72,7 +72,7 @@ const MAROON = '#4c0519';
             </div>
           ) : schoolInitials ? (
             <div
-              class="w-9 h-9 rounded-full ring-2 ring-white flex items-center justify-center bg-[#4c0519] shadow"
+              class="w-9 h-9 rounded-full ring-2 ring-white flex items-center justify-center bg-[#1B4332] shadow"
               title={branchName}
             >
               <span class="text-white font-display font-bold text-xs">{schoolInitials}</span>
@@ -82,16 +82,16 @@ const MAROON = '#4c0519';
       </div>
 
       <!-- Name band -->
-      <div class="px-3 py-2 text-center" style="background:#4c0519;">
+      <div class="px-3 py-2 text-center" style="background:#1B4332;">
         <p class="text-white/70 text-xs uppercase tracking-wide">{branchName}</p>
         <p class="font-display font-bold text-white text-sm leading-tight">{presidentName}</p>
       </div>
     </div>
 
     <!-- Back -->
-    <div class="card-flip-back flex flex-col p-4 bg-white shadow-md border border-gray-100">
-      <div class="flex items-center gap-2 pb-3 border-b" style="border-color:#4c051933;">
-        <div class="w-10 h-10 rounded-full overflow-hidden shrink-0 ring-2 ring-[#4c0519]/20">
+    <div class="card-flip-back flex flex-col p-4 bg-paper border hairline">
+      <div class="flex items-center gap-2 pb-3 border-b" style="border-color:#1B433233;">
+        <div class="w-10 h-10 rounded-full overflow-hidden shrink-0 ring-2 ring-[#1B4332]/20">
           {presidentHeadshot ? (
             <img
               src={presidentHeadshot}
@@ -120,7 +120,7 @@ const MAROON = '#4c0519';
           {presidentEmail && (
             <a
               href={`mailto:${presidentEmail}`}
-              class="text-gray-400 hover:text-[#4c0519] transition-colors"
+              class="text-gray-400 hover:text-[#1B4332] transition-colors"
               aria-label={`Email ${presidentName}`}
               onclick="event.stopPropagation()"
             >
@@ -132,7 +132,7 @@ const MAROON = '#4c0519';
           {presidentInstagram && (
             <a
               href={`https://instagram.com/${presidentInstagram}`}
-              class="text-gray-400 hover:text-[#4c0519] transition-colors"
+              class="text-gray-400 hover:text-[#1B4332] transition-colors"
               aria-label={`${presidentName} on Instagram`}
               target="_blank"
               rel="noopener noreferrer"
@@ -146,7 +146,7 @@ const MAROON = '#4c0519';
           {presidentLinkedin && (
             <a
               href={presidentLinkedin}
-              class="text-gray-400 hover:text-[#4c0519] transition-colors"
+              class="text-gray-400 hover:text-[#1B4332] transition-colors"
               aria-label={`${presidentName} on LinkedIn`}
               target="_blank"
               rel="noopener noreferrer"

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750" role="img" aria-label="Portrait coming soon">
+  <rect width="600" height="750" fill="#EFEBE1"/>
+  <!-- head -->
+  <circle cx="300" cy="290" r="110" fill="#B9C6BC"/>
+  <!-- short hair cap -->
+  <path d="M190 285 a110 110 0 0 1 220 0 l0 -34 a110 82 0 0 0 -220 0 z" fill="#8FA396"/>
+  <!-- shoulders -->
+  <path d="M300 420 c-118 0 -196 74 -210 178 a8 8 0 0 0 8 9 l404 0 a8 8 0 0 0 8 -9 c-14 -104 -92 -178 -210 -178 z" fill="#8FA396"/>
+  <!-- collar notch -->
+  <path d="M300 420 l-26 44 26 34 26 -34 z" fill="#EFEBE1" opacity="0.35"/>
+</svg>

@@ -1,0 +1,6 @@
+# Loudoun Nature Conservation Project
+# All crawlers welcome, including AI/LLM crawlers.
+User-agent: *
+Allow: /
+
+Sitemap: https://loudounnatureconservation.org/sitemap-index.xml

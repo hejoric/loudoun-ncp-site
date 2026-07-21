@@ -15,9 +15,9 @@ function isActive(href: string) {
 }
 ---
 
-<header class="sticky top-0 z-50 bg-[#1B4332]/95 backdrop-blur-sm border-b border-[#2D6A4F]">
+<header class="sticky top-0 z-50 bg-paper/95 backdrop-blur-sm border-b hairline">
   <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
-    <div class="flex items-center justify-between h-16">
+    <div class="flex items-center justify-between h-18">
       <!-- Logo -->
       <a href="/" class="flex items-center gap-3 shrink-0" aria-label="Loudoun Nature Conservation Project home">
         <img
@@ -28,22 +28,22 @@ function isActive(href: string) {
           class="w-10 h-10 object-contain"
           loading="eager"
         />
-        <span class="hidden sm:block font-display font-bold text-white text-sm leading-tight">
+        <span class="hidden sm:block font-display font-semibold text-ink text-base leading-tight">
           Loudoun Nature<br />Conservation Project
         </span>
       </a>
 
       <!-- Desktop nav -->
-      <ul class="hidden md:flex items-center gap-1" role="list">
+      <ul class="hidden md:flex items-center gap-7" role="list">
         {navLinks.map(({ href, label }) => (
           <li>
             <a
               href={href}
               class:list={[
-                'px-3 py-2 rounded-md text-sm font-medium transition-colors',
+                'text-sm transition-colors pb-0.5',
                 isActive(href)
-                  ? 'text-white bg-[#2D6A4F]'
-                  : 'text-green-100 hover:text-white hover:bg-[#2D6A4F]/60',
+                  ? 'text-ink border-b border-ink'
+                  : 'text-ink-soft hover:text-ink',
               ]}
               aria-current={isActive(href) ? 'page' : undefined}
             >
@@ -51,10 +51,10 @@ function isActive(href: string) {
             </a>
           </li>
         ))}
-        <li class="ml-3">
+        <li class="ml-2">
           <a
             href="/volunteer/"
-            class="px-4 py-2 rounded-md text-sm font-bold bg-[#52b788] text-[#0d2118] hover:bg-[#74c69d] transition-colors"
+            class="px-5 py-2.5 text-sm font-semibold bg-forest-900 text-paper hover:bg-forest-800 transition-colors"
           >
             Volunteer
           </a>
@@ -64,7 +64,7 @@ function isActive(href: string) {
       <!-- Mobile menu button -->
       <button
         id="mobile-menu-btn"
-        class="md:hidden p-2 rounded-md text-green-100 hover:text-white hover:bg-[#2D6A4F] transition-colors"
+        class="md:hidden p-2 text-ink-soft hover:text-ink transition-colors"
         aria-controls="mobile-menu"
         aria-expanded="false"
         aria-label="Toggle navigation menu"
@@ -79,17 +79,17 @@ function isActive(href: string) {
     </div>
 
     <!-- Mobile menu -->
-    <div id="mobile-menu" class="hidden md:hidden pb-4" aria-label="Mobile navigation">
-      <ul class="flex flex-col gap-1" role="list">
+    <div id="mobile-menu" class="hidden md:hidden pb-4 border-t hairline" aria-label="Mobile navigation">
+      <ul class="flex flex-col gap-1 pt-3" role="list">
         {navLinks.map(({ href, label }) => (
           <li>
             <a
               href={href}
               class:list={[
-                'block px-3 py-2 rounded-md text-sm font-medium transition-colors',
+                'block px-3 py-2 text-sm transition-colors',
                 isActive(href)
-                  ? 'text-white bg-[#2D6A4F]'
-                  : 'text-green-100 hover:text-white hover:bg-[#2D6A4F]/60',
+                  ? 'text-ink font-semibold'
+                  : 'text-ink-soft hover:text-ink',
               ]}
               aria-current={isActive(href) ? 'page' : undefined}
             >
@@ -100,7 +100,7 @@ function isActive(href: string) {
         <li class="mt-2">
           <a
             href="/volunteer/"
-            class="block px-4 py-2 rounded-md text-sm font-bold text-center bg-[#52b788] text-[#0d2118] hover:bg-[#74c69d] transition-colors"
+            class="block px-4 py-2.5 text-sm font-semibold text-center bg-forest-900 text-paper hover:bg-forest-800 transition-colors"
           >
             Volunteer
           </a>

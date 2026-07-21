@@ -1,0 +1,27 @@
+# Loudoun Nature Conservation Project (LNCP)
+
+> A student-led 501(c)(3) nonprofit empowering youth to restore nature, advance
+> sustainability, and foster community through environmental stewardship across
+> Loudoun County, Virginia. Made by students, for students.
+
+LNCP organizes stream cleanups, ecological restoration events, and student
+research on local water and habitat health. It operates through school-based
+branches led by student presidents, coordinated by an executive team and
+directors.
+
+## Key pages
+- [Home](https://loudounnatureconservation.org/): Mission, impact stats, and overview
+- [About](https://loudounnatureconservation.org/about/): Mission, history, and what we do
+- [Team](https://loudounnatureconservation.org/team/): Student leaders, directors, and branch presidents
+- [Events](https://loudounnatureconservation.org/events/): Upcoming and past cleanups, restoration events, and workshops
+- [Research](https://loudounnatureconservation.org/research/): Student water-quality and ecology publications
+- [Volunteer](https://loudounnatureconservation.org/volunteer/): How to join cleanups and conservation efforts
+- [Funding](https://loudounnatureconservation.org/funding/): How the nonprofit is funded and supported
+- [Contact](https://loudounnatureconservation.org/contact/): Partnerships, press, and general inquiries
+
+## Facts
+- Type: 501(c)(3) nonprofit, student-led
+- Location: Loudoun County, Virginia, USA
+- Contact: directors@loudounnatureconservation.org
+- Instagram: https://www.instagram.com/loudounncp
+- LinkedIn: https://www.linkedin.com/company/loudounncp
