@@ -8,11 +8,11 @@ const allMembers = await reader.collections.teamMembers.all();
 const allBranches = await reader.collections.branches.all();
 
 const bySection = {
-  executive:      allMembers.filter((m) => m.entry.section === 'executive').sort((a, b) => a.entry.sortOrder - b.entry.sortOrder),
-  directors:      allMembers.filter((m) => m.entry.section === 'directors').sort((a, b) => a.entry.sortOrder - b.entry.sortOrder),
-  executiveStaff: allMembers.filter((m) => m.entry.section === 'executiveStaff').sort((a, b) => a.entry.sortOrder - b.entry.sortOrder),
-  branchPresidents: allMembers.filter((m) => m.entry.section === 'branchPresidents').sort((a, b) => a.entry.sortOrder - b.entry.sortOrder),
-  branchStaff:    allMembers.filter((m) => m.entry.section === 'branchStaff').sort((a, b) => a.entry.sortOrder - b.entry.sortOrder),
+  executive:      allMembers.filter((m) => m.entry.section === 'executive').sort((a, b) => (a.entry.sortOrder ?? 99) - (b.entry.sortOrder ?? 99)),
+  directors:      allMembers.filter((m) => m.entry.section === 'directors').sort((a, b) => (a.entry.sortOrder ?? 99) - (b.entry.sortOrder ?? 99)),
+  executiveStaff: allMembers.filter((m) => m.entry.section === 'executiveStaff').sort((a, b) => (a.entry.sortOrder ?? 99) - (b.entry.sortOrder ?? 99)),
+  branchPresidents: allMembers.filter((m) => m.entry.section === 'branchPresidents').sort((a, b) => (a.entry.sortOrder ?? 99) - (b.entry.sortOrder ?? 99)),
+  branchStaff:    allMembers.filter((m) => m.entry.section === 'branchStaff').sort((a, b) => (a.entry.sortOrder ?? 99) - (b.entry.sortOrder ?? 99)),
 };
 
 function getBranchFor(member: (typeof allMembers)[0]) {
@@ -74,6 +74,7 @@ const personJsonLd = allMembers.map((m) => ({
                 email={m.entry.email ?? undefined}
                 instagram={m.entry.instagram ?? undefined}
                 linkedin={m.entry.linkedin ?? undefined}
+                website={m.entry.website ?? undefined}
                 accentColor={ACCENT}
               />
             </div>
@@ -101,6 +102,7 @@ const personJsonLd = allMembers.map((m) => ({
                 email={m.entry.email ?? undefined}
                 instagram={m.entry.instagram ?? undefined}
                 linkedin={m.entry.linkedin ?? undefined}
+                website={m.entry.website ?? undefined}
                 accentColor={ACCENT}
               />
             </div>
@@ -110,42 +112,30 @@ const personJsonLd = allMembers.map((m) => ({
     </section>
   )}
 
-  {/* ---- EXECUTIVE STAFF (accordion) ---- */}
+  {/* ---- EXECUTIVE STAFF ---- */}
   {bySection.executiveStaff.length > 0 && (
-    <section aria-labelledby="exec-staff-heading" class="py-2 bg-paper border-b hairline">
+    <section aria-labelledby="exec-staff-heading" class="py-16 bg-paper border-b hairline">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <details class="group">
-          <summary class="flex items-center justify-between gap-4 py-6 cursor-pointer list-none">
-            <h2 id="exec-staff-heading" class="font-display font-medium text-2xl sm:text-3xl text-ink">Executive Staff</h2>
-            <svg
-              class="w-6 h-6 text-ink-soft transition-transform group-open:rotate-180"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
-          </summary>
-          <div class="pb-14">
-            <div class="flex flex-wrap justify-center gap-4 sm:gap-6">
-              {bySection.executiveStaff.map((m) => (
-                <div class="w-[calc(50%-0.5rem)] sm:w-56 lg:w-64">
-                  <FlipCard
-                    name={m.entry.name}
-                    role={m.entry.role}
-                    bio={m.entry.bio}
-                    headshot={m.entry.headshot}
-                    email={m.entry.email ?? undefined}
-                    instagram={m.entry.instagram ?? undefined}
-                    linkedin={m.entry.linkedin ?? undefined}
-                    accentColor={ACCENT}
-                  />
-                </div>
-              ))}
+        <header class="mb-10 text-center">
+          <h2 id="exec-staff-heading" class="font-display font-medium text-2xl sm:text-3xl text-ink">Executive Staff</h2>
+        </header>
+        <div class="flex flex-wrap justify-center gap-4 sm:gap-6">
+          {bySection.executiveStaff.map((m) => (
+            <div class="w-[calc(50%-0.5rem)] sm:w-56 lg:w-64">
+              <FlipCard
+                name={m.entry.name}
+                role={m.entry.role}
+                bio={m.entry.bio}
+                headshot={m.entry.headshot}
+                email={m.entry.email ?? undefined}
+                instagram={m.entry.instagram ?? undefined}
+                linkedin={m.entry.linkedin ?? undefined}
+                website={m.entry.website ?? undefined}
+                accentColor={ACCENT}
+              />
             </div>
-          </div>
-        </details>
+          ))}
+        </div>
       </div>
     </section>
   )}
@@ -206,6 +196,7 @@ const personJsonLd = allMembers.map((m) => ({
                 email={m.entry.email ?? undefined}
                 instagram={m.entry.instagram ?? undefined}
                 linkedin={m.entry.linkedin ?? undefined}
+                website={m.entry.website ?? undefined}
                 accentColor={ACCENT}
               />
             </div>
