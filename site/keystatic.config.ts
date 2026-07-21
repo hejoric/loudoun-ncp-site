@@ -1,17 +1,10 @@
 import { config, fields, collection, singleton } from '@keystatic/core';
 
-const storage =
-  process.env.KEYSTATIC_GITHUB_REPO_OWNER &&
-  process.env.KEYSTATIC_GITHUB_REPO_NAME
-    ? ({
-        kind: 'github' as const,
-        repo: `${process.env.KEYSTATIC_GITHUB_REPO_OWNER}/${process.env.KEYSTATIC_GITHUB_REPO_NAME}` as `${string}/${string}`,
-        branchPrefix: 'keystatic/',
-      } as const)
-    : ({ kind: 'local' as const } as const);
-
 export default config({
-  storage,
+  // Local mode: Keystatic reads/writes the YAML files in src/content directly.
+  // The editor is only available during `npm run dev` at /keystatic - it is
+  // never part of the deployed site.
+  storage: { kind: 'local' },
 
   ui: {
     brand: { name: 'LNCP Admin' },

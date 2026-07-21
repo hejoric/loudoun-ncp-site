@@ -150,21 +150,21 @@ ffmpeg -i public/assets/hero.mp4 -vframes 1 -ss 00:00:02 -update 1 public/assets
    - Root directory: `site`
    - Node.js version: `22`
 
-No environment variables are required for a basic static deployment.
+No environment variables are required.
 
-### Optional: Enable Keystatic GitHub Mode (web-based editing without local dev)
+## Editing Workflows
 
-If you want an online CMS editor backed by GitHub, create a Keystatic GitHub OAuth app and set these environment variables in Cloudflare Pages:
+See **[docs/EDITING.md](docs/EDITING.md)** - the runbook for everyone who
+edits the site:
 
-```
-KEYSTATIC_GITHUB_CLIENT_ID=...
-KEYSTATIC_GITHUB_CLIENT_SECRET=...
-KEYSTATIC_SECRET=...
-KEYSTATIC_GITHUB_REPO_OWNER=your-org
-KEYSTATIC_GITHUB_REPO_NAME=loudoun-ncp
-```
+- **Webmaster**: Keystatic editor at `localhost:4321/keystatic` during `npm run dev`
+- **Director / non-technical editors**: edit YAML files directly in GitHub's
+  web editor (requires repo collaborator access); the site auto-deploys
 
-See `.env.example` for a template. Note: enabling the web CMS requires changing `output: 'static'` to `'hybrid'` and re-adding the Cloudflare adapter, plus enabling `nodejs_compat` in `wrangler.toml`.
+There is intentionally no web-hosted CMS: the deployed site is 100% static
+with zero attack surface. `docs/EDITING.md` documents the supported upgrade
+path (Keystatic GitHub mode on Netlify/Vercel) if that ever becomes necessary -
+note it cannot run on Cloudflare Pages.
 
 ## URL Redirects
 
@@ -185,7 +185,8 @@ site/
     assets/         # Fonts, logos, headshots, hero video
     research/       # PDFs
     _redirects      # Cloudflare Pages URL redirects
+  docs/
+    EDITING.md      # Editing runbook for webmaster + non-technical editors
   keystatic.config.ts
   astro.config.mjs
-  wrangler.toml
 ```

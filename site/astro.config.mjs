@@ -11,8 +11,8 @@ export default defineConfig({
   integrations: [
     react(),
     sitemap(),
-    // Keystatic admin UI is only needed in dev (local file editing).
-    // Excluding it from production builds keeps output fully static.
+    // Keystatic (the local content editor at /keystatic) runs in dev only.
+    // Production builds are fully static - no server routes, no adapter.
     ...(isDev ? [(await import('@keystatic/astro')).default()] : []),
   ],
   vite: {
