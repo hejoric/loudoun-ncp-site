@@ -43,49 +43,47 @@ const orgJsonLd = {
     <span aria-hidden="true">&rarr;</span>
   </a>
 
-  <!-- Hero: centered editorial headline on paper -->
-  <section class="bg-paper" aria-label="Hero">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-28 pb-16 sm:pb-20 text-center">
-      <p class="font-display italic text-clay text-lg sm:text-xl">Loudoun County, Virginia</p>
-      <h1 class="font-display font-medium text-4xl sm:text-6xl lg:text-7xl leading-[1.06] tracking-tight text-ink mt-6 mb-8 text-balance">
-        {home?.heroHeadline ?? 'Youth unite for Earth; inspire change piece by piece'}
-      </h1>
-      <p class="text-base sm:text-lg text-ink-soft max-w-2xl mx-auto mb-10 leading-relaxed">
-        {home?.heroSubtext ?? 'Made by Students, for Students. Young hearts, green minds, hands-on action - empowering youth, restoring nature, and fostering community through non-profit (501c3) environmental stewardship in Loudoun County, Virginia.'}
-      </p>
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
-        <a
-          href="/volunteer/"
-          class="px-8 py-4 font-semibold text-sm bg-forest-900 text-paper hover:bg-forest-800 transition-colors"
-        >
-          Join Now
-        </a>
-        <a
-          href="/about/"
-          class="text-sm text-ink border-b border-ink pb-0.5 hover:text-ink-soft hover:border-ink-soft transition-colors"
-        >
-          Read our story
-        </a>
-      </div>
-    </div>
-  </section>
+  <!-- Hero: centered editorial headline over a subtle, stretched background video -->
+  <section class="relative bg-paper overflow-hidden" aria-label="Hero">
+    <!-- Background video: stretched to fill, dimmed so the text stays legible -->
+    <video
+      id="hero-video"
+      class="absolute inset-0 w-full h-full object-cover opacity-40 pointer-events-none motion-reduce:hidden"
+      autoplay
+      muted
+      loop
+      playsinline
+      poster="/assets/hero-poster.jpg"
+      aria-hidden="true"
+    >
+      <source src="/assets/hero.mp4" type="video/mp4" />
+    </video>
+    <!-- Paper wash: solid at top and bottom to blend into the page, clearer through the middle -->
+    <div class="absolute inset-0 bg-gradient-to-b from-paper via-paper/25 to-paper pointer-events-none"></div>
 
-  <!-- Hero video: expands as you scroll -->
-  <section class="bg-paper pb-24" aria-label="LNCP in the field">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div data-scroll-expand class="border hairline overflow-hidden">
-        <video
-          class="w-full aspect-video object-cover block"
-          autoplay
-          muted
-          loop
-          playsinline
-          preload="none"
-          poster="/assets/hero-poster.jpg"
-          aria-hidden="true"
-        >
-          <source src="/assets/hero.mp4" type="video/mp4" />
-        </video>
+    <div class="relative z-10 flex items-center justify-center min-h-[60vh] sm:min-h-[70vh]">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 text-center">
+        <p class="font-display italic text-clay text-lg sm:text-xl">Loudoun County, Virginia</p>
+        <h1 class="font-display font-medium text-4xl sm:text-6xl lg:text-7xl leading-[1.06] tracking-tight text-ink mt-6 mb-8 text-balance">
+          {home?.heroHeadline ?? 'Youth unite for Earth; inspire change piece by piece'}
+        </h1>
+        <p class="text-base sm:text-lg text-ink-soft max-w-2xl mx-auto mb-10 leading-relaxed">
+          {home?.heroSubtext ?? 'Made by Students, for Students. Young hearts, green minds, hands-on action - empowering youth, restoring nature, and fostering community through non-profit (501c3) environmental stewardship in Loudoun County, Virginia.'}
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+          <a
+            href="/volunteer/"
+            class="px-8 py-4 font-semibold text-sm bg-forest-900 text-paper hover:bg-forest-800 transition-colors"
+          >
+            Join Now
+          </a>
+          <a
+            href="/about/"
+            class="text-sm text-ink border-b border-ink pb-0.5 hover:text-ink-soft hover:border-ink-soft transition-colors"
+          >
+            Read our story
+          </a>
+        </div>
       </div>
     </div>
   </section>
