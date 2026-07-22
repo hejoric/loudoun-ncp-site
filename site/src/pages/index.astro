@@ -43,48 +43,50 @@ const orgJsonLd = {
     <span aria-hidden="true">&rarr;</span>
   </a>
 
-  <!-- Hero: centered editorial headline over a subtle, stretched background video -->
-  <section class="relative bg-paper overflow-hidden" aria-label="Hero">
-    <!-- Background video: stretched to fill, dimmed so the text stays legible -->
-    <video
-      id="hero-video"
-      class="absolute inset-0 w-full h-full object-cover opacity-80 pointer-events-none motion-reduce:hidden"
-      autoplay
-      muted
-      loop
-      playsinline
-      poster="/assets/hero-poster.jpg"
-      aria-hidden="true"
-    >
-      <source src="/assets/hero.mp4" type="video/mp4" />
-    </video>
-    <!-- Paper wash: solid at top and bottom to blend into the page, clearer through the middle -->
-    <div class="absolute inset-0 bg-gradient-to-b from-paper via-paper/25 to-paper pointer-events-none"></div>
-    <!-- Dark vignette: darkens the area directly behind the text for legibility, without dimming the video itself -->
-    <div class="absolute inset-0 bg-[radial-gradient(ellipse_65%_55%_at_50%_50%,rgba(23,40,31,0.4),transparent_70%)] pointer-events-none"></div>
+  <!-- Hero: editorial headline over a framed, contained background video -->
+  <section class="bg-paper pt-10 sm:pt-14 pb-16 sm:pb-24" aria-label="Hero">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="relative overflow-hidden border hairline bg-forest-950">
+        <!-- Background video: fills the panel; the even scrim below keeps text legible -->
+        <video
+          id="hero-video"
+          class="absolute inset-0 w-full h-full object-cover pointer-events-none motion-reduce:hidden"
+          autoplay
+          muted
+          loop
+          playsinline
+          poster="/assets/hero-poster.jpg"
+          aria-hidden="true"
+        >
+          <source src="/assets/hero.mp4" type="video/mp4" />
+        </video>
+        <!-- Even scrim: uniform brand-tinted darkening for consistent legibility -->
+        <div class="absolute inset-0 bg-forest-950/55 pointer-events-none"></div>
 
-    <div class="relative z-10 flex items-center justify-center min-h-[60vh] sm:min-h-[70vh]">
-      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 text-center">
-        <p class="font-display italic text-clay text-lg sm:text-xl">Loudoun County, Virginia</p>
-        <h1 class="font-display font-medium text-4xl sm:text-6xl lg:text-7xl leading-[1.06] tracking-tight text-ink mt-6 mb-8 text-balance">
-          {home?.heroHeadline ?? 'Youth unite for Earth; inspire change piece by piece'}
-        </h1>
-        <p class="text-base sm:text-lg text-ink-soft max-w-2xl mx-auto mb-10 leading-relaxed">
-          {home?.heroSubtext ?? 'Made by Students, for Students. Young hearts, green minds, hands-on action - empowering youth, restoring nature, and fostering community through non-profit (501c3) environmental stewardship in Loudoun County, Virginia.'}
-        </p>
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
-          <a
-            href="/volunteer/"
-            class="px-8 py-4 font-semibold text-sm bg-forest-900 text-paper hover:bg-forest-800 transition-colors"
-          >
-            Join Now
-          </a>
-          <a
-            href="/about/"
-            class="text-sm text-ink border-b border-ink pb-0.5 hover:text-ink-soft hover:border-ink-soft transition-colors"
-          >
-            Read our story
-          </a>
+        <div class="relative z-10 flex items-center justify-center min-h-[560px] sm:min-h-[70vh]">
+          <div class="max-w-3xl mx-auto px-6 sm:px-10 py-20 sm:py-28 text-center">
+            <p class="font-display italic text-clay text-lg sm:text-xl">Loudoun County, Virginia</p>
+            <h1 class="font-display font-medium text-4xl sm:text-6xl lg:text-7xl leading-[1.06] tracking-tight text-paper mt-6 mb-8 text-balance">
+              {home?.heroHeadline ?? 'Youth unite for Earth; inspire change piece by piece'}
+            </h1>
+            <p class="text-base sm:text-lg text-paper/80 max-w-2xl mx-auto mb-10 leading-relaxed">
+              {home?.heroSubtext ?? 'Made by Students, for Students. Young hearts, green minds, hands-on action - empowering youth, restoring nature, and fostering community through non-profit (501c3) environmental stewardship in Loudoun County, Virginia.'}
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+              <a
+                href="/volunteer/"
+                class="px-8 py-4 font-semibold text-sm bg-paper text-forest-900 hover:bg-paper-2 transition-colors"
+              >
+                Join Now
+              </a>
+              <a
+                href="/about/"
+                class="text-sm text-paper border-b border-paper/60 pb-0.5 hover:border-paper transition-colors"
+              >
+                Read our story
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
