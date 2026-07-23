@@ -45,6 +45,10 @@ export default config({
           label: 'Headshot crop position (CSS object-position, e.g. "center 20%") - leave blank for top',
           validation: { isRequired: false, length: { min: 0 } },
         }),
+        headshotScale: fields.text({
+          label: 'Headshot zoom (e.g. "0.9" to zoom out a little, "1.1" to zoom in) - leave blank for 1',
+          validation: { isRequired: false, length: { min: 0 } },
+        }),
         email: fields.text({
           label: 'Email',
           validation: { isRequired: false, length: { min: 0 } },

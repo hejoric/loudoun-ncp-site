@@ -7,6 +7,7 @@ interface Props {
   bio: string;
   headshot?: string | null;
   headshotPosition?: string | null;
+  headshotScale?: string | null;
   email?: string | null;
   instagram?: string | null;
   linkedin?: string | null;
@@ -21,6 +22,7 @@ const {
   bio,
   headshot,
   headshotPosition,
+  headshotScale,
   email,
   instagram,
   linkedin,
@@ -30,6 +32,8 @@ const {
 } = Astro.props;
 
 const slug = name.toLowerCase().replace(/\s+/g, '-');
+const focalPoint = headshotPosition || 'top';
+const scale = Number(headshotScale) || 1;
 ---
 
 <div
@@ -50,7 +54,7 @@ const slug = name.toLowerCase().replace(/\s+/g, '-');
             src={headshot}
             alt={`${name} headshot`}
             class="absolute inset-0 w-full h-full object-cover"
-            style={`object-position:${headshotPosition || 'top'};`}
+            style={`object-position:${focalPoint};${scale !== 1 ? ` transform:scale(${scale}); transform-origin:${focalPoint};` : ''}`}
             loading="lazy"
             decoding="async"
           />
