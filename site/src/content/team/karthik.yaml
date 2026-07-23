@@ -2,10 +2,11 @@ name: Karthik
 role: Branch President
 section: branchPresidents
 branch: rock-ridge
-bio: Bio coming soon.
-headshot: /assets/team/placeholder-male.svg
-email: ''
-instagram: ''
-linkedin: ''
+bio: >-
+  Hi, I’m Karthik Uppalapati, a junior at Rock Ridge and AET engineering. I’m
+  interested in the environmental impact of data center expansion in NOVA, and
+  started the Rock Ridge LNCP branch. I’m excited to help and make the
+  environment healthier!
+headshot: /assets/team/karthik/headshot.jpeg
 featuredOnHome: false
 sortOrder: 4
