@@ -17,18 +17,18 @@ function isActive(href: string) {
 
 <header class="sticky top-0 z-50 bg-paper/95 backdrop-blur-sm border-b hairline">
   <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
-    <div class="flex items-center justify-between h-18">
+    <div class="relative flex items-center justify-center md:justify-between h-18">
       <!-- Logo -->
-      <a href="/" class="flex items-center gap-3 shrink-0" aria-label="Loudoun Nature Conservation Project home">
+      <a href="/" class="flex items-center gap-2 sm:gap-3 shrink-0" aria-label="Loudoun Nature Conservation Project home">
         <img
           src="/assets/lncp-logo.png"
           alt="LNCP Logo"
           width="40"
           height="40"
-          class="w-10 h-10 object-contain"
+          class="w-8 h-8 sm:w-10 sm:h-10 object-contain shrink-0"
           loading="eager"
         />
-        <span class="hidden sm:block font-display font-semibold text-ink text-base leading-tight">
+        <span class="block text-center sm:text-left font-display font-semibold text-ink text-xs sm:text-base leading-tight">
           Loudoun Nature<br />Conservation Project
         </span>
       </a>
@@ -64,7 +64,7 @@ function isActive(href: string) {
       <!-- Mobile menu button -->
       <button
         id="mobile-menu-btn"
-        class="md:hidden p-2 text-ink-soft hover:text-ink transition-colors"
+        class="md:hidden absolute right-0 top-1/2 -translate-y-1/2 p-2 text-ink-soft hover:text-ink transition-colors"
         aria-controls="mobile-menu"
         aria-expanded="false"
         aria-label="Toggle navigation menu"
