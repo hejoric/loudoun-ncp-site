@@ -41,6 +41,10 @@ export default config({
           publicPath: '/assets/team/',
           validation: { isRequired: false },
         }),
+        headshotPosition: fields.text({
+          label: 'Headshot crop position (CSS object-position, e.g. "center 20%") - leave blank for top',
+          validation: { isRequired: false, length: { min: 0 } },
+        }),
         email: fields.text({
           label: 'Email',
           validation: { isRequired: false, length: { min: 0 } },
