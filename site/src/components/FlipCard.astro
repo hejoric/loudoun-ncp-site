@@ -14,6 +14,7 @@ interface Props {
   website?: string | null;
   affiliationLogo?: string | null;
   affiliation?: string | null;
+  affiliationLabel?: string | null;
   accentColor?: string;
   avatarSize?: string;
 }
@@ -31,6 +32,7 @@ const {
   website,
   affiliationLogo,
   affiliation,
+  affiliationLabel,
   accentColor = '#1B4332',
   avatarSize = 'w-10 h-10',
 } = Astro.props;
@@ -91,6 +93,9 @@ const scale = Number(headshotScale) || 1;
       <div class="p-3 text-center" style={`background:${accentColor};`}>
         <p class="font-display font-bold text-white text-sm leading-tight">{name}</p>
         <p class="text-white/80 text-xs mt-0.5">{role}</p>
+        {affiliationLabel && (
+          <p class="text-white/60 text-[11px] mt-0.5 leading-tight">{affiliationLabel}</p>
+        )}
       </div>
     </div>
 
