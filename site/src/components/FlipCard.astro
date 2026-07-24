@@ -12,6 +12,9 @@ interface Props {
   instagram?: string | null;
   linkedin?: string | null;
   website?: string | null;
+  affiliationLogo?: string | null;
+  affiliation?: string | null;
+  affiliationLabel?: string | null;
   accentColor?: string;
   avatarSize?: string;
 }
@@ -27,6 +30,9 @@ const {
   instagram,
   linkedin,
   website,
+  affiliationLogo,
+  affiliation,
+  affiliationLabel,
   accentColor = '#1B4332',
   avatarSize = 'w-10 h-10',
 } = Astro.props;
@@ -63,11 +69,33 @@ const scale = Number(headshotScale) || 1;
             <InitialsAvatar name={name} size="xl" bgColor={accentColor} />
           </div>
         )}
+
+        <!-- College affiliation logo badge (bottom-right) -->
+        {affiliationLogo && (
+          <div class="absolute bottom-2 right-2">
+            <div
+              class="w-9 h-9 rounded-full overflow-hidden ring-1 ring-black/10 shadow-md"
+              title={affiliation || undefined}
+            >
+              <img
+                src={affiliationLogo}
+                alt={affiliation ? `${affiliation} logo` : `${name} college affiliation logo`}
+                class="w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
+                aria-hidden="true"
+              />
+            </div>
+          </div>
+        )}
       </div>
       <!-- Name + role -->
       <div class="p-3 text-center" style={`background:${accentColor};`}>
         <p class="font-display font-bold text-white text-sm leading-tight">{name}</p>
         <p class="text-white/80 text-xs mt-0.5">{role}</p>
+        {affiliationLabel && (
+          <p class="text-white/60 text-[11px] mt-0.5 leading-tight">{affiliationLabel}</p>
+        )}
       </div>
     </div>
 

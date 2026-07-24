@@ -5,10 +5,48 @@ import reader from '@/lib/reader';
 
 const home = await reader.singletons.home.read();
 const allTeam = await reader.collections.teamMembers.all();
-const featuredTeam = allTeam
-  .filter((m) => m.entry.featuredOnHome)
-  .sort((a, b) => (a.entry.sortOrder ?? 99) - (b.entry.sortOrder ?? 99));
+const allBranches = await reader.collections.branches.all();
 const ryan = allTeam.find((m) => m.slug === 'ryan-nisay') ?? null;
+
+// Home showcase: a continuously scrolling strip of the people leading LNCP,
+// ordered executive -> directors -> branch presidents. Branch presidents show
+// their school badge (pulled from the branch record) in place of a college
+// affiliation. Members without a headshot (e.g. a tentative branch) are skipped
+// so the strip never shows an empty avatar.
+const inSection = (section: string) =>
+  allTeam
+    .filter((m) => m.entry.section === section)
+    .sort((a, b) => (a.entry.sortOrder ?? 99) - (b.entry.sortOrder ?? 99));
+
+const showcaseMembers = [
+  ...inSection('executive'),
+  ...inSection('directors'),
+  ...inSection('branchPresidents'),
+]
+  .filter((m) => m.entry.headshot)
+  .map((m) => {
+    const branch =
+      m.entry.section === 'branchPresidents' && m.entry.branch
+        ? allBranches.find((b) => b.slug === m.entry.branch) ?? null
+        : null;
+    return {
+      name: m.entry.name,
+      role: m.entry.role,
+      bio: m.entry.bio,
+      headshot: m.entry.headshot,
+      headshotPosition: m.entry.headshotPosition ?? undefined,
+      headshotScale: m.entry.headshotScale ?? undefined,
+      email: m.entry.email ?? undefined,
+      instagram: m.entry.instagram ?? undefined,
+      linkedin: m.entry.linkedin ?? undefined,
+      website: m.entry.website ?? undefined,
+      affiliationLogo: m.entry.affiliationLogo ?? branch?.entry.schoolLogo ?? undefined,
+      affiliation: m.entry.affiliation ?? branch?.entry.school ?? branch?.entry.name ?? undefined,
+      // Branch presidents get their school name printed on the card - the logo
+      // badge alone does not tell visitors which school they represent.
+      affiliationLabel: branch ? branch.entry.school : undefined,
+    };
+  });
 
 // Accept any YouTube reference an editor might paste (full watch URL, youtu.be
 // share link with tracking params, embed/shorts URL, or a bare ID) and reduce
@@ -410,40 +448,72 @@ const orgJsonLd = {
     </div>
   </section>
 
-  <!-- Featured Team -->
-  {featuredTeam.length > 0 && (
-    <section class="bg-paper border-t hairline py-24" aria-labelledby="team-heading">
+  <!-- Featured Team: a slow, continuously scrolling showcase -->
+  {showcaseMembers.length > 0 && (
+    <section class="bg-paper border-t hairline py-24 overflow-hidden" aria-labelledby="team-heading">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-2xl mb-14">
           <p class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">Meet Our Team</p>
-          <h2 id="team-heading" class="font-display font-medium text-3xl sm:text-4xl text-ink">Leading Staff</h2>
+          <h2 id="team-heading" class="font-display font-medium text-3xl sm:text-4xl text-ink">The students leading LNCP</h2>
           <p class="text-ink-soft mt-4 text-base leading-relaxed">
-            Our staff is made up of passionate student leaders dedicated to environmental advocacy and community engagement. Hover or tap a card to learn more.
+            From our executive team to directors and branch presidents across Loudoun County. Hover to pause, tap any card to read their story, or use the arrows to browse.
           </p>
         </div>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-          {featuredTeam.map((member) => (
-            <FlipCard
-              name={member.entry.name}
-              role={member.entry.role}
-              bio={member.entry.bio}
-              headshot={member.entry.headshot}
-              email={member.entry.email ?? undefined}
-              instagram={member.entry.instagram ?? undefined}
-              linkedin={member.entry.linkedin ?? undefined}
-              website={member.entry.website ?? undefined}
-              accentColor="#1B4332"
-            />
-          ))}
+      </div>
+
+      <!-- Marquee: full-bleed strip that auto-scrolls slowly. Two identical
+           copies of the roster are laid end to end so the scroll loops
+           seamlessly. Auto-scroll pauses on hover/focus (so a card can be
+           flipped) and while the visitor is browsing; the arrow buttons jump a
+           few members at a time, and native touch/trackpad swiping works too.
+           Under prefers-reduced-motion the auto-scroll never starts - the arrows
+           and swiping still do. Behaviour lives in the script below. -->
+      <div class="marquee group" data-marquee>
+        <div class="marquee-viewport" data-marquee-viewport>
+          <div class="marquee-track flex w-max" data-marquee-track>
+            {[0, 1].map((copy) =>
+              showcaseMembers.map((member) => (
+                <div class="marquee-item w-52 sm:w-60 shrink-0" aria-hidden={copy === 1 ? 'true' : undefined} inert={copy === 1 ? true : undefined}>
+                  <FlipCard
+                    name={member.name}
+                    role={member.role}
+                    bio={member.bio}
+                    headshot={member.headshot}
+                    headshotPosition={member.headshotPosition}
+                    headshotScale={member.headshotScale}
+                    email={member.email}
+                    instagram={member.instagram}
+                    linkedin={member.linkedin}
+                    website={member.website}
+                    affiliationLogo={member.affiliationLogo}
+                    affiliation={member.affiliation}
+                    affiliationLabel={member.affiliationLabel}
+                    accentColor="#1B4332"
+                  />
+                </div>
+              ))
+            )}
+          </div>
         </div>
-        <div class="mt-12">
-          <a
-            href="/team/"
-            class="text-sm text-ink border-b border-ink pb-0.5 hover:text-ink-soft hover:border-ink-soft transition-colors"
-          >
-            View the full team
-          </a>
-        </div>
+
+        <div class="marquee-fade marquee-fade-left" aria-hidden="true"></div>
+        <div class="marquee-fade marquee-fade-right" aria-hidden="true"></div>
+
+        <button type="button" class="marquee-nav marquee-nav-prev" data-marquee-prev aria-label="Show previous members">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button type="button" class="marquee-nav marquee-nav-next" data-marquee-next aria-label="Show next members">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+        <a
+          href="/team/"
+          class="text-sm text-ink border-b border-ink pb-0.5 hover:text-ink-soft hover:border-ink-soft transition-colors"
+        >
+          View the full team
+        </a>
       </div>
     </section>
   )}
@@ -556,5 +626,101 @@ const orgJsonLd = {
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
     update();
+  }
+
+  // Team showcase marquee: a slow, ambient auto-scroll that any visitor can
+  // take over. The viewport is a real horizontal scroller, so the arrow buttons
+  // (jump ~3 members), trackpad/touch swiping, and the auto-drift all move the
+  // same scrollLeft. Two identical copies of the roster sit end to end; whenever
+  // scrollLeft passes one copy width we subtract it, which is invisible because
+  // the copies are identical. Auto-scroll pauses while a card is hovered/focused
+  // (to read or flip it) and for a beat after any manual interaction. Under
+  // prefers-reduced-motion the drift never starts, but the arrows and swiping do.
+  const marquee = document.querySelector<HTMLElement>('[data-marquee]');
+  const viewport = marquee?.querySelector<HTMLElement>('[data-marquee-viewport]');
+  const track = marquee?.querySelector<HTMLElement>('[data-marquee-track]');
+
+  if (marquee && viewport && track) {
+    const copyWidth = () => track.scrollWidth / 2;
+
+    const wrap = () => {
+      const w = copyWidth();
+      if (w <= 0) return;
+      if (viewport.scrollLeft >= w) viewport.scrollLeft -= w;
+      else if (viewport.scrollLeft < 0) viewport.scrollLeft += w;
+    };
+
+    let hovering = false;
+    let resumeAt = 0;
+    const holdFor = (ms: number) => {
+      resumeAt = Math.max(resumeAt, performance.now() + ms);
+    };
+
+    marquee.addEventListener('pointerenter', () => (hovering = true));
+    marquee.addEventListener('pointerleave', () => (hovering = false));
+    marquee.addEventListener('focusin', () => (hovering = true));
+    marquee.addEventListener('focusout', () => (hovering = false));
+    viewport.addEventListener('wheel', () => holdFor(2500), { passive: true });
+    viewport.addEventListener('touchstart', () => holdFor(4000), { passive: true });
+    viewport.addEventListener('touchmove', () => holdFor(4000), { passive: true });
+
+    // Drift is accumulated in a float `pos`, not by reading scrollLeft back each
+    // frame: at devicePixelRatio 1 scrollLeft rounds to whole pixels, so a
+    // sub-pixel increment would round to 0 and never move. We re-sync `pos` from
+    // the real scrollLeft whenever drift resumes, so button jumps and swipes are
+    // never fought or undone.
+    const SPEED = 0.4; // px per frame - a slow, unobtrusive drift
+    let pos = viewport.scrollLeft;
+    let active = false;
+    const drift = () => {
+      const canMove = !reduced && !hovering && performance.now() >= resumeAt;
+      if (canMove) {
+        if (!active) {
+          pos = viewport.scrollLeft;
+          active = true;
+        }
+        const w = copyWidth();
+        pos += SPEED;
+        if (w > 0) {
+          if (pos >= w) pos -= w;
+          else if (pos < 0) pos += w;
+        }
+        viewport.scrollLeft = pos;
+      } else {
+        active = false;
+      }
+      requestAnimationFrame(drift);
+    };
+    // Wait one frame so the track has laid out and copyWidth() is measurable.
+    requestAnimationFrame(() => {
+      wrap();
+      requestAnimationFrame(drift);
+    });
+
+    // How far one button press travels: three members (card width + its gap).
+    const stepDistance = () => {
+      const item = track.querySelector<HTMLElement>('.marquee-item');
+      if (!item) return 720;
+      const gap = parseFloat(getComputedStyle(item).marginRight) || 0;
+      return (item.getBoundingClientRect().width + gap) * 3;
+    };
+
+    const jump = (dir: number) => {
+      const w = copyWidth();
+      let sl = ((viewport.scrollLeft % w) + w) % w; // normalise into [0, w)
+      const amount = stepDistance();
+      // Give a leftward jump room to travel without crossing the seam mid-scroll.
+      if (dir < 0 && sl < amount) sl += w;
+      viewport.scrollLeft = sl; // instant + invisible (identical copy)
+      viewport.scrollBy({ left: dir * amount, behavior: reduced ? 'auto' : 'smooth' });
+      holdFor(2500);
+    };
+
+    marquee
+      .querySelector<HTMLElement>('[data-marquee-prev]')
+      ?.addEventListener('click', () => jump(-1));
+    marquee
+      .querySelector<HTMLElement>('[data-marquee-next]')
+      ?.addEventListener('click', () => jump(1));
   }
 </script>
