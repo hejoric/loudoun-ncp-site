@@ -1,7 +1,7 @@
 name: Ryan Nisay
 role: Executive Director & Founder
 section: executive
-branch: ''
+branch: potomac-falls
 bio: >-
   Growing up in the Potomac Falls Region, Ryan serves as the founder and
   Executive Director of the Loudoun Nature Conservation Project, the 501(c)(3)
@@ -12,10 +12,9 @@ bio: >-
   research initiatives, and partnerships as the organization continues to grow.
   He attends Cornell University with a full ride as a double major in Music and
   Biological Sciences.
-headshot: /assets/team/ryan-nisay.jpeg
+headshot: /assets/team/ryan-nisay/headshot.jpeg
 headshotPosition: center 27%
 email: ryan.nisay@loudounnatureconservation.org
-instagram: ''
-linkedin: ''
+affiliation: Cornell University
 featuredOnHome: true
 sortOrder: 1
