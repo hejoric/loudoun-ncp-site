@@ -10,6 +10,72 @@ const featuredTeam = allTeam
   .sort((a, b) => (a.entry.sortOrder ?? 99) - (b.entry.sortOrder ?? 99));
 const ryan = allTeam.find((m) => m.slug === 'ryan-nisay') ?? null;
 
+// Accept any YouTube reference an editor might paste (full watch URL, youtu.be
+// share link with tracking params, embed/shorts URL, or a bare ID) and reduce
+// it to the 11-character video ID. Returns '' if nothing usable is found, in
+// which case the spotlight falls back to a thumbnail that links to the article.
+function youtubeId(raw: string | null | undefined): string {
+  const s = (raw ?? '').trim();
+  if (!s) return '';
+  if (/^[\w-]{11}$/.test(s)) return s;
+  const m =
+    s.match(/(?:v=|\/embed\/|\/shorts\/|youtu\.be\/)([\w-]{11})/) ??
+    s.match(/([\w-]{11})/);
+  return m ? m[1] : '';
+}
+
+// Spotlight: featured WUSA video + highlight cards. Values come from the home
+// singleton with hardcoded fallbacks so the section renders even before an
+// editor fills them in. A blank video ID falls back to a thumbnail that links
+// out to the article.
+const spotlight = {
+  videoId: youtubeId(home?.spotlightVideoId),
+  videoTitle: home?.spotlightVideoTitle || 'These local students are cleaning up parks in Northern Virginia',
+  videoSource: home?.spotlightVideoSource || 'WUSA9',
+  videoUrl:
+    home?.spotlightVideoUrl ||
+    'https://www.wusa9.com/video/tech/science/environment/these-local-students-are-cleaning-up-parks-in-northern-virginia/65-71e16312-f011-4edf-a3b5-fb93d8432e6e',
+  items:
+    (home?.spotlightItems?.length ? home.spotlightItems : null) ?? [
+      {
+        label: '2025 Award',
+        title: 'Winner, Environmental Excellence Award',
+        body:
+          "The Loudoun County Environmental Commission named LNCP founder Ryan Nisay, a Potomac Falls High School senior, the 2025 Student winner of its Environmental Excellence Award, recognizing the project for encouraging young people to take action in environmental restoration.",
+        linkText: 'Read the news release (PDF)',
+        linkUrl: '/assets/lncp-environmental-excellence-award-2025.pdf',
+        secondaryLinkText: '',
+        secondaryLinkUrl: '',
+      },
+      {
+        label: 'Recognition',
+        title: 'Honored in the U.S. Congressional Record',
+        body:
+          "LNCP was honored in the U.S. Congressional Record by Representative Suhas Subramanyam of Virginia's 10th Congressional District, recognizing a student-led effort now more than 270 members strong.",
+        linkText: 'Read the entry on Congress.gov',
+        linkUrl:
+          'https://www.congress.gov/congressional-record/volume-172/issue-115/extensions-of-remarks-section/article/E694-2',
+        secondaryLinkText: 'View the record (PDF)',
+        secondaryLinkUrl: '/assets/lncp-congressional-record.pdf',
+      },
+      {
+        label: 'In the community',
+        title: 'A five-hour cleanup with Keep Loudoun Beautiful',
+        body:
+          'On April 12, LNCP collaborated with Keep Loudoun Beautiful to host a large-scale cleanup in Leesburg, Virginia, gathering an astonishing amount of trash over five hours of work.',
+        linkText: 'See the post on LinkedIn',
+        linkUrl:
+          'https://www.linkedin.com/posts/loudoun-nature-conservation-project_on-april-12-our-organization-was-able-to-activity-7451375612444868608-Qht7',
+        secondaryLinkText: '',
+        secondaryLinkUrl: '',
+      },
+    ],
+};
+// A real still from the WUSA segment (dropped in by an editor) makes the best
+// poster and is guaranteed to exist, unlike YouTube's maxres thumbnail which
+// 404s for some videos. Falls back to a cleanup photo if the still is missing.
+const spotlightPoster = '/assets/wusa-spotlight-poster.jpg';
+
 // Split the hero headline on the semicolon so it renders on two lines.
 const heroHeadline = home?.heroHeadline ?? 'Youth unite for Earth; inspire change piece by piece';
 const heroHeadlineParts = heroHeadline.split(';').map((p) => p.trim()).filter(Boolean);
@@ -123,42 +189,112 @@ const orgJsonLd = {
     </section>
   )}
 
-  <!-- Congressional Record recognition -->
-  <section class="bg-paper pb-24" aria-labelledby="recognition-heading">
+  <!-- Spotlight: featured WUSA video + highlight cards -->
+  <section class="bg-paper pb-24" aria-labelledby="spotlight-heading">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="border hairline p-8 sm:p-14 grid md:grid-cols-[0.9fr_1.3fr] gap-8 md:gap-16 items-start bg-paper-2">
-        <div>
-          <p class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">Recognition</p>
-          <h2 id="recognition-heading" class="font-display font-medium text-2xl sm:text-3xl leading-snug text-ink text-balance">
-            Recognized in the United States Congressional Record
-          </h2>
-        </div>
-        <div>
-          <p class="text-base text-ink-soft leading-relaxed">
-            LNCP has been honored in the U.S. Congressional Record by Representative Suhas Subramanyam of Virginia's 10th Congressional District. What began in 2024 as a student-led effort has grown into a community of more than 270 members, partnerships with 17 parks and schools, over 3,100 acres of restored land, and three published research studies on local water quality, including the Potomac River basin.
-          </p>
-          <p class="text-base text-ink-soft leading-relaxed mt-4">
-            This recognition belongs to every volunteer who showed up for a cleanup, every partner who opened their gates, and everyone who believed that young people can protect the places we call home.
-          </p>
-          <div class="flex flex-wrap gap-x-8 gap-y-3 mt-7">
-            <a
-              href="https://www.congress.gov/congressional-record/volume-172/issue-115/extensions-of-remarks-section/article/E694-2"
-              class="text-sm text-ink border-b border-ink pb-0.5 hover:text-ink-soft hover:border-ink-soft transition-colors"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Read the entry on Congress.gov
-            </a>
-            <a
-              href="/assets/lncp-congressional-record.pdf"
-              class="text-sm text-ink border-b border-ink pb-0.5 hover:text-ink-soft hover:border-ink-soft transition-colors"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View the record (PDF)
-            </a>
+      <div class="max-w-2xl mb-12">
+        <p class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">Spotlight</p>
+        <h2 id="spotlight-heading" class="font-display font-medium text-3xl sm:text-4xl text-ink">In the spotlight</h2>
+        <p class="text-ink-soft mt-4 text-base leading-relaxed">
+          The moments and milestones defining our work - from the evening news to the halls of Congress.
+        </p>
+      </div>
+
+      <!-- Featured video -->
+      <figure class="m-0">
+        {spotlight.videoId ? (
+          <div
+            data-yt-facade
+            data-yt-id={spotlight.videoId}
+            data-yt-title={spotlight.videoTitle}
+            role="button"
+            tabindex="0"
+            aria-label={`Play video: ${spotlight.videoTitle}`}
+            class="group relative block w-full aspect-video overflow-hidden border hairline bg-forest-950 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
+          >
+            <img
+              src={spotlightPoster}
+              alt={spotlight.videoTitle}
+              width="1280"
+              height="720"
+              class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="absolute inset-0 bg-forest-950/25 group-hover:bg-forest-950/15 transition-colors"></div>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <span class="flex items-center justify-center w-20 h-20 rounded-full bg-paper/95 shadow-lg transition-transform duration-300 group-hover:scale-110">
+                <svg class="w-8 h-8 text-forest-900 translate-x-0.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+              </span>
+            </div>
           </div>
-        </div>
+        ) : (
+          <a
+            href={spotlight.videoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Watch on ${spotlight.videoSource}: ${spotlight.videoTitle} (opens in a new tab)`}
+            class="group relative block w-full aspect-video overflow-hidden border hairline bg-forest-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
+          >
+            <img
+              src={spotlightPoster}
+              alt={spotlight.videoTitle}
+              width="1440"
+              height="810"
+              class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-forest-950/80 via-forest-950/30 to-forest-950/20"></div>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <span class="flex items-center justify-center w-20 h-20 rounded-full bg-paper/95 shadow-lg transition-transform duration-300 group-hover:scale-110">
+                <svg class="w-8 h-8 text-forest-900 translate-x-0.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+              </span>
+            </div>
+            <div class="absolute left-0 right-0 bottom-0 p-6 sm:p-8">
+              <p class="text-xs font-semibold uppercase tracking-widest text-paper/80">Watch on {spotlight.videoSource}</p>
+              <p class="font-display text-paper text-lg sm:text-2xl leading-snug mt-2 max-w-2xl text-balance">{spotlight.videoTitle}</p>
+            </div>
+          </a>
+        )}
+        <figcaption class="text-xs uppercase tracking-wider text-ink-soft mt-3">
+          {spotlight.videoSource} · {spotlight.videoTitle}
+        </figcaption>
+      </figure>
+
+      <!-- Highlight cards -->
+      <div class="grid md:grid-cols-3 border-t border-l hairline mt-14">
+        {spotlight.items.map((item) => (
+          <div class="border-r border-b hairline p-8 flex flex-col bg-paper-2">
+            <p class="text-xs font-semibold uppercase tracking-widest text-clay mb-4">{item.label}</p>
+            <h3 class="font-display font-medium text-xl leading-snug text-ink text-balance">{item.title}</h3>
+            <p class="text-sm text-ink-soft leading-relaxed mt-3 flex-1">{item.body}</p>
+            {(item.linkUrl || item.secondaryLinkUrl) && (
+              <div class="flex flex-wrap gap-x-6 gap-y-2 mt-6">
+                {item.linkUrl && item.linkText && (
+                  <a
+                    href={item.linkUrl}
+                    class="text-sm text-ink border-b border-ink pb-0.5 hover:text-ink-soft hover:border-ink-soft transition-colors"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {item.linkText}
+                  </a>
+                )}
+                {item.secondaryLinkUrl && item.secondaryLinkText && (
+                  <a
+                    href={item.secondaryLinkUrl}
+                    class="text-sm text-ink border-b border-ink pb-0.5 hover:text-ink-soft hover:border-ink-soft transition-colors"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {item.secondaryLinkText}
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   </section>
@@ -358,6 +494,35 @@ const orgJsonLd = {
 </Base>
 
 <script>
+  // Spotlight video: lazy YouTube facade. We render a thumbnail + play button
+  // and only inject the heavy iframe once the visitor chooses to play, keeping
+  // the initial page fast and avoiding YouTube cookies until intent is clear.
+  const facade = document.querySelector<HTMLElement>('[data-yt-facade]');
+  if (facade) {
+    const play = () => {
+      const id = facade.dataset.ytId;
+      if (!id) return;
+      const title = facade.dataset.ytTitle ?? 'Video';
+      const iframe = document.createElement('iframe');
+      iframe.className = 'absolute inset-0 w-full h-full';
+      iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+      iframe.title = title;
+      iframe.allow =
+        'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      iframe.allowFullscreen = true;
+      facade.replaceChildren(iframe);
+      facade.classList.remove('cursor-pointer', 'group');
+      iframe.focus();
+    };
+    facade.addEventListener('click', play);
+    facade.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        play();
+      }
+    });
+  }
+
   const expandEls = document.querySelectorAll<HTMLElement>('[data-scroll-expand]');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 

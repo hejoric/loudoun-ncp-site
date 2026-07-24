@@ -65,6 +65,18 @@ export default config({
           label: 'Personal website URL',
           validation: { isRequired: false },
         }),
+        affiliationLogo: fields.image({
+          label: 'College Affiliation Logo (transparent PNG/SVG preferred)',
+          description:
+            'Optional. University/college logo shown as a small badge on the card. Used for executive, director, and executive staff members whose school is not an LNCP branch.',
+          directory: 'public/assets/affiliations',
+          publicPath: '/assets/affiliations/',
+          validation: { isRequired: false },
+        }),
+        affiliation: fields.text({
+          label: 'College Affiliation Name (for the logo tooltip / alt text, e.g. "University of Virginia")',
+          validation: { isRequired: false, length: { min: 0 } },
+        }),
         featuredOnHome: fields.checkbox({
           label: 'Feature on Home Page',
           defaultValue: false,
@@ -153,6 +165,39 @@ export default config({
         statsPartners: fields.integer({ label: 'Partner Parks & Schools', defaultValue: 17 }),
         missionHeading: fields.text({ label: 'Mission Section Heading' }),
         missionBody: fields.text({ label: 'Mission Section Body', multiline: true }),
+        spotlightVideoId: fields.text({
+          label: 'Spotlight YouTube Video ID',
+          description:
+            'Just the ID from the YouTube URL (the part after "watch?v=" or "youtu.be/"), e.g. dQw4w9WgXcQ. Powers the featured video in the Spotlight section. Leave blank to fall back to a thumbnail that links to the article.',
+          validation: { isRequired: false, length: { min: 0 } },
+        }),
+        spotlightVideoTitle: fields.text({
+          label: 'Spotlight Video Title',
+          validation: { isRequired: false, length: { min: 0 } },
+        }),
+        spotlightVideoSource: fields.text({
+          label: 'Spotlight Video Source Label (e.g. WUSA9)',
+          validation: { isRequired: false, length: { min: 0 } },
+        }),
+        spotlightVideoUrl: fields.url({
+          label: 'Spotlight Video Fallback / Article URL (opened if no video ID is set)',
+          validation: { isRequired: false },
+        }),
+        spotlightItems: fields.array(
+          fields.object({
+            label: fields.text({ label: 'Eyebrow Label (e.g. Award, Recognition)' }),
+            title: fields.text({ label: 'Title' }),
+            body: fields.text({ label: 'Body', multiline: true }),
+            linkText: fields.text({ label: 'Link Text', validation: { isRequired: false, length: { min: 0 } } }),
+            linkUrl: fields.text({ label: 'Link URL', validation: { isRequired: false, length: { min: 0 } } }),
+            secondaryLinkText: fields.text({ label: 'Second Link Text (optional)', validation: { isRequired: false, length: { min: 0 } } }),
+            secondaryLinkUrl: fields.text({ label: 'Second Link URL (optional)', validation: { isRequired: false, length: { min: 0 } } }),
+          }),
+          {
+            label: 'Spotlight Items',
+            itemLabel: (props) => props.fields.title.value || 'Spotlight Item',
+          }
+        ),
         pressLinks: fields.array(
           fields.object({
             publication: fields.text({ label: 'Publication Name' }),
