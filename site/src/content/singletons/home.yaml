@@ -1,4 +1,4 @@
-heroHeadline: 'Youth unite for Earth; inspire change piece by piece'
+heroHeadline: Youth unite for Earth; inspire change piece by piece
 heroSubtext: >-
   Made by Students, for Students. Young hearts, green minds, hands-on action —
   empowering youth, restoring nature, and fostering community through 501(c)(3)
@@ -22,6 +22,50 @@ missionBody: >-
   restore ecosystems and build a lasting culture of environmental
   responsibility. Made by students, for students, we're proving that the next
   generation of conservation leaders is already at work.
+spotlightVideoId: https://youtu.be/zlhxa3m8rug?si=JtukcnUcoP1TBcvg
+spotlightVideoTitle: These local students are cleaning up parks in Northern Virginia
+spotlightVideoSource: WUSA9
+spotlightVideoUrl: >-
+  https://www.wusa9.com/video/tech/science/environment/these-local-students-are-cleaning-up-parks-in-northern-virginia/65-71e16312-f011-4edf-a3b5-fb93d8432e6e
+spotlightItems:
+  - label: 2025 Award
+    title: Winner, Environmental Excellence Award
+    body: >-
+      The Loudoun County Environmental Commission named LNCP founder Ryan Nisay,
+      a Potomac Falls High School senior, the 2025 Student winner of its
+      Environmental Excellence Award. The commission recognized the Loudoun
+      Nature Conservation Project for encouraging young people to take action in
+      environmental restoration through partnerships with schools, parks, and
+      community organizations. The award was presented at the Board of
+      Supervisors' April 15, 2025 meeting.
+    linkText: Read the news release (PDF)
+    linkUrl: /assets/lncp-environmental-excellence-award-2025.pdf
+  - label: Recognition
+    title: Honored in the U.S. Congressional Record
+    body: >-
+      LNCP was honored in the U.S. Congressional Record by Representative Suhas
+      Subramanyam of Virginia's 10th Congressional District. What began in 2024
+      as a student-led effort has grown into a community of more than 270
+      members, partnerships with 17 parks and schools, over 3,100 acres of
+      restored land, and three published research studies on local water
+      quality.
+    linkText: Read the entry on Congress.gov
+    linkUrl: >-
+      https://www.congress.gov/congressional-record/volume-172/issue-115/extensions-of-remarks-section/article/E694-2
+    secondaryLinkText: View the record (PDF)
+    secondaryLinkUrl: /assets/lncp-congressional-record.pdf
+  - label: In the community
+    title: A five-hour cleanup with Keep Loudoun Beautiful
+    body: >-
+      On April 12, LNCP collaborated with Keep Loudoun Beautiful to host a
+      large-scale cleanup in Leesburg, Virginia. Over five hours, our volunteers
+      worked relentlessly together to gather an astonishing amount of trash and
+      make a meaningful impact on our local environment. We thank everyone who
+      came out, and we hope it inspires more of you to join our everlasting
+      mission.
+    linkText: See the post on LinkedIn
+    linkUrl: >-
+      https://www.linkedin.com/posts/loudoun-nature-conservation-project_on-april-12-our-organization-was-able-to-activity-7451375612444868608-Qht7
 pressLinks:
   - publication: WUSA9
     headline: These local students are cleaning up parks in Northern Virginia
@@ -34,7 +78,7 @@ pressLinks:
     url: >-
       https://wtop.com/loudoun-county/2024/11/still-in-high-school-loudon-county-students-look-to-clean-up-the-environment-for-future-generations/
   - publication: Loudoun Now
-    headline: 'Sterling teens create conservation nonprofit, offer weekly park cleanups'
+    headline: Sterling teens create conservation nonprofit, offer weekly park cleanups
     url: >-
       https://www.loudounnow.com/giving_back/sterling-teens-create-conservation-nonprofit-offer-weekly-park-cleanups/article_f54fbbc6-777a-11ef-a63e-a7c6205f9ce0.html
   - publication: InsideNOVA
