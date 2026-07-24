@@ -5,10 +5,50 @@ import reader from '@/lib/reader';
 
 const home = await reader.singletons.home.read();
 const allTeam = await reader.collections.teamMembers.all();
-const featuredTeam = allTeam
-  .filter((m) => m.entry.featuredOnHome)
-  .sort((a, b) => (a.entry.sortOrder ?? 99) - (b.entry.sortOrder ?? 99));
+const allBranches = await reader.collections.branches.all();
 const ryan = allTeam.find((m) => m.slug === 'ryan-nisay') ?? null;
+
+// Home showcase: a continuously scrolling strip of the people leading LNCP,
+// ordered executive -> directors -> branch presidents. Branch presidents show
+// their school badge (pulled from the branch record) in place of a college
+// affiliation. Members without a headshot (e.g. a tentative branch) are skipped
+// so the strip never shows an empty avatar.
+const inSection = (section: string) =>
+  allTeam
+    .filter((m) => m.entry.section === section)
+    .sort((a, b) => (a.entry.sortOrder ?? 99) - (b.entry.sortOrder ?? 99));
+
+const showcaseMembers = [
+  ...inSection('executive'),
+  ...inSection('directors'),
+  ...inSection('branchPresidents'),
+]
+  .filter((m) => m.entry.headshot)
+  .map((m) => {
+    const branch =
+      m.entry.section === 'branchPresidents' && m.entry.branch
+        ? allBranches.find((b) => b.slug === m.entry.branch) ?? null
+        : null;
+    return {
+      name: m.entry.name,
+      role: m.entry.role,
+      bio: m.entry.bio,
+      headshot: m.entry.headshot,
+      headshotPosition: m.entry.headshotPosition ?? undefined,
+      headshotScale: m.entry.headshotScale ?? undefined,
+      email: m.entry.email ?? undefined,
+      instagram: m.entry.instagram ?? undefined,
+      linkedin: m.entry.linkedin ?? undefined,
+      website: m.entry.website ?? undefined,
+      affiliationLogo: m.entry.affiliationLogo ?? branch?.entry.schoolLogo ?? undefined,
+      affiliation: m.entry.affiliation ?? branch?.entry.name ?? undefined,
+    };
+  });
+
+// Speed scales with the roster so the strip always moves at the same pace
+// (~6s per card) regardless of how many people are shown. Two identical copies
+// are rendered back to back, so the track translates exactly one copy width.
+const marqueeDuration = `${Math.max(showcaseMembers.length * 6, 30)}s`;
 
 // Accept any YouTube reference an editor might paste (full watch URL, youtu.be
 // share link with tracking params, embed/shorts URL, or a bare ID) and reduce
@@ -410,42 +450,59 @@ const orgJsonLd = {
     </div>
   </section>
 
-  <!-- Featured Team -->
-  {featuredTeam.length > 0 && (
-    <section class="bg-paper border-t hairline py-24" aria-labelledby="team-heading">
+  <!-- Featured Team: a slow, continuously scrolling showcase -->
+  {showcaseMembers.length > 0 && (
+    <section class="bg-paper border-t hairline py-24 overflow-hidden" aria-labelledby="team-heading">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-2xl mb-14">
           <p class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">Meet Our Team</p>
-          <h2 id="team-heading" class="font-display font-medium text-3xl sm:text-4xl text-ink">Leading Staff</h2>
+          <h2 id="team-heading" class="font-display font-medium text-3xl sm:text-4xl text-ink">The students leading LNCP</h2>
           <p class="text-ink-soft mt-4 text-base leading-relaxed">
-            Our staff is made up of passionate student leaders dedicated to environmental advocacy and community engagement. Hover or tap a card to learn more.
+            From our executive team to directors and branch presidents across Loudoun County. Hover to pause the strip, then tap any card to read their story.
           </p>
         </div>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-          {featuredTeam.map((member) => (
-            <FlipCard
-              name={member.entry.name}
-              role={member.entry.role}
-              bio={member.entry.bio}
-              headshot={member.entry.headshot}
-              email={member.entry.email ?? undefined}
-              instagram={member.entry.instagram ?? undefined}
-              linkedin={member.entry.linkedin ?? undefined}
-              website={member.entry.website ?? undefined}
-              affiliationLogo={member.entry.affiliationLogo ?? undefined}
-              affiliation={member.entry.affiliation ?? undefined}
-              accentColor="#1B4332"
-            />
-          ))}
+      </div>
+
+      <!-- Marquee: full-bleed, auto-scrolling strip. Two identical copies of the
+           roster are laid end to end and the track translates exactly one copy
+           width, so the loop is seamless. It pauses on hover/focus so a card can
+           be flipped, and falls back to a manual horizontal scroll for visitors
+           who prefer reduced motion. -->
+      <div class="marquee" data-marquee>
+        <div class="marquee-track flex w-max" style={`--marquee-duration:${marqueeDuration}`}>
+          {[0, 1].map(() =>
+            showcaseMembers.map((member) => (
+              <div class="marquee-item w-52 sm:w-60 shrink-0">
+                <FlipCard
+                  name={member.name}
+                  role={member.role}
+                  bio={member.bio}
+                  headshot={member.headshot}
+                  headshotPosition={member.headshotPosition}
+                  headshotScale={member.headshotScale}
+                  email={member.email}
+                  instagram={member.instagram}
+                  linkedin={member.linkedin}
+                  website={member.website}
+                  affiliationLogo={member.affiliationLogo}
+                  affiliation={member.affiliation}
+                  accentColor="#1B4332"
+                />
+              </div>
+            ))
+          )}
         </div>
-        <div class="mt-12">
-          <a
-            href="/team/"
-            class="text-sm text-ink border-b border-ink pb-0.5 hover:text-ink-soft hover:border-ink-soft transition-colors"
-          >
-            View the full team
-          </a>
-        </div>
+        <div class="marquee-fade marquee-fade-left" aria-hidden="true"></div>
+        <div class="marquee-fade marquee-fade-right" aria-hidden="true"></div>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+        <a
+          href="/team/"
+          class="text-sm text-ink border-b border-ink pb-0.5 hover:text-ink-soft hover:border-ink-soft transition-colors"
+        >
+          View the full team
+        </a>
       </div>
     </section>
   )}

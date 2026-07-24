@@ -124,6 +124,77 @@ h1, h2, h3, h4, h5, h6 {
   transform: rotateY(180deg);
 }
 
+/* Team showcase marquee (home page) */
+.marquee {
+  position: relative;
+  overflow: hidden;
+}
+
+.marquee-track {
+  animation: marquee-scroll var(--marquee-duration, 60s) linear infinite;
+  will-change: transform;
+}
+
+/* Pause while a visitor hovers or keyboard-focuses a card so it can be
+   read and flipped without the target sliding away. */
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+
+/* Uniform trailing gap on every item (including the last of each copy) keeps
+   the two copies exactly equal width, which is what makes the -50% loop seam
+   invisible. Do not switch this to flex `gap`. */
+.marquee-item {
+  margin-right: 1rem;
+}
+
+.marquee-fade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 4rem;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.marquee-fade-left {
+  left: 0;
+  background: linear-gradient(to right, var(--color-paper), transparent);
+}
+
+.marquee-fade-right {
+  right: 0;
+  background: linear-gradient(to left, var(--color-paper), transparent);
+}
+
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (min-width: 640px) {
+  .marquee-item {
+    margin-right: 1.5rem;
+  }
+  .marquee-fade {
+    width: 6rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    overflow-x: auto;
+  }
+  .marquee-track {
+    animation: none;
+  }
+}
+
 /* Initials avatar */
 .initials-avatar {
   display: inline-flex;
