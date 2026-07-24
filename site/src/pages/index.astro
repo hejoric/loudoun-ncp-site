@@ -24,12 +24,20 @@ function youtubeId(raw: string | null | undefined): string {
   return m ? m[1] : '';
 }
 
+// A "&t=90" / "&t=90s" / "&start=90" in the pasted URL sets where playback
+// begins (it does not affect the poster thumbnail). Returns 0 when absent.
+function youtubeStart(raw: string | null | undefined): number {
+  const m = (raw ?? '').match(/[?&](?:t|start)=(\d+)/);
+  return m ? parseInt(m[1], 10) : 0;
+}
+
 // Spotlight: featured WUSA video + highlight cards. Values come from the home
 // singleton with hardcoded fallbacks so the section renders even before an
 // editor fills them in. A blank video ID falls back to a thumbnail that links
 // out to the article.
 const spotlight = {
   videoId: youtubeId(home?.spotlightVideoId),
+  videoStart: youtubeStart(home?.spotlightVideoId),
   videoTitle: home?.spotlightVideoTitle || 'These local students are cleaning up parks in Northern Virginia',
   videoSource: home?.spotlightVideoSource || 'WUSA9',
   videoUrl:
@@ -206,6 +214,7 @@ const orgJsonLd = {
           <div
             data-yt-facade
             data-yt-id={spotlight.videoId}
+            data-yt-start={spotlight.videoStart ? String(spotlight.videoStart) : undefined}
             data-yt-title={spotlight.videoTitle}
             role="button"
             tabindex="0"
@@ -505,7 +514,8 @@ const orgJsonLd = {
       const title = facade.dataset.ytTitle ?? 'Video';
       const iframe = document.createElement('iframe');
       iframe.className = 'absolute inset-0 w-full h-full';
-      iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+      const start = facade.dataset.ytStart ? `&start=${facade.dataset.ytStart}` : '';
+      iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0${start}`;
       iframe.title = title;
       iframe.allow =
         'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
