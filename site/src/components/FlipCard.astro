@@ -54,7 +54,7 @@ const scale = Number(headshotScale) || 1;
             src={headshot}
             alt={`${name} headshot`}
             class="absolute inset-0 w-full h-full object-cover"
-            style={`object-position:${focalPoint};${scale !== 1 ? ` transform:scale(${scale}); transform-origin:${focalPoint};` : ''}`}
+            style={`object-position:${focalPoint};${scale !== 1 ? ` transform:scale(${scale}); transform-origin:center bottom;` : ''}`}
             loading="lazy"
             decoding="async"
           />
