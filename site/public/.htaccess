@@ -1,0 +1,198 @@
+# Apache config for serving the built site on Bluehost shared hosting.
+#
+# This file is copied verbatim into dist/ by Astro and must end up at the root
+# of whatever directory Bluehost serves (normally public_html/).
+#
+# It replaces public/_redirects, which is Cloudflare Pages syntax that Apache
+# ignores entirely. Without this file the legacy WordPress redirects below
+# silently 404 after the cutover.
+#
+# Every block is wrapped in <IfModule> so a missing module degrades to "no
+# optimisation" rather than a 500 on a host where it is not compiled in.
+
+# ---------------------------------------------------------------------------
+# Canonical host and HTTPS
+# ---------------------------------------------------------------------------
+# astro.config.mjs sets site: 'https://loudounnatureconservation.org' (no www),
+# and every canonical URL, sitemap entry, and JSON-LD @id is built from it. The
+# server has to agree, or each page is reachable at two hosts and the canonical
+# tag fights the served URL.
+#
+# Bluehost terminates TLS ahead of Apache, so %{HTTPS} can read as "off" on a
+# request that genuinely arrived over HTTPS. A request counts as secure if
+# EITHER signal says so, which means the "not secure" test has to require BOTH
+# to be negative - AND, not OR.
+#
+# Getting that wrong is an infinite redirect loop, not a cosmetic bug: an
+# [OR] chain redirects an already-HTTPS request straight back to itself,
+# forever, because %{HTTPS} is never "on" behind the proxy. Verified against a
+# real Apache 2.4 with X-Forwarded-Proto: https - see the deploy doc.
+#
+# The HTTPS rule hardcodes the bare host, so http://www.* is corrected to
+# https://loudounnatureconservation.org in a single hop rather than two.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Not secure by either signal -> upgrade (and drop www at the same time).
+  RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+  RewriteCond %{HTTPS} !=on
+  RewriteRule ^ https://loudounnatureconservation.org%{REQUEST_URI} [R=301,L,NE]
+
+  # Already secure but on www -> strip it.
+  RewriteCond %{HTTP_HOST} ^www\. [NC]
+  RewriteRule ^ https://loudounnatureconservation.org%{REQUEST_URI} [R=301,L,NE]
+
+  # -------------------------------------------------------------------------
+  # Legacy WordPress redirects (ported from public/_redirects)
+  # -------------------------------------------------------------------------
+  # Two things these rules must get right, both verified against a real Apache:
+  #
+  # NE (noescape) keeps the #history fragment as "#" rather than escaping it to
+  # %23, which would send visitors to a literal path instead of an anchor.
+  #
+  # The targets are absolute https:// URLs, not paths. Given a bare path Apache
+  # builds the Location header using the scheme it believes the request used -
+  # and behind Bluehost's TLS termination that is http. A relative target
+  # therefore emits Location: http://..., costing an extra insecure hop through
+  # the HTTPS rule above. Absolute targets land in one hop.
+  RewriteRule ^history/?$      https://loudounnatureconservation.org/about/#history [R=301,L,NE]
+  RewriteRule ^our-history/?$  https://loudounnatureconservation.org/about/#history [R=301,L,NE]
+
+  # Old asset paths, catch-all to the homepage.
+  RewriteRule ^wp-content/     https://loudounnatureconservation.org/ [R=301,L]
+  RewriteRule ^wp-includes/    https://loudounnatureconservation.org/ [R=301,L]
+
+  # NOTE: public/_redirects documented that WordPress /?page_id=NNN URLs could
+  # not be redirected on Cloudflare Pages and were handled by a Worker instead.
+  # That Worker will not exist on Bluehost. Apache *can* match query strings, so
+  # those redirects can live here once someone supplies the page_id -> path
+  # mapping. Template:
+  #
+  #   RewriteCond %{QUERY_STRING} (^|&)page_id=42($|&)
+  #   RewriteRule ^$ /about/ [R=301,L]
+</IfModule>
+
+# ---------------------------------------------------------------------------
+# 404
+# ---------------------------------------------------------------------------
+# Astro emits dist/404.html. Without this, Bluehost shows its own generic error
+# page instead of the site's.
+ErrorDocument 404 /404.html
+
+# ---------------------------------------------------------------------------
+# Compression
+# ---------------------------------------------------------------------------
+# Fonts are woff2, which is already Brotli-compressed internally - compressing
+# it again costs CPU and saves nothing, so it is deliberately absent below.
+<IfModule mod_deflate.c>
+  <IfModule mod_filter.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml
+    AddOutputFilterByType DEFLATE application/javascript application/json
+    AddOutputFilterByType DEFLATE application/xml application/rss+xml
+    AddOutputFilterByType DEFLATE application/manifest+json
+    AddOutputFilterByType DEFLATE image/svg+xml
+  </IfModule>
+</IfModule>
+
+# ---------------------------------------------------------------------------
+# Cache headers
+# ---------------------------------------------------------------------------
+# Two tiers, and the distinction matters:
+#
+#   dist/_astro/*  - content-hashed filenames (Base.BgqbEPj3.css). A change
+#                    produces a new filename, so these are safe to cache for a
+#                    year and mark immutable.
+#   dist/assets/*  - copied from public/ with STABLE filenames (hero.mp4,
+#                    lncp-logo.png). Cached for a week only, because replacing
+#                    one reuses its URL and a longer TTL would strand visitors
+#                    on the old file.
+#
+# HTML is explicitly never cached. Page content is edited through Keystatic and
+# redeployed under the same URL, so a cached document would hide the update.
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault                          "access plus 1 week"
+  ExpiresByType text/html                 "access plus 0 seconds"
+  ExpiresByType application/xml           "access plus 1 hour"
+  ExpiresByType text/plain                "access plus 1 hour"
+  ExpiresByType font/woff2                "access plus 1 year"
+</IfModule>
+
+<IfModule mod_headers.c>
+  # Hashed build output: safe to pin for a year.
+  <FilesMatch "\.(css|js)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # Anything in assets/ has a stable name, so override the rule above.
+  # (FilesMatch cannot test a directory, so this re-matches by extension and is
+  # placed after, letting the shorter TTL win for media.)
+  <FilesMatch "\.(png|jpe?g|gif|svg|webp|avif|ico|mp4|webm|pdf|docx)$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
+
+  <FilesMatch "\.(woff2?)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # HTML, sitemaps, robots.txt, llms.txt: always revalidate.
+  <FilesMatch "\.(html|xml|txt|webmanifest)$">
+    Header set Cache-Control "public, max-age=0, must-revalidate"
+  </FilesMatch>
+
+  # -------------------------------------------------------------------------
+  # Security headers
+  # -------------------------------------------------------------------------
+  # Deliberately NOT setting Content-Security-Policy here. /volunteer embeds a
+  # Google Forms iframe and the pages carry inline JSON-LD, so a CSP written
+  # without testing against the real deployed site would break both.
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+
+  # SAMEORIGIN, not DENY: this stops other sites framing us, and does not affect
+  # the Google Form that /volunteer embeds (that is us framing them).
+  Header set X-Frame-Options "SAMEORIGIN"
+</IfModule>
+
+# ---------------------------------------------------------------------------
+# MIME types
+# ---------------------------------------------------------------------------
+# Older Apache builds on shared hosting do not always know these, and a
+# .webmanifest served as text/plain is ignored by the browser, which silently
+# breaks the installable-PWA metadata and the Android home-screen icons.
+<IfModule mod_mime.c>
+  AddType application/manifest+json  .webmanifest
+  AddType font/woff2                 .woff2
+  AddType image/svg+xml              .svg
+  AddType image/avif                 .avif
+  AddType image/webp                 .webp
+  AddType text/plain                 .txt
+</IfModule>
+
+# ---------------------------------------------------------------------------
+# Directory behaviour
+# ---------------------------------------------------------------------------
+# Astro builds directory-style output (about/index.html), which DirectoryIndex
+# serves at /about/. Listings are disabled so a directory without an index.html
+# cannot expose a file tree.
+DirectoryIndex index.html
+Options -Indexes
+
+# Do not serve the config files themselves. Apache's stock global config denies
+# .ht* already, but shared hosts vary and a bare test server happily served this
+# file with a 200 - so it is denied explicitly rather than assumed.
+<IfModule mod_authz_core.c>
+  <FilesMatch "^\.(htaccess|htpasswd|env)">
+    Require all denied
+  </FilesMatch>
+</IfModule>
+
+# _redirects ships in this directory too. It is Cloudflare Pages syntax that
+# Apache ignores, so it is inert rather than harmful, and it is left in the repo
+# deliberately in case Cloudflare stays in front of Bluehost as a CDN. It is not
+# served, to avoid publishing the redirect map.
+<IfModule mod_authz_core.c>
+  <Files "_redirects">
+    Require all denied
+  </Files>
+</IfModule>
