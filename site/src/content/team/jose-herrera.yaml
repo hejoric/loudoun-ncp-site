@@ -1,6 +1,7 @@
 name: Jose R. Herrera
 role: Webmaster
 section: executiveStaff
+branch: dominion
 bio: >-
   Jose joined LNCP in July 2026 after the organization's WUSA9 feature caught
   his attention and resonated with a goal of his own: putting his technical
@@ -14,7 +15,8 @@ headshot: /assets/team/jose-herrera/headshot.jpg
 email: hejoric@outlook.com
 linkedin: https://www.linkedin.com/in/hejoric/
 website: https://hejoric.com
-affiliationLogo: /assets/affiliations/jose-herrera/affiliationLogo.jpg
-affiliation: University of Virginia
+affiliations:
+  - name: University of Virginia
+    logo: /assets/affiliations/jose-herrera/affiliations/0/logo.jpg
 featuredOnHome: false
 sortOrder: 1

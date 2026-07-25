@@ -3,6 +3,7 @@ import Base from '@/layouts/Base.astro';
 import FlipCard from '@/components/FlipCard.astro';
 import BranchCard from '@/components/BranchCard.astro';
 import reader from '@/lib/reader';
+import { resolveAffiliations } from '@/lib/affiliations';
 
 const allMembers = await reader.collections.teamMembers.all();
 const allBranches = await reader.collections.branches.all();
@@ -20,9 +21,7 @@ function getBranchFor(member: (typeof allMembers)[0]) {
   return allBranches.find((b) => b.slug === member.entry.branch) ?? null;
 }
 
-function schoolInitials(name: string) {
-  return name.split(/\s+/).filter(Boolean).map((w) => w[0]).join('').toUpperCase().slice(0, 3);
-}
+const schoolsFor = (member: (typeof allMembers)[0]) => resolveAffiliations(member, allBranches);
 
 const ACCENT = '#1B4332';
 
@@ -77,8 +76,7 @@ const personJsonLd = allMembers.map((m) => ({
                 instagram={m.entry.instagram ?? undefined}
                 linkedin={m.entry.linkedin ?? undefined}
                 website={m.entry.website ?? undefined}
-                affiliationLogo={m.entry.affiliationLogo ?? undefined}
-                affiliation={m.entry.affiliation ?? undefined}
+                affiliations={schoolsFor(m)}
                 accentColor={ACCENT}
               />
             </div>
@@ -109,8 +107,7 @@ const personJsonLd = allMembers.map((m) => ({
                 instagram={m.entry.instagram ?? undefined}
                 linkedin={m.entry.linkedin ?? undefined}
                 website={m.entry.website ?? undefined}
-                affiliationLogo={m.entry.affiliationLogo ?? undefined}
-                affiliation={m.entry.affiliation ?? undefined}
+                affiliations={schoolsFor(m)}
                 accentColor={ACCENT}
               />
             </div>
@@ -141,8 +138,7 @@ const personJsonLd = allMembers.map((m) => ({
                 instagram={m.entry.instagram ?? undefined}
                 linkedin={m.entry.linkedin ?? undefined}
                 website={m.entry.website ?? undefined}
-                affiliationLogo={m.entry.affiliationLogo ?? undefined}
-                affiliation={m.entry.affiliation ?? undefined}
+                affiliations={schoolsFor(m)}
                 accentColor={ACCENT}
               />
             </div>
@@ -176,8 +172,7 @@ const personJsonLd = allMembers.map((m) => ({
                   presidentInstagram={m.entry.instagram ?? undefined}
                   presidentLinkedin={m.entry.linkedin ?? undefined}
                   branchName={branch?.entry.name ?? m.entry.branch ?? 'Branch'}
-                  schoolLogo={branch?.entry.schoolLogo ?? undefined}
-                  schoolInitials={branch ? schoolInitials(branch.entry.school) : undefined}
+                  affiliations={schoolsFor(m)}
                 />
               </div>
             );
@@ -211,8 +206,7 @@ const personJsonLd = allMembers.map((m) => ({
                 instagram={m.entry.instagram ?? undefined}
                 linkedin={m.entry.linkedin ?? undefined}
                 website={m.entry.website ?? undefined}
-                affiliationLogo={m.entry.affiliationLogo ?? undefined}
-                affiliation={m.entry.affiliation ?? undefined}
+                affiliations={schoolsFor(m)}
                 accentColor={ACCENT}
               />
             </div>

@@ -1,0 +1,61 @@
+---
+import type { Affiliation } from '@/lib/affiliations';
+
+interface Props {
+  affiliations: readonly Affiliation[];
+}
+
+const { affiliations } = Astro.props;
+
+function initials(name: string) {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((w) => w[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 3);
+}
+
+// A branch school always gets a badge - we fall back to its initials when the
+// branch record has no logo yet. A member's own affiliation needs a logo to earn
+// one; until then it is carried by the school name printed under the card.
+const shown = affiliations
+  .filter((a) => a.logo || a.source === 'branch')
+  // High school + college is the common case and three still fits the card;
+  // anything beyond that stays in the text label only.
+  .slice(0, 3);
+---
+
+{shown.length > 0 && (
+  <div class="absolute bottom-2 right-2 flex items-center gap-1.5">
+    {shown.map((a) =>
+      a.logo ? (
+        <div
+          class="w-10 h-10 rounded-full ring-2 ring-white overflow-hidden bg-white flex items-center justify-center shadow"
+          title={a.name}
+        >
+          {/* 71% is the square that fits inside the round badge (d / sqrt(2)).
+              School logos are often wordmarks whose text runs to the edge of
+              the image, and letting them fill the full box clips the first and
+              last letter against the circle. */}
+          <img
+            src={a.logo}
+            alt={`${a.name} logo`}
+            class="w-[71%] h-[71%] object-contain"
+            loading="lazy"
+            decoding="async"
+            aria-hidden="true"
+          />
+        </div>
+      ) : (
+        <div
+          class="w-10 h-10 rounded-full ring-2 ring-white flex items-center justify-center bg-[#1B4332] shadow"
+          title={a.name}
+        >
+          <span class="text-white font-display font-bold text-xs">{initials(a.name)}</span>
+        </div>
+      )
+    )}
+  </div>
+)}

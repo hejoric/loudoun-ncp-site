@@ -68,17 +68,49 @@ Start the dev server, then visit `http://localhost:4321/keystatic`.
 name: First Last
 role: Your Role
 section: Executive  # Executive | Directors | Executive Staff | Branch Presidents | Branch Staff
-branch: null        # branch slug (e.g. "potomac-falls") only for Branch Presidents/Staff
+branch: null        # branch slug (e.g. "potomac-falls") - their school, see "Schools on a card"
 bio: A short bio paragraph.
-headshot: null      # /assets/team/first-last.jpg once uploaded
+headshot: null      # /assets/team/first-last/headshot.jpg once uploaded
+headshotPosition: null  # CSS object-position, e.g. "center 27%" - leave blank for top
+headshotScale: null     # e.g. "0.9" to zoom out - leave blank for 1
 email: null
 instagram: null
 linkedin: null
+website: null
+affiliations: []    # extra schools beyond their branch, see "Schools on a card"
 featuredOnHome: false
 sortOrder: 99
 ```
 
-2. Place headshot at `public/assets/team/first-last.jpg` (400x400px, <100KB).
+2. Place headshot at `public/assets/team/first-last/headshot.jpg` (400x400px, <100KB).
+
+### Schools on a card
+
+A member can show more than one school - most branch presidents are seniors, so
+once they are accepted to college they have a high school badge and a college
+badge side by side. The two come from different places:
+
+- **Their school comes from `branch`.** The branch record owns the school name
+  and logo, so a branch member never uploads a school logo. This works for any
+  section, not just Branch Presidents.
+- **Anything else goes in `affiliations`**, shown in the order listed after the
+  branch school:
+
+```yaml
+branch: dominion            # Dominion High School badge, from the branch record
+affiliations:
+  - name: University of Virginia
+    logo: /assets/affiliations/first-last/affiliations/0/logo.png
+```
+
+An entry with no `logo` yet still gets its name printed under the card, so a
+college can be announced before its logo is sourced. Up to three badges are
+shown per card; any beyond that appear as names only.
+
+The `affiliations/<index>/logo` path above is where Keystatic files an uploaded
+logo. Any path under `public/` works if you hand-write the YAML, but Keystatic
+moves the file to that canonical path the next time the entry is saved in the
+editor - so it is simpler to put it there to begin with.
 
 ## Adding a Branch
 
@@ -129,6 +161,7 @@ pdfLink: null   # or external DOI URL
 |---|---|---|
 | Team headshots | `public/assets/team/` | 400x400px, JPEG, <100KB |
 | School logos | `public/assets/branches/` | 200x200px transparent PNG, <50KB |
+| College logos | `public/assets/affiliations/` | 200x200px square, trimmed of margins, <50KB |
 | Hero video | `public/assets/hero.mp4` | 1280px wide, H.264, CRF 26, no audio, <2MB |
 | Hero poster | `public/assets/hero-poster.jpg` | JPEG still from video, same dimensions |
 | Research PDFs | `public/research/` | PDF, any size |

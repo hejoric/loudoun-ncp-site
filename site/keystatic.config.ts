@@ -32,6 +32,8 @@ export default config({
         }),
         branch: fields.text({
           label: 'Branch slug (e.g. potomac-falls) - leave blank if not a branch member',
+          description:
+            'The LNCP branch this member belongs to. Doubles as their school: the branch record supplies the school name and logo for the badge on their card, so a branch member never needs to upload a school logo here.',
           validation: { isRequired: false, length: { min: 0 } },
         }),
         bio: fields.text({ label: 'Bio', multiline: true }),
@@ -65,18 +67,26 @@ export default config({
           label: 'Personal website URL',
           validation: { isRequired: false },
         }),
-        affiliationLogo: fields.image({
-          label: 'College Affiliation Logo (transparent PNG/SVG preferred)',
-          description:
-            'Optional. University/college logo shown as a small badge on the card. Used for executive, director, and executive staff members whose school is not an LNCP branch.',
-          directory: 'public/assets/affiliations',
-          publicPath: '/assets/affiliations/',
-          validation: { isRequired: false },
-        }),
-        affiliation: fields.text({
-          label: 'College Affiliation Name (for the logo tooltip / alt text, e.g. "University of Virginia")',
-          validation: { isRequired: false, length: { min: 0 } },
-        }),
+        affiliations: fields.array(
+          fields.object({
+            name: fields.text({
+              label: 'School Name (e.g. "University of Virginia")',
+              validation: { isRequired: true, length: { min: 1 } },
+            }),
+            logo: fields.image({
+              label: 'Logo (transparent PNG/SVG preferred)',
+              directory: 'public/assets/affiliations',
+              publicPath: '/assets/affiliations/',
+              validation: { isRequired: false },
+            }),
+          }),
+          {
+            label: 'Additional Affiliations (college, other school)',
+            description:
+              'Optional, and shown in this order after the branch school. Add an entry here when a member has a second school to show - e.g. a branch president who has been accepted to college keeps their high school badge (from their branch) and gains a college one. An entry with no logo yet still has its name printed under the card.',
+            itemLabel: (props) => props.fields.name.value || 'Affiliation',
+          }
+        ),
         featuredOnHome: fields.checkbox({
           label: 'Feature on Home Page',
           defaultValue: false,

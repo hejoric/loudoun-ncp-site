@@ -1,0 +1,19 @@
+---
+import type { Affiliation } from '@/lib/affiliations';
+
+interface Props {
+  affiliations: readonly Affiliation[];
+}
+
+const { affiliations } = Astro.props;
+---
+
+{/* One school per line: joining two full school names into a single sentence
+    wraps mid-name and leaves an orphaned word on a card this narrow. */}
+{affiliations.length > 0 && (
+  <div class="mt-0.5">
+    {affiliations.map((a) => (
+      <p class="text-white/60 text-[11px] leading-tight">{a.name}</p>
+    ))}
+  </div>
+)}

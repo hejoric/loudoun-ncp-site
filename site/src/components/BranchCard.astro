@@ -1,5 +1,8 @@
 ---
 import InitialsAvatar from './InitialsAvatar.astro';
+import AffiliationBadges from './AffiliationBadges.astro';
+import AffiliationNames from './AffiliationNames.astro';
+import { affiliationLabel, type Affiliation } from '@/lib/affiliations';
 
 interface Props {
   presidentName: string;
@@ -10,8 +13,8 @@ interface Props {
   presidentInstagram?: string | null;
   presidentLinkedin?: string | null;
   branchName: string;
-  schoolLogo?: string | null;
-  schoolInitials?: string;
+  /** Branch school first, then any college the president has added. */
+  affiliations?: readonly Affiliation[];
 }
 
 const {
@@ -23,11 +26,16 @@ const {
   presidentInstagram,
   presidentLinkedin,
   branchName,
-  schoolLogo,
-  schoolInitials,
+  affiliations = [],
 } = Astro.props;
 
 const MAROON = '#1B4332';
+
+// The branch school is already the eyebrow above the president's name, so only
+// the schools it does not cover (e.g. the college they were accepted to) get
+// named under it.
+const otherAffiliations = affiliations.filter((a) => a.source !== 'branch');
+const otherSchools = affiliationLabel(otherAffiliations);
 ---
 
 <div
@@ -57,34 +65,15 @@ const MAROON = '#1B4332';
           </div>
         )}
 
-        <!-- School logo badge (bottom-right) -->
-        <div class="absolute bottom-2 right-2">
-          {schoolLogo ? (
-            <div class="w-9 h-9 rounded-full ring-2 ring-white overflow-hidden bg-white flex items-center justify-center shadow">
-              <img
-                src={schoolLogo}
-                alt={`${branchName} school logo`}
-                class="w-full h-full object-contain p-0.5"
-                loading="lazy"
-                decoding="async"
-                aria-hidden="true"
-              />
-            </div>
-          ) : schoolInitials ? (
-            <div
-              class="w-9 h-9 rounded-full ring-2 ring-white flex items-center justify-center bg-[#1B4332] shadow"
-              title={branchName}
-            >
-              <span class="text-white font-display font-bold text-xs">{schoolInitials}</span>
-            </div>
-          ) : null}
-        </div>
+        <!-- School / college logo badges (bottom-right) -->
+        <AffiliationBadges affiliations={affiliations} />
       </div>
 
       <!-- Name band -->
       <div class="px-3 py-2 text-center" style="background:#1B4332;">
         <p class="text-white/70 text-xs uppercase tracking-wide">{branchName}</p>
         <p class="font-display font-bold text-white text-sm leading-tight">{presidentName}</p>
+        <AffiliationNames affiliations={otherAffiliations} />
       </div>
     </div>
 
@@ -160,7 +149,9 @@ const MAROON = '#1B4332';
         </div>
       )}
 
-      <span class="sr-only">{presidentName}, {presidentRole} of {branchName}. {presidentBio}</span>
+      <span class="sr-only">
+        {presidentName}, {presidentRole} of {branchName}.{otherSchools ? ` ${otherSchools}.` : ''} {presidentBio}
+      </span>
     </div>
   </div>
 </div>
