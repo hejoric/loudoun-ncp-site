@@ -1,6 +1,9 @@
 ---
 import Base from '@/layouts/Base.astro';
 import reader from '@/lib/reader';
+import { getSocialLink } from '@/lib/social';
+
+const instagram = await getSocialLink('instagramUrl');
 
 const events = await reader.collections.events.all();
 const now = new Date();
@@ -66,17 +69,22 @@ const past = events
         <div class="bg-paper border hairline p-12 text-center">
           <h3 class="font-display font-medium text-xl text-ink mb-3">No upcoming events right now</h3>
           <p class="text-ink-soft text-sm max-w-md mx-auto">
-            We're planning our next cleanup - check back soon, or follow us on Instagram for the latest announcements.
+            We're planning our next cleanup - check back soon
+            {instagram
+              ? `, or follow us on ${instagram.label} for the latest announcements.`
+              : ' for the latest announcements.'}
           </p>
           <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-5">
-            <a
-              href="https://instagram.com/loudounncp"
-              class="px-6 py-3 bg-forest-900 text-paper text-sm font-semibold hover:bg-forest-800 transition-colors"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Follow on Instagram
-            </a>
+            {instagram && (
+              <a
+                href={instagram.href}
+                class="px-6 py-3 bg-forest-900 text-paper text-sm font-semibold hover:bg-forest-800 transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Follow on {instagram.label}
+              </a>
+            )}
             <a
               href="/volunteer/"
               class="text-sm text-ink border-b border-ink pb-0.5 hover:text-ink-soft hover:border-ink-soft transition-colors"

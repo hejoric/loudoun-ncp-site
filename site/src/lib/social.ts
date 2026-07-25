@@ -35,7 +35,11 @@ const platforms: SocialPlatform[] = [
   },
 ];
 
-export type SocialLink = Omit<SocialPlatform, 'settingsKey'> & { href: string };
+/**
+ * A platform whose profile URL is set in Site Settings. `settingsKey` is kept
+ * so a caller can pick out one platform without matching on display text.
+ */
+export type SocialLink = SocialPlatform & { href: string };
 
 /**
  * The org's social profiles that have a URL set in Site Settings, in display
@@ -44,8 +48,18 @@ export type SocialLink = Omit<SocialPlatform, 'settingsKey'> & { href: string };
 export async function getSocialLinks(): Promise<SocialLink[]> {
   const settings = await reader.singletons.siteSettings.read();
 
-  return platforms.flatMap(({ settingsKey, ...platform }) => {
-    const href = settings?.[settingsKey]?.trim();
+  return platforms.flatMap((platform) => {
+    const href = settings?.[platform.settingsKey]?.trim();
     return href ? [{ ...platform, href }] : [];
   });
+}
+
+/**
+ * One social profile, or undefined when it is blank in Site Settings so callers
+ * can drop a platform-specific link instead of rendering an empty href.
+ */
+export async function getSocialLink(
+  settingsKey: SocialPlatform['settingsKey'],
+): Promise<SocialLink | undefined> {
+  return (await getSocialLinks()).find((link) => link.settingsKey === settingsKey);
 }
