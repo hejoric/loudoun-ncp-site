@@ -1,6 +1,7 @@
 ---
 import Nav from '@/components/Nav.astro';
 import Footer from '@/components/Footer.astro';
+import { socialLinks } from '@/lib/social';
 import '@/styles/global.css';
 
 interface Props {
@@ -80,10 +81,7 @@ const fullTitle = title === 'Home'
         "addressRegion": "VA",
         "addressCountry": "US"
       },
-      "sameAs": [
-        "https://www.instagram.com/loudounncp",
-        "https://www.linkedin.com/company/loudounncp"
-      ]
+      "sameAs": socialLinks.map((link) => link.href)
     })} />
   </head>
   <body class="flex flex-col min-h-screen">
