@@ -73,8 +73,20 @@ const schools = affiliationLabel(affiliations);
         <!-- School / college logo badges (bottom-right) -->
         <AffiliationBadges affiliations={affiliations} />
       </div>
-      <!-- Name + role -->
-      <div class="p-3 text-center" style={`background:${accentColor};`}>
+      {/* Name + role. The band keeps a constant height so the photo/band seam
+          lands at the same place on every card in a row: the headshot above is
+          flex-1, so a card with two school lines would otherwise push its seam
+          ~30px higher than a card with none. 5.75rem is the tallest band in
+          today's rows (name + one-line role + two school lines) plus a hair, and
+          it also absorbs a role that wraps to two lines. Content is centered
+          rather than top-aligned so a card with no school lines reads as a
+          roomier band instead of an empty gap under the role. A third school
+          line (the cap) grows the band instead of being clipped - reserving for
+          it would cost every card 11px of headshot for a case no member has. */}
+      <div
+        class="p-3 text-center flex flex-col justify-center min-h-[5.75rem]"
+        style={`background:${accentColor};`}
+      >
         <p class="font-display font-bold text-white text-sm leading-tight">{name}</p>
         <p class="text-white/80 text-xs mt-0.5">{role}</p>
         <AffiliationNames affiliations={affiliations} />

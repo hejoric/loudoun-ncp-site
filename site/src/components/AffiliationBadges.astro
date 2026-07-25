@@ -39,9 +39,12 @@ const shown = affiliations
               School logos are often wordmarks whose text runs to the edge of
               the image, and letting them fill the full box clips the first and
               last letter against the circle. */}
+          {/* Decorative: the card text already names the school, so the badge
+              is hidden from assistive tech. alt="" rather than a description,
+              because aria-hidden wins and any alt string here is dead code. */}
           <img
             src={a.logo}
-            alt={`${a.name} logo`}
+            alt=""
             class="w-[71%] h-[71%] object-contain"
             loading="lazy"
             decoding="async"
