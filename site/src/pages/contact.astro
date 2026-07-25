@@ -1,11 +1,29 @@
 ---
 import Base from '@/layouts/Base.astro';
 import SocialLinks from '@/components/SocialLinks.astro';
+import { ORG_EMAIL, ORG_ID, SITE_URL } from '@/lib/seo';
+
+const contactPageJsonLd = {
+  '@type': 'ContactPage',
+  '@id': `${SITE_URL}/contact/#contactpage`,
+  name: 'Contact Loudoun Nature Conservation Project',
+  about: { '@id': ORG_ID },
+  mainEntity: {
+    '@type': 'ContactPoint',
+    '@id': `${SITE_URL}/#contactpoint`,
+    email: ORG_EMAIL,
+    contactType: 'General, partnerships, and press inquiries',
+    areaServed: 'US-VA',
+    availableLanguage: 'English',
+  },
+};
 ---
 
 <Base
   title="Contact"
   description="Contact Loudoun Nature Conservation Project - reach out about volunteering, partnerships, press inquiries, or general questions."
+  breadcrumb={[['Home', '/'], ['Contact', '/contact/']]}
+  jsonLd={contactPageJsonLd}
 >
   <div class="bg-paper border-b hairline py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto text-center">

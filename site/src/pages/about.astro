@@ -1,6 +1,7 @@
 ---
 import Base from '@/layouts/Base.astro';
 import reader from '@/lib/reader';
+import { ORG_ID, SITE_URL } from '@/lib/seo';
 
 const about = await reader.singletons.about.read();
 const home = await reader.singletons.home.read();
@@ -38,11 +39,21 @@ const whatWeDo = about?.whatWeDo?.length
     ];
 
 const pressLinks = home?.pressLinks ?? [];
+
+const aboutPageJsonLd = {
+  '@type': 'AboutPage',
+  '@id': `${SITE_URL}/about/#aboutpage`,
+  name: 'About Loudoun Nature Conservation Project',
+  mainEntity: { '@id': ORG_ID },
+};
 ---
 
 <Base
   title="About"
-  description="Learn about Loudoun Nature Conservation Project - our mission, what we do, our impact, and the history of this student-led 501(c)(3) nonprofit in Loudoun County, Virginia."
+  description={about?.metaDescription ??
+    'Our mission, programs, impact, and history as a student-led 501(c)(3) environmental nonprofit in Loudoun County, Virginia.'}
+  breadcrumb={[['Home', '/'], ['About', '/about/']]}
+  jsonLd={aboutPageJsonLd}
 >
   <!-- Page header -->
   <div class="bg-paper border-b hairline py-16 sm:py-20 px-4 sm:px-6 lg:px-8">

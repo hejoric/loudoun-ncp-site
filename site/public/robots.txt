@@ -3,4 +3,8 @@
 User-agent: *
 Allow: /
 
+# Structured summaries for LLM crawlers (llmstxt.org):
+#   /llms.txt      - site map, publications, leadership, key facts
+#   /llms-full.txt - the above plus the full abstract of every publication
+
 Sitemap: https://loudounnatureconservation.org/sitemap-index.xml

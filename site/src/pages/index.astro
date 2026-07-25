@@ -137,22 +137,14 @@ const stats = [
   { value: home?.statsPartners?.toLocaleString() ?? '17', label: 'Partner Parks & Schools' },
 ];
 
-const orgJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: 'Loudoun Nature Conservation Project',
-  url: 'https://loudounnatureconservation.org',
-  logo: 'https://loudounnatureconservation.org/assets/lncp-logo.png',
-  foundingDate: '2024',
-  description: 'A student-led 501(c)(3) nonprofit advancing sustainability and ecological health across Loudoun County, Virginia.',
-  email: 'directors@loudounnatureconservation.org',
-};
+// No Organization node here: Base emits the canonical one (with a stable @id)
+// on every page. A second, differently-worded copy would read as a rival entity.
 ---
 
 <Base
   title="Home"
-  description="Loudoun Nature Conservation Project - A student-led 501(c)(3) nonprofit empowering youth, restoring nature, and fostering community through environmental stewardship in Loudoun County, Virginia."
-  jsonLd={orgJsonLd}
+  description="A student-led 501(c)(3) nonprofit empowering youth to restore nature through cleanups, habitat restoration, and research in Loudoun County, Virginia."
+  preloadImage="/assets/hero-poster.jpg"
 >
   <!-- Announcement: back for the new school year -->
   <a
@@ -223,7 +215,7 @@ const orgJsonLd = {
           {ryan.entry.headshot && (
             <img
               src={ryan.entry.headshot}
-              alt={ryan.entry.name}
+              alt={`${ryan.entry.name}, ${ryan.entry.role}`}
               width="44"
               height="44"
               class="w-11 h-11 rounded-full object-cover"

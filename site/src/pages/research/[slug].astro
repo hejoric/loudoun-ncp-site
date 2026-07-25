@@ -1,6 +1,7 @@
 ---
 import Base from '@/layouts/Base.astro';
 import reader from '@/lib/reader';
+import { ORG_ID, SITE_URL, absoluteUrl, truncate } from '@/lib/seo';
 
 export async function getStaticPaths() {
   const pubs = await reader.collections.publications.all();
@@ -17,30 +18,58 @@ const displayDate = pub.date
   : '';
 const pdfHref = pub.pdfFile ?? pub.pdfLink;
 
-const personJsonLd = pub.authors.map((author) => ({
-  '@context': 'https://schema.org',
+const canonical = `${SITE_URL}/research/${slug}/`;
+
+// Authors get stable @ids so the article's author list and the standalone
+// Person nodes resolve to the same entities instead of duplicating them.
+const authorRefs = pub.authors.map((name) => ({
+  '@id': `${canonical}#author-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`,
+}));
+
+const personJsonLd = pub.authors.map((name, i) => ({
   '@type': 'Person',
-  name: author,
+  '@id': authorRefs[i]['@id'],
+  name,
+  affiliation: { '@id': ORG_ID },
 }));
 
 const articleJsonLd = {
-  '@context': 'https://schema.org',
   '@type': 'ScholarlyArticle',
-  headline: pub.title,
-  author: pub.authors.map((name) => ({ '@type': 'Person', name })),
-  datePublished: pub.date ?? undefined,
+  '@id': `${canonical}#article`,
+  headline: truncate(pub.title, 110),
+  name: pub.title,
+  // Canonical HTML page, not the PDF - the PDF is an associated encoding.
+  url: canonical,
+  mainEntityOfPage: { '@id': `${canonical}#webpage` },
+  author: authorRefs,
+  ...(pub.date ? { datePublished: pub.date, dateModified: pub.date } : {}),
   description: pub.abstract,
-  publisher: {
-    '@type': 'Organization',
-    name: 'Loudoun Nature Conservation Project',
-  },
-  ...(pdfHref ? { url: pdfHref } : {}),
+  abstract: pub.abstract,
+  publisher: { '@id': ORG_ID },
+  sourceOrganization: { '@id': ORG_ID },
+  inLanguage: 'en-US',
+  isAccessibleForFree: true,
+  learningResourceType: 'Research paper',
+  ...(pdfHref
+    ? {
+        associatedMedia: {
+          '@type': 'MediaObject',
+          contentUrl: absoluteUrl(pdfHref),
+          encodingFormat: 'application/pdf',
+        },
+      }
+    : {}),
 };
 ---
 
 <Base
   title={pub.title}
-  description={pub.abstract.slice(0, 200)}
+  titleSuffix="LNCP"
+  description={pub.seoDescription?.trim() || pub.abstract}
+  canonicalUrl={canonical}
+  ogType="article"
+  publishedTime={pub.date ?? undefined}
+  breadcrumb={[['Home', '/'], ['Research', '/research/'], [truncate(pub.title, 60), `/research/${slug}/`]]}
   jsonLd={[articleJsonLd, ...personJsonLd]}
 >
   <!-- Header -->

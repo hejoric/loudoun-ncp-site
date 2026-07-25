@@ -129,6 +129,12 @@ export default config({
         ),
         date: fields.date({ label: 'Publication Date' }),
         abstract: fields.text({ label: 'Abstract', multiline: true }),
+        seoDescription: fields.text({
+          label:
+            'SEO meta description (optional, max ~160 chars) - falls back to the abstract. Set this when two papers share a similar abstract opening, so their search results stay distinct.',
+          multiline: true,
+          validation: { isRequired: false, length: { min: 0 } },
+        }),
         pdfFile: fields.file({
           label: 'PDF Upload',
           directory: 'public/research',
