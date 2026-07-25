@@ -175,10 +175,10 @@ note it cannot run on Cloudflare Pages.
 ```
 site/
   src/
-    components/     # Nav, Footer, FlipCard, BranchCard, PublicationCard, InitialsAvatar
+    components/     # Nav, Footer, SocialLinks, FlipCard, BranchCard, PublicationCard, InitialsAvatar
     content/        # YAML content files (Keystatic collections + singletons)
     layouts/        # Base.astro (HTML shell with meta/SEO)
-    lib/            # reader.ts (Keystatic build-time data access)
+    lib/            # reader.ts (Keystatic build-time data access), social.ts (social profile links)
     pages/          # One .astro file per route
     styles/         # global.css (Tailwind + custom theme tokens)
   public/
