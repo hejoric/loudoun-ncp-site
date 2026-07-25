@@ -1,5 +1,5 @@
 ---
-import { socialLinks } from '../lib/social';
+import { getSocialLinks } from '@/lib/social';
 
 interface Props {
   /** 'icon' renders icons only; 'labeled' renders icon + platform name. */
@@ -8,6 +8,8 @@ interface Props {
 }
 
 const { variant = 'icon', class: className = '' } = Astro.props;
+
+const links = await getSocialLinks();
 
 const iconSize = variant === 'icon' ? 'w-5 h-5' : 'w-4 h-4';
 const linkClass =
@@ -22,21 +24,23 @@ const listClass =
     : 'flex flex-col items-start gap-2';
 ---
 
-<div class:list={[listClass, className]}>
-  {
-    socialLinks.map((link) => (
-      <a
-        href={link.href}
-        class={linkClass}
-        aria-label={variant === 'icon' ? link.label : undefined}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <svg class={iconSize} fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path d={link.path} fill-rule={link.fillRule} clip-rule={link.fillRule} />
-        </svg>
-        {variant === 'labeled' && link.label}
-      </a>
-    ))
-  }
-</div>
+{
+  links.length > 0 && (
+    <div class:list={[listClass, className]}>
+      {links.map((link) => (
+        <a
+          href={link.href}
+          class={linkClass}
+          aria-label={variant === 'icon' ? link.label : undefined}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <svg class={iconSize} fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path d={link.path} fill-rule={link.fillRule} clip-rule={link.fillRule} />
+          </svg>
+          {variant === 'labeled' && link.label}
+        </a>
+      ))}
+    </div>
+  )
+}
