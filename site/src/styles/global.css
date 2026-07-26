@@ -6,7 +6,12 @@
   --color-paper-2: #EFEBE1;
   --color-ink: #17281F;
   --color-ink-soft: #4B5D50;
-  --color-clay: #B4633A;
+  /* Darkened from #B4633A, which was 3.99:1 on paper - below the 4.5:1 AA floor
+     for normal text. Clay is used almost everywhere at text-xs (section
+     eyebrows, dates, timeline years), so it is normal text, not large. #9C522C
+     clears AA on all three backgrounds it lands on: 5.22 on paper, 4.82 on
+     paper-2, 5.74 on white. */
+  --color-clay: #9C522C;
 
   /* Brand greens */
   --color-forest-950: #0d2118;
@@ -85,29 +90,20 @@ h1, h2, h3, h4, h5, h6 {
   height: 100%;
   transform-style: preserve-3d;
   transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: var(--flip-transform, none);
 }
 
-.card-flip:hover .card-flip-inner,
-.card-flip.is-flipped .card-flip-inner {
-  transform: rotateY(180deg);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .card-flip-inner {
-    transition: none;
-  }
-  .card-flip:hover .card-flip-inner,
-  .card-flip.is-flipped .card-flip-inner {
-    transform: none;
-  }
-  .card-flip:hover .card-flip-front,
-  .card-flip.is-flipped .card-flip-front {
-    display: none;
-  }
-  .card-flip:hover .card-flip-back,
-  .card-flip.is-flipped .card-flip-back {
-    display: flex;
-  }
+/* Which side a card shows, decided in one place. A card turns to its back when
+   the pointer hovers it (a desktop affordance cards can opt out of with
+   .card-flip-no-hover) or when a click/tap/keypress pinned it there.
+   [data-flip] always beats :hover, in both directions, so an explicit toggle
+   can never look like it did nothing - which is what happens if you flip a
+   class underneath a hovered card and the hover keeps it turned. */
+.card-flip[data-flip='back'],
+.card-flip:not([data-flip]):not(.card-flip-no-hover):hover {
+  --flip-transform: rotateY(180deg);
+  --flip-front-display: none;
+  --flip-back-display: flex;
 }
 
 .card-flip-front,
@@ -122,6 +118,24 @@ h1, h2, h3, h4, h5, h6 {
 
 .card-flip-back {
   transform: rotateY(180deg);
+}
+
+/* Must stay after the face rules above so these overrides win. */
+@media (prefers-reduced-motion: reduce) {
+  /* Swap the two faces instead of rotating. The back's own 180deg rotation has
+     to go with it, otherwise backface-visibility hides the side we just
+     switched to and the card reads as blank. */
+  .card-flip-inner {
+    transition: none;
+    transform: none;
+  }
+  .card-flip-front {
+    display: var(--flip-front-display, flex);
+  }
+  .card-flip-back {
+    transform: none;
+    display: var(--flip-back-display, none);
+  }
 }
 
 /* Team showcase marquee (home page) */
@@ -261,8 +275,12 @@ details > summary::-webkit-details-marker {
   display: none;
 }
 
-/* Focus visible ring */
+/* Focus visible ring.
+   forest-600 (#52b788) was 2.25:1 against paper - under the 3:1 WCAG floor for
+   a non-text UI indicator, which made the keyboard focus ring genuinely hard to
+   locate on the light background it almost always sits on. forest-800 is 5.81:1
+   and still reads as the brand green rather than a browser default. */
 :focus-visible {
-  outline: 3px solid var(--color-forest-600);
+  outline: 3px solid var(--color-forest-800);
   outline-offset: 2px;
 }

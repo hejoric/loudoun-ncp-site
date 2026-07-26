@@ -471,14 +471,23 @@ const orgJsonLd = {
            flipped) and while the visitor is browsing; the arrow buttons jump a
            few members at a time, and native touch/trackpad swiping works too.
            Under prefers-reduced-motion the auto-scroll never starts - the arrows
-           and swiping still do. Behaviour lives in the script below. -->
+           and swiping still do. Behaviour lives in the script below.
+
+           The duplicate copy is hidden from assistive tech and dropped from the
+           tab order, but it must stay clickable: for most of the loop the strip
+           on screen is largely made of duplicate cards, so making that copy
+           inert (as it once was) left the visible cards dead to hover and
+           clicks until the drift wrapped around. Cards flip in pairs by
+           data-flip-key, so the copies never disagree. -->
       <div class="marquee group" data-marquee>
         <div class="marquee-viewport" data-marquee-viewport>
           <div class="marquee-track flex w-max" data-marquee-track>
             {[0, 1].map((copy) =>
               showcaseMembers.map((member) => (
-                <div class="marquee-item w-52 sm:w-60 shrink-0" aria-hidden={copy === 1 ? 'true' : undefined} inert={copy === 1 ? true : undefined}>
+                <div class="marquee-item w-52 sm:w-60 shrink-0" aria-hidden={copy === 1 ? 'true' : undefined}>
                   <FlipCard
+                    hoverFlip={false}
+                    focusable={copy === 0}
                     name={member.name}
                     role={member.role}
                     bio={member.bio}
@@ -653,10 +662,9 @@ const orgJsonLd = {
       else if (viewport.scrollLeft < 0) viewport.scrollLeft += w;
     };
 
-    // Whenever a scroll (arrow jump, wheel, touch swipe) settles outside the
-    // first, interactive copy of the roster, snap it back in. The second copy
-    // is aria-hidden + inert for accessibility, so if the view were left
-    // resting there, its cards couldn't be hovered/clicked to flip.
+    // Whenever a scroll (arrow jump, wheel, touch swipe) settles past the end of
+    // the first copy of the roster, subtract a copy width to bring it back.
+    // Invisible, since the copies are identical and flip in lockstep.
     if ('onscrollend' in window) {
       viewport.addEventListener('scrollend', wrap);
     } else {
@@ -684,7 +692,17 @@ const orgJsonLd = {
     };
 
     marquee.addEventListener('pointerenter', () => (pointerOver = true));
-    marquee.addEventListener('pointerleave', () => (pointerOver = false));
+    marquee.addEventListener('pointerleave', (e) => {
+      pointerOver = false;
+      // A mouse user who has wandered off is done reading: turn any card they
+      // opened back to its portrait so the drifting strip returns to its calm
+      // default. Touch taps are left alone - there is no "moving away" there.
+      if (e.pointerType !== 'mouse') return;
+      track.querySelectorAll<HTMLElement>('[data-card-flip][data-flip]').forEach((card) => {
+        delete card.dataset.flip;
+        card.setAttribute('aria-pressed', 'false');
+      });
+    });
     // Scoped to the card track, not the whole marquee: clicking a nav button
     // leaves it focused indefinitely (browsers don't auto-blur it), and if
     // that counted here it would pause auto-scroll forever after a single
