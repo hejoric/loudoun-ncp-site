@@ -23,3 +23,6 @@ site/.env
 # OS
 .DS_Store
 Thumbs.db
+
+# Claude Code local state and worktrees
+.claude/

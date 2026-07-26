@@ -25,3 +25,7 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Vercel CLI local state (.env.local holds an OIDC token - never commit)
+.vercel
+.env*.local
