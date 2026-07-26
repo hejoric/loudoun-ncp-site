@@ -1,0 +1,24 @@
+---
+import type { Affiliation } from '@/lib/affiliations';
+
+interface Props {
+  affiliations: readonly Affiliation[];
+}
+
+const { affiliations } = Astro.props;
+
+// Same cap as the logo badges (AffiliationBadges): three lines still fit the
+// card, and anything beyond that would squash the headshot above. The full list
+// stays in the card's screen-reader summary.
+const shown = affiliations.slice(0, 3);
+---
+
+{/* One school per line: joining two full school names into a single sentence
+    wraps mid-name and leaves an orphaned word on a card this narrow. */}
+{shown.length > 0 && (
+  <div class="mt-0.5">
+    {shown.map((a) => (
+      <p class="text-white/60 text-[11px] leading-tight">{a.name}</p>
+    ))}
+  </div>
+)}
