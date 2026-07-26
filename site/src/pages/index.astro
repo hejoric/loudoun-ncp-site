@@ -653,16 +653,46 @@ const orgJsonLd = {
       else if (viewport.scrollLeft < 0) viewport.scrollLeft += w;
     };
 
-    let hovering = false;
+    // Whenever a scroll (arrow jump, wheel, touch swipe) settles outside the
+    // first, interactive copy of the roster, snap it back in. The second copy
+    // is aria-hidden + inert for accessibility, so if the view were left
+    // resting there, its cards couldn't be hovered/clicked to flip.
+    if ('onscrollend' in window) {
+      viewport.addEventListener('scrollend', wrap);
+    } else {
+      let wrapTimer: ReturnType<typeof setTimeout> | undefined;
+      viewport.addEventListener(
+        'scroll',
+        () => {
+          clearTimeout(wrapTimer);
+          wrapTimer = setTimeout(wrap, 150);
+        },
+        { passive: true }
+      );
+    }
+
+    // Tracked separately (rather than one shared `hovering` flag) because a
+    // click can leave keyboard focus on a nav button after the pointer moves
+    // away, or vice versa; combining them with OR means a mismatched pair can
+    // never wedge auto-scroll paused forever.
+    let pointerOver = false;
+    let focusWithin = false;
+    const isHovering = () => pointerOver || focusWithin;
     let resumeAt = 0;
     const holdFor = (ms: number) => {
       resumeAt = Math.max(resumeAt, performance.now() + ms);
     };
 
-    marquee.addEventListener('pointerenter', () => (hovering = true));
-    marquee.addEventListener('pointerleave', () => (hovering = false));
-    marquee.addEventListener('focusin', () => (hovering = true));
-    marquee.addEventListener('focusout', () => (hovering = false));
+    marquee.addEventListener('pointerenter', () => (pointerOver = true));
+    marquee.addEventListener('pointerleave', () => (pointerOver = false));
+    // Scoped to the card track, not the whole marquee: clicking a nav button
+    // leaves it focused indefinitely (browsers don't auto-blur it), and if
+    // that counted here it would pause auto-scroll forever after a single
+    // arrow click. Focus on an actual card still pauses, so keyboard users
+    // get time to read/flip it; the buttons rely on holdFor()'s short grace
+    // window instead.
+    track.addEventListener('focusin', () => (focusWithin = true));
+    track.addEventListener('focusout', () => (focusWithin = false));
     viewport.addEventListener('wheel', () => holdFor(2500), { passive: true });
     viewport.addEventListener('touchstart', () => holdFor(4000), { passive: true });
     viewport.addEventListener('touchmove', () => holdFor(4000), { passive: true });
@@ -676,7 +706,7 @@ const orgJsonLd = {
     let pos = viewport.scrollLeft;
     let active = false;
     const drift = () => {
-      const canMove = !reduced && !hovering && performance.now() >= resumeAt;
+      const canMove = !reduced && !isHovering() && performance.now() >= resumeAt;
       if (canMove) {
         if (!active) {
           pos = viewport.scrollLeft;
