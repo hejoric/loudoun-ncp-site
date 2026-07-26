@@ -71,8 +71,15 @@ manual steps - there's no bot doing this for you.
 | Contact info, social links | Site Settings | `src/content/singletons/settings/index.yaml` |
 
 Images go in `public/assets/` (team headshots in `public/assets/team/`,
-school logos in `public/assets/branches/`). Keystatic places uploaded images
-there automatically; you can also copy files in manually.
+school logos in `public/assets/branches/`, college logos in
+`public/assets/affiliations/`). Keystatic places uploaded images there
+automatically; you can also copy files in manually.
+
+A team member's card badges every school they are affiliated with. Their own
+school comes from the branch you set on them, so it needs no logo upload; add a
+second school (e.g. the college a senior was accepted to) under **Additional
+Affiliations** on their Team Members entry. See "Schools on a card" in the
+README for the field details.
 
 ---
 

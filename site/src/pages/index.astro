@@ -2,6 +2,7 @@
 import Base from '@/layouts/Base.astro';
 import FlipCard from '@/components/FlipCard.astro';
 import reader from '@/lib/reader';
+import { resolveAffiliations } from '@/lib/affiliations';
 
 const home = await reader.singletons.home.read();
 const allTeam = await reader.collections.teamMembers.all();
@@ -9,10 +10,10 @@ const allBranches = await reader.collections.branches.all();
 const ryan = allTeam.find((m) => m.slug === 'ryan-nisay') ?? null;
 
 // Home showcase: a continuously scrolling strip of the people leading LNCP,
-// ordered executive -> directors -> branch presidents. Branch presidents show
-// their school badge (pulled from the branch record) in place of a college
-// affiliation. Members without a headshot (e.g. a tentative branch) are skipped
-// so the strip never shows an empty avatar.
+// ordered executive -> directors -> branch presidents. Each card badges every
+// school the member is affiliated with - their branch school plus any college
+// they have added. Members without a headshot (e.g. a tentative branch) are
+// skipped so the strip never shows an empty avatar.
 const inSection = (section: string) =>
   allTeam
     .filter((m) => m.entry.section === section)
@@ -25,10 +26,6 @@ const showcaseMembers = [
 ]
   .filter((m) => m.entry.headshot)
   .map((m) => {
-    const branch =
-      m.entry.section === 'branchPresidents' && m.entry.branch
-        ? allBranches.find((b) => b.slug === m.entry.branch) ?? null
-        : null;
     return {
       name: m.entry.name,
       role: m.entry.role,
@@ -40,11 +37,7 @@ const showcaseMembers = [
       instagram: m.entry.instagram ?? undefined,
       linkedin: m.entry.linkedin ?? undefined,
       website: m.entry.website ?? undefined,
-      affiliationLogo: m.entry.affiliationLogo ?? branch?.entry.schoolLogo ?? undefined,
-      affiliation: m.entry.affiliation ?? branch?.entry.school ?? branch?.entry.name ?? undefined,
-      // Branch presidents get their school name printed on the card - the logo
-      // badge alone does not tell visitors which school they represent.
-      affiliationLabel: branch ? branch.entry.school : undefined,
+      affiliations: resolveAffiliations(m, allBranches),
     };
   });
 
@@ -496,9 +489,7 @@ const orgJsonLd = {
                     instagram={member.instagram}
                     linkedin={member.linkedin}
                     website={member.website}
-                    affiliationLogo={member.affiliationLogo}
-                    affiliation={member.affiliation}
-                    affiliationLabel={member.affiliationLabel}
+                    affiliations={member.affiliations}
                     accentColor="#1B4332"
                   />
                 </div>
@@ -662,16 +653,46 @@ const orgJsonLd = {
       else if (viewport.scrollLeft < 0) viewport.scrollLeft += w;
     };
 
-    let hovering = false;
+    // Whenever a scroll (arrow jump, wheel, touch swipe) settles outside the
+    // first, interactive copy of the roster, snap it back in. The second copy
+    // is aria-hidden + inert for accessibility, so if the view were left
+    // resting there, its cards couldn't be hovered/clicked to flip.
+    if ('onscrollend' in window) {
+      viewport.addEventListener('scrollend', wrap);
+    } else {
+      let wrapTimer: ReturnType<typeof setTimeout> | undefined;
+      viewport.addEventListener(
+        'scroll',
+        () => {
+          clearTimeout(wrapTimer);
+          wrapTimer = setTimeout(wrap, 150);
+        },
+        { passive: true }
+      );
+    }
+
+    // Tracked separately (rather than one shared `hovering` flag) because a
+    // click can leave keyboard focus on a nav button after the pointer moves
+    // away, or vice versa; combining them with OR means a mismatched pair can
+    // never wedge auto-scroll paused forever.
+    let pointerOver = false;
+    let focusWithin = false;
+    const isHovering = () => pointerOver || focusWithin;
     let resumeAt = 0;
     const holdFor = (ms: number) => {
       resumeAt = Math.max(resumeAt, performance.now() + ms);
     };
 
-    marquee.addEventListener('pointerenter', () => (hovering = true));
-    marquee.addEventListener('pointerleave', () => (hovering = false));
-    marquee.addEventListener('focusin', () => (hovering = true));
-    marquee.addEventListener('focusout', () => (hovering = false));
+    marquee.addEventListener('pointerenter', () => (pointerOver = true));
+    marquee.addEventListener('pointerleave', () => (pointerOver = false));
+    // Scoped to the card track, not the whole marquee: clicking a nav button
+    // leaves it focused indefinitely (browsers don't auto-blur it), and if
+    // that counted here it would pause auto-scroll forever after a single
+    // arrow click. Focus on an actual card still pauses, so keyboard users
+    // get time to read/flip it; the buttons rely on holdFor()'s short grace
+    // window instead.
+    track.addEventListener('focusin', () => (focusWithin = true));
+    track.addEventListener('focusout', () => (focusWithin = false));
     viewport.addEventListener('wheel', () => holdFor(2500), { passive: true });
     viewport.addEventListener('touchstart', () => holdFor(4000), { passive: true });
     viewport.addEventListener('touchmove', () => holdFor(4000), { passive: true });
@@ -685,7 +706,7 @@ const orgJsonLd = {
     let pos = viewport.scrollLeft;
     let active = false;
     const drift = () => {
-      const canMove = !reduced && !hovering && performance.now() >= resumeAt;
+      const canMove = !reduced && !isHovering() && performance.now() >= resumeAt;
       if (canMove) {
         if (!active) {
           pos = viewport.scrollLeft;
