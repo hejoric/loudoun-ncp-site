@@ -134,7 +134,13 @@ const linkTabIndex = focusable ? undefined : -1;
       </div>
 
       <!-- Bio -->
-      <p class="text-xs text-gray-600 leading-relaxed flex-1 mt-3 overflow-y-auto">{bio || 'Bio coming soon.'}</p>
+      <!-- tabindex is set for the same reason the links below carry it. This
+           paragraph scrolls when the bio overflows, and Chromium adds a
+           scrollable element to the tab order on its own, with no tabindex
+           attribute involved - so dropping the duplicate copy's links out of
+           the sequence is not enough on its own. Without this, tabbing through
+           the home strip lands on seven bios inside the aria-hidden copy. -->
+      <p class="text-xs text-gray-600 leading-relaxed flex-1 mt-3 overflow-y-auto" tabindex={linkTabIndex}>{bio || 'Bio coming soon.'}</p>
 
       <!-- Social icons -->
       {(email || instagram || linkedin || website) && (
@@ -227,8 +233,20 @@ const linkTabIndex = focusable ? undefined : -1;
       });
     };
 
+    // Which pointer drove the current interaction. Blink applies :hover to a
+    // tapped element, so on a touchscreen an untouched card reads as hovered the
+    // instant it is tapped. Inferring the visible side from :hover then pins the
+    // side already showing and the first tap does nothing at all - two taps to
+    // open a bio. Only a real mouse gets to seed the state from :hover.
+    let pointerKind = 'mouse';
+    el.addEventListener('pointerdown', (e) => {
+      pointerKind = e.pointerType || 'mouse';
+    });
+
     const showingBack = () =>
-      el.dataset.flip ? el.dataset.flip === 'back' : hoverFlips && el.matches(':hover');
+      el.dataset.flip
+        ? el.dataset.flip === 'back'
+        : hoverFlips && pointerKind === 'mouse' && el.matches(':hover');
 
     const toggle = () => show(showingBack() ? 'front' : 'back');
 
@@ -245,6 +263,15 @@ const linkTabIndex = focusable ? undefined : -1;
     });
 
     el.addEventListener('keydown', (e) => {
+      // Escape closes an open card from anywhere inside it, including from a
+      // focused social link, and returns focus to the card. Without this a
+      // keyboard user who opens a bio has no way to dismiss it, which the
+      // aria-pressed control implies they should.
+      if (e.key === 'Escape' && showingBack()) {
+        show('front');
+        el.focus();
+        return;
+      }
       // Only keys typed on the card itself flip it. Enter on a focused social
       // link bubbles up here, and flipping would preventDefault() away the
       // link's own activation - the card would turn and the link never open.
