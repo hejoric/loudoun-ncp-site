@@ -120,4 +120,24 @@ Keep `astro.config.mjs`'s `site:` value and the canonical host in agreement -
 today both are the bare apex, and `www` redirects to it. If that ever flips,
 change both together or canonical tags will contradict the served URL.
 
-<!-- deploy path verified via git integration -->
+## The Root Directory trap
+
+This one has already broken production once, so it is worth stating plainly.
+
+The Vercel project's **Root Directory must be `site`**. If it is `.`, a
+git-triggered build runs from the repo root, finds no app, and publishes an
+empty deployment - every route 404s, including the homepage.
+
+What makes it nasty is that **CLI deploys hide it**. Running `npx vercel --prod`
+from inside `site/` makes that directory the upload root, so the CLI path keeps
+working perfectly while every git-triggered deploy is broken. The two paths
+disagree, and only one of them is what a `git push` actually uses.
+
+So: after any change to the project's build settings, verify with a **git-
+triggered** deploy, not a CLI one. Merge something small and curl the production
+alias. A CLI deploy proves nothing about the git path.
+
+```sh
+# check the current setting without opening the dashboard
+npx vercel project inspect loudoun-ncp | grep -i 'root directory'
+```
