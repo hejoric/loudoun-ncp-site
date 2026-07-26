@@ -119,3 +119,5 @@ deleted as part of the cutover, which is the whole reason it is safe.
 Keep `astro.config.mjs`'s `site:` value and the canonical host in agreement -
 today both are the bare apex, and `www` redirects to it. If that ever flips,
 change both together or canonical tags will contradict the served URL.
+
+<!-- deploy path verified via git integration -->
