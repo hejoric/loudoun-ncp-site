@@ -7,5 +7,8 @@ headshot: /assets/team/placeholder-female.svg
 email: ''
 instagram: ''
 linkedin: ''
+affiliations:
+  - name: Cornell University
+    logo: /assets/affiliations/chloe-loo/affiliations/0/logo.png
 featuredOnHome: false
 sortOrder: 2

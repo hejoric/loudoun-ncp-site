@@ -1,7 +1,7 @@
 name: Nawaf Shehzad
 role: Director of Expansion & Operations
 section: directors
-branch: ''
+branch: dominion
 bio: >-
   Recognizing the need for stronger student-led conservation efforts across
   Northern Virginia, Nawaf co-founded the NOVA Nature Conservation branch in
@@ -17,5 +17,8 @@ headshotPosition: center 24%
 email: ''
 instagram: ''
 linkedin: ''
+affiliations:
+  - name: Northern Virginia Community College
+    logo: /assets/affiliations/nawaf-shehzad/affiliations/0/logo.jpg
 featuredOnHome: true
 sortOrder: 2
