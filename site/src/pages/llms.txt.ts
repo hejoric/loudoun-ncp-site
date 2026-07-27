@@ -10,6 +10,7 @@
 import type { APIRoute } from 'astro';
 import reader from '@/lib/reader';
 import { ORG_EMAIL, SITE_URL } from '@/lib/seo';
+import { getSocialLinks } from '@/lib/social';
 
 const PAGES: Array<[string, string, string]> = [
   ['Home', '/', 'Mission, impact stats, awards, and recent press'],
@@ -42,6 +43,12 @@ export const GET: APIRoute = async () => {
 
   const members = await reader.collections.teamMembers.all();
   const branches = await reader.collections.branches.all();
+  // Same source the site links from, so a profile added or removed in Site
+  // Settings shows up here too instead of leaving a stale URL behind.
+  const socialLinks = await getSocialLinks();
+
+  const home = await reader.singletons.home.read();
+  const press = (home?.pressLinks ?? []).filter((p) => p.url && p.headline && p.publication);
 
   const leadership = members
     .filter((m) => m.entry.section === 'executive' || m.entry.section === 'directors')
@@ -118,14 +125,26 @@ export const GET: APIRoute = async () => {
   );
   lines.push('');
 
+  if (press.length > 0) {
+    lines.push('## Press coverage');
+    lines.push('');
+    lines.push('Third-party reporting on LNCP, for citation.');
+    lines.push('');
+    for (const p of press) {
+      lines.push(`- ${p.publication}: [${p.headline}](${p.url})`);
+    }
+    lines.push('');
+  }
+
   lines.push('## Facts');
   lines.push('- Type: 501(c)(3) nonprofit, student-led');
   lines.push('- Incorporated: April 2024, Commonwealth of Virginia');
   lines.push('- Founder: Ryan Nisay (co-founders Christian Shire and Carter Lepuil)');
   lines.push('- Location: Loudoun County, Virginia, USA');
   lines.push(`- Contact: ${ORG_EMAIL}`);
-  lines.push('- Instagram: https://www.instagram.com/loudounncp');
-  lines.push('- LinkedIn: https://www.linkedin.com/company/loudounncp');
+  for (const link of socialLinks) {
+    lines.push(`- ${link.label}: ${link.href}`);
+  }
   lines.push('');
 
   lines.push('## Optional');

@@ -55,15 +55,16 @@ function listDir(dir) {
   }
 }
 
-const LAYOUT_FILES = [
-  'src/layouts/Base.astro',
-  'src/components/Nav.astro',
-  'src/components/Footer.astro',
-];
-
 /**
- * Source files backing each route, plus crawl hints.
+ * Content files backing each route, plus crawl hints.
  * Research article entries are generated from the publications collection.
+ *
+ * Shared templates (`Base.astro`, `Nav`, `Footer`, `research/[slug].astro`) are
+ * deliberately excluded even though every page renders through them. Folding
+ * them in means one nav tweak restamps every URL on the same second - the same
+ * every-page-changed-every-deploy noise this file exists to avoid, just keyed to
+ * layout commits instead of build time. Google asks for the date the page's
+ * *content* last meaningfully changed, and a chrome edit is not that.
  */
 const ROUTES = {
   '/': {
@@ -122,7 +123,7 @@ const RESOLVED = new Map();
 
 for (const [route, meta] of Object.entries(ROUTES)) {
   RESOLVED.set(route, {
-    lastmod: newestOf([...meta.files, ...LAYOUT_FILES]),
+    lastmod: newestOf(meta.files),
     changefreq: meta.changefreq,
     priority: meta.priority,
   });
@@ -132,7 +133,7 @@ for (const [route, meta] of Object.entries(ROUTES)) {
 for (const file of listDir('src/content/publications')) {
   const slug = file.split('/').pop().replace(/\.yaml$/, '');
   RESOLVED.set(`/research/${slug}/`, {
-    lastmod: newestOf([file, 'src/pages/research/[slug].astro', ...LAYOUT_FILES]),
+    lastmod: newestOf([file]),
     changefreq: 'yearly',
     priority: 0.7,
   });
