@@ -19,6 +19,17 @@ export const ORG_LOGO = `${SITE_URL}/assets/lncp-logo.png`;
 export const ORG_ID = `${SITE_URL}/#organization`;
 export const WEBSITE_ID = `${SITE_URL}/#website`;
 
+/**
+ * The founder's node lives on /team/, where the full Person is built from the
+ * team collection. Everywhere else the organization references it by `@id`.
+ * That reference carries the name as well, because a bare `{'@id': ...}` is
+ * only resolvable by a crawler that also fetched /team/ - and an LLM reading
+ * one page in isolation would see an opaque identifier where the founder's
+ * name should be. The full node on /team/ merges with this stub by `@id`.
+ */
+export const FOUNDER_ID = `${SITE_URL}/team/#ryan-nisay`;
+export const FOUNDER_NAME = 'Ryan Nisay';
+
 /** Resolve a site-relative path to an absolute URL. */
 export function absoluteUrl(path: string): string {
   if (/^https?:\/\//.test(path)) return path;
@@ -67,7 +78,7 @@ export function organizationNode({ sameAs = [] }: { sameAs?: string[] } = {}) {
       'A student-led 501(c)(3) nonprofit advancing sustainability and ecological health across Loudoun County, Virginia, through cleanups, habitat restoration, and student research.',
     email: ORG_EMAIL,
     foundingDate: '2024-04',
-    founder: { '@id': `${SITE_URL}/team/#ryan-nisay` },
+    founder: { '@type': 'Person', '@id': FOUNDER_ID, name: FOUNDER_NAME },
     nonprofitStatus: 'Nonprofit501c3',
     award:
       'Recognized in the United States Congressional Record by Representative Suhas Subramanyam (Virginia 10th District)',

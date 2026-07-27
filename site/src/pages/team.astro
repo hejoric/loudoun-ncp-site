@@ -4,7 +4,7 @@ import FlipCard from '@/components/FlipCard.astro';
 import BranchCard from '@/components/BranchCard.astro';
 import reader from '@/lib/reader';
 import { resolveAffiliations } from '@/lib/affiliations';
-import { ORG_ID, SITE_URL, absoluteUrl, truncate } from '@/lib/seo';
+import { FOUNDER_ID, ORG_ID, SITE_URL, absoluteUrl, truncate } from '@/lib/seo';
 
 const allMembers = await reader.collections.teamMembers.all();
 const allBranches = await reader.collections.branches.all();
@@ -33,12 +33,23 @@ const FOUNDER_AWARDS = [
   '2025 Youth Leader, Faith Alliance for Climate Solutions Sustainability Champions Awards',
 ];
 
+/** Slug-based and stable across builds, so other pages can reference a member. */
+const personId = (slug: string) => `${SITE_URL}/team/#${slug}`;
+
+// Every other page's Organization node points `founder` at FOUNDER_ID, and only
+// this page defines that Person. If the founder's slug is ever renamed, the
+// reference would silently dangle sitewide, so fail the build instead.
+if (!allMembers.some((m) => personId(m.slug) === FOUNDER_ID)) {
+  throw new Error(
+    `No team member matches FOUNDER_ID (${FOUNDER_ID}). Update FOUNDER_ID in src/lib/seo.ts to the founder's current slug, or every page will reference a Person that nothing defines.`,
+  );
+}
+
 const personJsonLd = allMembers.map((m) => {
   const sameAs = [m.entry.linkedin, m.entry.instagram, m.entry.website].filter(Boolean);
   return {
     '@type': 'Person',
-    // Slug-based @id: stable across builds and referenceable from other pages.
-    '@id': `${SITE_URL}/team/#${m.slug}`,
+    '@id': personId(m.slug),
     name: m.entry.name,
     url: `${SITE_URL}/team/`,
     jobTitle: m.entry.role,
@@ -55,7 +66,7 @@ const personJsonLd = allMembers.map((m) => {
     ...(m.entry.headshot ? { image: absoluteUrl(m.entry.headshot) } : {}),
     ...(m.entry.email ? { email: m.entry.email } : {}),
     ...(sameAs.length ? { sameAs } : {}),
-    ...(m.slug === 'ryan-nisay' ? { award: FOUNDER_AWARDS } : {}),
+    ...(personId(m.slug) === FOUNDER_ID ? { award: FOUNDER_AWARDS } : {}),
   };
 });
 
