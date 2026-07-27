@@ -17,14 +17,14 @@ function initials(name: string) {
     .slice(0, 3);
 }
 
-// A branch school always gets a badge - we fall back to its initials when the
-// branch record has no logo yet. A member's own affiliation needs a logo to earn
-// one; until then it is carried by the school name printed under the card.
-const shown = affiliations
-  .filter((a) => a.logo || a.source === 'branch')
-  // High school + college is the common case and three still fits the card;
-  // anything beyond that stays in the text label only.
-  .slice(0, 3);
+// Every school gets a badge, falling back to its initials when there is no logo
+// yet. A member affiliation without a logo used to be left to the school name
+// printed under the card; that text is gone now, so skipping it here would hide
+// the school outright instead of just showing it plainly.
+//
+// High school + college is the common case and three still fits the card;
+// anything beyond that lives in the card's screen-reader summary only.
+const shown = affiliations.slice(0, 3);
 ---
 
 {shown.length > 0 && (

@@ -1,7 +1,6 @@
 ---
 import InitialsAvatar from './InitialsAvatar.astro';
 import AffiliationBadges from './AffiliationBadges.astro';
-import AffiliationNames from './AffiliationNames.astro';
 import { affiliationLabel, type Affiliation } from '@/lib/affiliations';
 
 interface Props {
@@ -88,21 +87,21 @@ const linkTabIndex = focusable ? undefined : -1;
       </div>
       {/* Name + role. The band keeps a constant height so the photo/band seam
           lands at the same place on every card in a row: the headshot above is
-          flex-1, so a card with two school lines would otherwise push its seam
-          ~30px higher than a card with none. 5.75rem is the tallest band in
-          today's rows (name + one-line role + two school lines) plus a hair, and
-          it also absorbs a role that wraps to two lines. Content is centered
-          rather than top-aligned so a card with no school lines reads as a
-          roomier band instead of an empty gap under the role. A third school
-          line (the cap) grows the band instead of being clipped - reserving for
-          it would cost every card 11px of headshot for a case no member has. */}
+          flex-1, so a card whose role wraps to two lines would otherwise push
+          its seam higher than a card whose role fits on one. Measured: the
+          longest role we have ("Director of External Relations &
+          Communications") wraps to two lines and needs 73.5px, versus 71px for a
+          one-line role - so 4.75rem (76px) clears the tallest band with a little
+          slack. Content is centered rather than top-aligned so a card with a
+          one-line role reads as a roomier band instead of an empty gap
+          underneath. School names used to print here too; they are logo badges
+          on the photo only now, which is why this is smaller than it was. */}
       <div
-        class="p-3 text-center flex flex-col justify-center min-h-[5.75rem]"
+        class="p-3 text-center flex flex-col justify-center min-h-[4.75rem]"
         style={`background:${accentColor};`}
       >
         <p class="font-display font-bold text-white text-sm leading-tight">{name}</p>
         <p class="text-white/80 text-xs mt-0.5">{role}</p>
-        <AffiliationNames affiliations={affiliations} />
       </div>
     </div>
 

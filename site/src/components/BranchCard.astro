@@ -1,7 +1,6 @@
 ---
 import InitialsAvatar from './InitialsAvatar.astro';
 import AffiliationBadges from './AffiliationBadges.astro';
-import AffiliationNames from './AffiliationNames.astro';
 import { affiliationLabel, type Affiliation } from '@/lib/affiliations';
 
 interface Props {
@@ -31,11 +30,11 @@ const {
 
 const MAROON = '#1B4332';
 
-// The branch school is already the eyebrow above the president's name, so only
-// the schools it does not cover (e.g. the college they were accepted to) get
-// named under it.
-const otherAffiliations = affiliations.filter((a) => a.source !== 'branch');
-const otherSchools = affiliationLabel(otherAffiliations);
+// Schools are shown as logo badges on the photo, not as text on the card. The
+// branch school is already the eyebrow above the president's name, so the
+// screen-reader summary at the bottom only needs to add the ones it does not
+// cover (e.g. the college they were accepted to).
+const otherSchools = affiliationLabel(affiliations.filter((a) => a.source !== 'branch'));
 ---
 
 <!-- Flip behaviour (click, tap, Enter/Space, and keeping the social links on the
@@ -78,7 +77,6 @@ const otherSchools = affiliationLabel(otherAffiliations);
       <div class="px-3 py-2 text-center" style="background:#1B4332;">
         <p class="text-white/70 text-xs uppercase tracking-wide">{branchName}</p>
         <p class="font-display font-bold text-white text-sm leading-tight">{presidentName}</p>
-        <AffiliationNames affiliations={otherAffiliations} />
       </div>
     </div>
 

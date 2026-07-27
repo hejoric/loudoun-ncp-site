@@ -54,8 +54,11 @@ const socialUrls = (await getSocialLinks()).map((link) => link.href);
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={`${siteUrl}${ogImage}`} />
 
-    <!-- Favicon -->
-    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <!-- Favicon. Every file here is generated from public/assets/lncp-logo.png by
+         `npm run icons` (scripts/generate-icons.mjs) - regenerate rather than
+         editing one by hand, or they drift out of sync with the logo again. -->
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48x48.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />

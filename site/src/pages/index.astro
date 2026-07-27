@@ -536,8 +536,12 @@ const orgJsonLd = {
         News on Loudoun Nature Conservation Project
       </h2>
       <div class="flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
+        {/* Fallback mirrors src/content/singletons/home.yaml so the strip renders
+            before an editor fills the singleton in. Keep the two in sync - this
+            list had already drifted (missing WUSA9, stale WTOP headline). */}
         {(home?.pressLinks ?? [
-          { publication: 'WTOP', headline: 'Still in high school, Loudoun County students look to clean up the environment for future generations', url: 'https://wtop.com/loudoun-county/2024/11/still-in-high-school-loudon-county-students-look-to-clean-up-the-environment-for-future-generations/' },
+          { publication: 'WUSA9', headline: 'These local students are cleaning up parks in Northern Virginia', url: 'https://www.wusa9.com/video/tech/science/environment/these-local-students-are-cleaning-up-parks-in-northern-virginia/65-71e16312-f011-4edf-a3b5-fb93d8432e6e' },
+          { publication: 'WTOP', headline: "Friends say it was a 'ridiculous idea.' That didn't stop these students from trying to make Loudoun Co. cleaner and greener", url: 'https://wtop.com/loudoun-county/2024/11/still-in-high-school-loudon-county-students-look-to-clean-up-the-environment-for-future-generations/' },
           { publication: 'Loudoun Now', headline: 'Sterling teens create conservation nonprofit, offer weekly park cleanups', url: 'https://www.loudounnow.com/giving_back/sterling-teens-create-conservation-nonprofit-offer-weekly-park-cleanups/article_f54fbbc6-777a-11ef-a63e-a7c6205f9ce0.html' },
           { publication: 'InsideNOVA', headline: 'Loudoun high school students are trying to clean up the environment for future generations', url: 'https://www.insidenova.com/headlines/loudoun-high-school-students-are-trying-to-clean-up-the-environment-for-future-generations/article_c7e18406-a369-11ef-a330-23b6f26e801e.html' },
           { publication: 'U.S. Congressional Record', headline: 'Recognizing the Loudoun Nature Conservation Project', url: 'https://www.congress.gov/congressional-record/volume-172/issue-115/extensions-of-remarks-section/article/E694-2' },

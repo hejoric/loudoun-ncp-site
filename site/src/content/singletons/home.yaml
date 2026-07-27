@@ -1,6 +1,6 @@
 heroHeadline: Youth unite for Earth; inspire change piece by piece
 heroSubtext: >-
-  Made by Students, for Students. Young hearts, green minds, hands-on action —
+  Made by Students, for Students. Young hearts, green minds, hands-on action -
   empowering youth, restoring nature, and fostering community through 501(c)(3)
   environmental stewardship in Loudoun County, Virginia.
 founderQuote: >-
@@ -54,18 +54,6 @@ spotlightItems:
       https://www.congress.gov/congressional-record/volume-172/issue-115/extensions-of-remarks-section/article/E694-2
     secondaryLinkText: View the record (PDF)
     secondaryLinkUrl: /assets/lncp-congressional-record.pdf
-  - label: In the community
-    title: A five-hour cleanup with Keep Loudoun Beautiful
-    body: >-
-      On April 12, LNCP collaborated with Keep Loudoun Beautiful to host a
-      large-scale cleanup in Leesburg, Virginia. Over five hours, our volunteers
-      worked relentlessly together to gather an astonishing amount of trash and
-      make a meaningful impact on our local environment. We thank everyone who
-      came out, and we hope it inspires more of you to join our everlasting
-      mission.
-    linkText: See the post on LinkedIn
-    linkUrl: >-
-      https://www.linkedin.com/posts/loudoun-nature-conservation-project_on-april-12-our-organization-was-able-to-activity-7451375612444868608-Qht7
   - label: 2025 Award
     title: Youth Leader, FACS Sustainability Champions Award
     body: >-
@@ -79,6 +67,39 @@ spotlightItems:
     linkText: Read the FACS event recap
     linkUrl: >-
       https://faithforclimate.org/celebrating-climate-champions-in-northern-virginia-and-rockingham-county-facs-2025-sustainability-champions-awards-photos-highlights/
+  - label: In the news
+    title: WTOP News profiles LNCP's founding students
+    body: >-
+      WTOP's Kate Ryan reported on how three high school students turned an idea
+      their friends called ridiculous into a 501(c)(3), covering LNCP's weekly
+      and biweekly cleanups and its meadow restoration work across Loudoun
+      County. "Teenagers are the most eager individuals to tackle these
+      environmental issues," founder Ryan Nisay told the station.
+    linkText: Read the story on WTOP
+    linkUrl: >-
+      https://wtop.com/loudoun-county/2024/11/still-in-high-school-loudon-county-students-look-to-clean-up-the-environment-for-future-generations/
+  - label: In the news
+    title: Loudoun Now covers LNCP's first months at Claude Moore Park
+    body: >-
+      Loudoun Now's Alexis Gustin reported on the three Potomac Falls seniors who
+      founded LNCP, and on its partnership with Claude Moore Park, where the
+      group cleaned 60 acres in four months while removing invasive plants and
+      running free weekly cleanups open to volunteers of every age.
+    linkText: Read the story in Loudoun Now
+    linkUrl: >-
+      https://www.loudounnow.com/giving_back/sterling-teens-create-conservation-nonprofit-offer-weekly-park-cleanups/article_f54fbbc6-777a-11ef-a63e-a7c6205f9ce0.html
+  - label: In the community
+    title: A five-hour cleanup with Keep Loudoun Beautiful
+    body: >-
+      On April 12, LNCP collaborated with Keep Loudoun Beautiful to host a
+      large-scale cleanup in Leesburg, Virginia. Over five hours, our volunteers
+      worked relentlessly together to gather an astonishing amount of trash and
+      make a meaningful impact on our local environment. We thank everyone who
+      came out, and we hope it inspires more of you to join our everlasting
+      mission.
+    linkText: See the post on LinkedIn
+    linkUrl: >-
+      https://www.linkedin.com/posts/loudoun-nature-conservation-project_on-april-12-our-organization-was-able-to-activity-7451375612444868608-Qht7
 pressLinks:
   - publication: WUSA9
     headline: These local students are cleaning up parks in Northern Virginia
@@ -86,8 +107,8 @@ pressLinks:
       https://www.wusa9.com/video/tech/science/environment/these-local-students-are-cleaning-up-parks-in-northern-virginia/65-71e16312-f011-4edf-a3b5-fb93d8432e6e
   - publication: WTOP
     headline: >-
-      Still in high school, Loudoun County students look to clean up the
-      environment for future generations
+      Friends say it was a 'ridiculous idea.' That didn't stop these students
+      from trying to make Loudoun Co. cleaner and greener
     url: >-
       https://wtop.com/loudoun-county/2024/11/still-in-high-school-loudon-county-students-look-to-clean-up-the-environment-for-future-generations/
   - publication: Loudoun Now
