@@ -141,6 +141,12 @@ export const GET: APIRoute = async () => {
   lines.push('- Incorporated: April 2024, Commonwealth of Virginia');
   lines.push('- Founder: Ryan Nisay (co-founders Christian Shire and Carter Lepuil)');
   lines.push('- Location: Loudoun County, Virginia, USA');
+  lines.push(
+    '- Funding: community donations, grants, and partnerships with local parks and schools',
+  );
+  lines.push(
+    '- First grant: $3,000 from MainStreet Bank in 2024, the first monetary support the organization received',
+  );
   lines.push(`- Contact: ${ORG_EMAIL}`);
   for (const link of socialLinks) {
     lines.push(`- ${link.label}: ${link.href}`);

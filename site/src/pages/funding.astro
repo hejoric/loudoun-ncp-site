@@ -1,11 +1,36 @@
 ---
 import Base from '@/layouts/Base.astro';
+import { ORG_ID, SITE_URL } from '@/lib/seo';
+
+// The MainStreet Bank grant stated in the prose below, as a linked entity.
+// "Who funds this nonprofit" is a question both donors and LLMs ask, and a
+// MonetaryGrant answers it with a named funder and amount instead of leaving
+// the fact buried in a paragraph. `fundedItem` points back at the org, so the
+// grant joins the same graph rather than floating free.
+const grantJsonLd = {
+  '@type': 'MonetaryGrant',
+  '@id': `${SITE_URL}/funding/#mainstreet-bank-grant`,
+  name: 'MainStreet Bank Grant',
+  description:
+    'The first monetary support Loudoun Nature Conservation Project received, funding cleanup supplies and event operations.',
+  funder: {
+    '@type': 'Organization',
+    name: 'MainStreet Bank',
+  },
+  amount: {
+    '@type': 'MonetaryAmount',
+    value: 3000,
+    currency: 'USD',
+  },
+  fundedItem: { '@id': ORG_ID },
+};
 ---
 
 <Base
   title="Funding"
   description="Support Loudoun Nature Conservation Project - learn how we're funded and how you can support student-led environmental conservation in Loudoun County, Virginia."
   breadcrumb={[['Home', '/'], ['Funding', '/funding/']]}
+  jsonLd={grantJsonLd}
 >
   <div class="bg-paper border-b hairline py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto text-center">
