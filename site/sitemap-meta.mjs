@@ -41,7 +41,11 @@ function git(args) {
  * depth window slides forward - restamping untouched pages on future deploys.
  * Any answer that lands on a boundary commit is therefore "unknown", not a date.
  *
- * Run `git fetch --unshallow` before the build to get real dates for every page.
+ * `vercel.json` prepends `git fetch --unshallow` to the build command so
+ * production has full history and this guard stays dormant. It is guarded with
+ * `|| true` there, and this code is the reason: if the fetch ever stops working
+ * the sitemap quietly loses some lastmod values instead of publishing wrong
+ * ones. Don't remove one without the other.
  */
 const SHALLOW_BOUNDARY = readShallowBoundary();
 
