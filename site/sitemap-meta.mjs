@@ -2,44 +2,80 @@
  * Per-URL sitemap metadata (lastmod / changefreq / priority).
  *
  * `lastmod` is derived from the last git commit that touched the files backing
- * each URL, falling back to filesystem mtime when git history is unavailable
- * (e.g. a tarball deploy). It is deliberately NOT the build timestamp: a
- * sitemap that claims every page changed on every deploy is noise, and search
- * engines learn to discount it. An accurate lastmod is the signal Google uses
- * to decide what to recrawl.
+ * each URL. It is deliberately NOT the build timestamp: a sitemap that claims
+ * every page changed on every deploy is noise, and search engines learn to
+ * discount it. An accurate lastmod is the signal Google uses to decide what to
+ * recrawl.
+ *
+ * When git cannot give a trustworthy answer, the URL ships with no `lastmod` at
+ * all. `lastmod` is optional in the sitemap spec and Google simply falls back to
+ * its own crawl signals when it is absent, whereas a confidently wrong date is
+ * actively misleading. Filesystem mtime is NOT used as a fallback: on any CI
+ * checkout every file's mtime is the clone time, which reproduces the
+ * every-page-changed-every-deploy noise this file exists to prevent.
  */
 import { execFileSync } from 'node:child_process';
-import { existsSync, statSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { readdirSync } from 'node:fs';
 
 const SITE_ORIGIN = 'https://loudounnatureconservation.org';
 
-/** Last commit date for a path, or null if git can't answer. */
-function gitLastModified(path) {
+function git(args) {
   try {
-    const out = execFileSync('git', ['log', '-1', '--format=%cI', '--', path], {
+    return execFileSync('git', args, {
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'ignore'],
     }).trim();
-    return out || null;
   } catch {
     return null;
   }
 }
 
-function fsLastModified(path) {
+/**
+ * Commits at the truncation edge of a shallow clone.
+ *
+ * Vercel clones at `--depth=10`, and in a shallow clone the boundary commit
+ * looks like it introduced every file that already existed at that point. So
+ * `git log -1 -- some/old/file` confidently returns the boundary's date rather
+ * than the file's real last-change date, and that date advances every time the
+ * depth window slides forward - restamping untouched pages on future deploys.
+ * Any answer that lands on a boundary commit is therefore "unknown", not a date.
+ *
+ * Run `git fetch --unshallow` before the build to get real dates for every page.
+ */
+const SHALLOW_BOUNDARY = readShallowBoundary();
+
+function readShallowBoundary() {
+  if (git(['rev-parse', '--is-shallow-repository']) !== 'true') return new Set();
+  const gitDir = git(['rev-parse', '--git-dir']);
   try {
-    return statSync(path).mtime.toISOString();
+    // One boundary commit SHA per line; the file exists only in shallow clones.
+    const shas = readFileSync(`${gitDir}/shallow`, 'utf8').split('\n').filter(Boolean);
+    if (shas.length) return new Set(shas);
   } catch {
-    return null;
+    // fall through
   }
+  // Shallow, but the boundary is unreadable, so no answer can be trusted.
+  // `null` makes gitLastModified decline every path rather than publish
+  // boundary dates as if they were real.
+  return null;
+}
+
+/** Last commit date for a path, or null if git can't answer trustworthily. */
+function gitLastModified(path) {
+  if (SHALLOW_BOUNDARY === null) return null;
+  const out = git(['log', '-1', '--format=%H %cI', '--', path]);
+  if (!out) return null;
+  const [hash, date] = out.split(' ');
+  if (SHALLOW_BOUNDARY.has(hash)) return null;
+  return date || null;
 }
 
 /** Newest modification time across a set of files. */
 function newestOf(paths) {
   const stamps = paths
     .filter((p) => existsSync(p))
-    .map((p) => gitLastModified(p) ?? fsLastModified(p))
+    .map((p) => gitLastModified(p))
     .filter(Boolean)
     .map((s) => new Date(s))
     .filter((d) => !Number.isNaN(d.getTime()));
