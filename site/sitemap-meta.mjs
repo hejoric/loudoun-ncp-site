@@ -54,8 +54,15 @@ function completeShallowClone() {
   if (git(['rev-parse', '--is-shallow-repository']) !== 'true') return;
   // Capped so a hanging fetch cannot hang a deploy. This repo is small; a
   // full history fetch is well under a second in practice.
-  git(['fetch', '--unshallow'], { timeout: 60_000 });
+  git.lastError = '';
+  const out = git(['fetch', '--unshallow'], { timeout: 60_000 });
   if (git(['rev-parse', '--is-shallow-repository']) === 'true') {
+    // TEMP DIAGNOSTIC - remove once the Vercel failure mode is understood.
+    console.log('[sitemap][diag] fetch returned:', JSON.stringify(out));
+    console.log('[sitemap][diag] fetch error:', JSON.stringify(git.lastError));
+    console.log('[sitemap][diag] remotes:', JSON.stringify(git(['remote', '-v'])));
+    console.log('[sitemap][diag] depth:', git(['rev-list', '--count', 'HEAD']));
+    console.log('[sitemap][diag] config:', JSON.stringify(git(['config', '--get-regexp', '^remote\\.'])));
     console.log(
       `[sitemap] could not complete shallow clone, some lastmod dates will be omitted${
         git.lastError ? `: ${git.lastError.split('\n')[0]}` : ''
