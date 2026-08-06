@@ -20,16 +20,51 @@ import { readdirSync } from 'node:fs';
 
 const SITE_ORIGIN = 'https://loudounnatureconservation.org';
 
-function git(args) {
+function git(args, { timeout } = {}) {
   try {
     return execFileSync('git', args, {
       encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'ignore'],
+      // stderr is piped, not ignored, so a failure can explain itself.
+      stdio: ['ignore', 'pipe', 'pipe'],
+      ...(timeout ? { timeout } : {}),
     }).trim();
-  } catch {
+  } catch (err) {
+    // Surfaced by the caller when the failure is worth explaining.
+    git.lastError = (err?.stderr || err?.message || '').toString().trim();
     return null;
   }
 }
+
+/**
+ * Complete a shallow clone, if this is one.
+ *
+ * Vercel clones at `--depth=10`, which is not enough history to date most of
+ * these pages (see SHALLOW_BOUNDARY below). This lives here rather than in the
+ * build command because that is where it was tried first and it silently did
+ * not run: `vercel.json`'s `buildCommand` reached the deployment (confirmed via
+ * the API) but never appeared in the build log, while `npm run build` plainly
+ * did. Putting it in the one module that actually needs the history removes the
+ * guesswork - if the sitemap is being generated, this ran.
+ *
+ * Failure is not fatal. The guard below still refuses to publish dates it
+ * cannot stand behind, so the worst case is a sitemap with fewer `lastmod`
+ * entries, never a wrong one or a failed deploy.
+ */
+function completeShallowClone() {
+  if (git(['rev-parse', '--is-shallow-repository']) !== 'true') return;
+  // Capped so a hanging fetch cannot hang a deploy. This repo is small; a
+  // full history fetch is well under a second in practice.
+  git(['fetch', '--unshallow'], { timeout: 60_000 });
+  if (git(['rev-parse', '--is-shallow-repository']) === 'true') {
+    console.log(
+      `[sitemap] could not complete shallow clone, some lastmod dates will be omitted${
+        git.lastError ? `: ${git.lastError.split('\n')[0]}` : ''
+      }`,
+    );
+  }
+}
+
+completeShallowClone();
 
 /**
  * Commits at the truncation edge of a shallow clone.
@@ -41,11 +76,10 @@ function git(args) {
  * depth window slides forward - restamping untouched pages on future deploys.
  * Any answer that lands on a boundary commit is therefore "unknown", not a date.
  *
- * `vercel.json` prepends `git fetch --unshallow` to the build command so
- * production has full history and this guard stays dormant. It is guarded with
- * `|| true` there, and this code is the reason: if the fetch ever stops working
- * the sitemap quietly loses some lastmod values instead of publishing wrong
- * ones. Don't remove one without the other.
+ * `completeShallowClone()` above tries to remove the truncation before this
+ * runs, so on a healthy build this guard stays dormant. It exists for when that
+ * fails: the sitemap then quietly loses some `lastmod` values rather than
+ * publishing wrong ones. Don't remove one without the other.
  */
 const SHALLOW_BOUNDARY = readShallowBoundary();
 
@@ -187,7 +221,7 @@ for (const file of listDir('src/content/publications')) {
   const total = RESOLVED.size;
   const withLastmod = [...RESOLVED.values()].filter((m) => m.lastmod).length;
   const detail = SHALLOW_BOUNDARY === null || SHALLOW_BOUNDARY.size > 0
-    ? ' (shallow clone: run `git fetch --unshallow` before building for full coverage)'
+    ? ' (history is still truncated; the rest are omitted rather than guessed)'
     : '';
   console.log(`[sitemap] lastmod resolved for ${withLastmod}/${total} URLs${detail}`);
 }
