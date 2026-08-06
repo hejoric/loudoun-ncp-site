@@ -4,6 +4,7 @@ import reader from '@/lib/reader';
 import { getSocialLink } from '@/lib/social';
 
 const instagram = await getSocialLink('instagramUrl');
+import { ORG_ID, SITE_URL, absoluteUrl } from '@/lib/seo';
 
 const events = await reader.collections.events.all();
 const now = new Date();
@@ -13,11 +14,49 @@ const upcoming = events
 const past = events
   .filter((e) => e.entry.date && new Date(e.entry.date) < now)
   .sort((a, b) => new Date(b.entry.date!).getTime() - new Date(a.entry.date!).getTime());
+
+// Event schema for both upcoming and past events. The CMS stores a date with no
+// time component, so `startDate` is date-only - valid per schema.org, and
+// honest about the precision we actually have.
+function eventNode(event: (typeof events)[number], isPast: boolean) {
+  const slug = event.slug ?? event.entry.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  return {
+    '@type': 'Event',
+    '@id': `${SITE_URL}/events/#${slug}`,
+    name: event.entry.title,
+    startDate: event.entry.date,
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    organizer: { '@id': ORG_ID },
+    ...(event.entry.location
+      ? { location: { '@type': 'Place', name: event.entry.location } }
+      : {}),
+    ...(event.entry.description ? { description: event.entry.description } : {}),
+    ...(!isPast && event.entry.signupLink
+      ? {
+          offers: {
+            '@type': 'Offer',
+            url: absoluteUrl(event.entry.signupLink),
+            price: 0,
+            priceCurrency: 'USD',
+            availability: 'https://schema.org/InStock',
+          },
+        }
+      : {}),
+  };
+}
+
+const eventJsonLd = [
+  ...upcoming.map((e) => eventNode(e, false)),
+  ...past.map((e) => eventNode(e, true)),
+];
 ---
 
 <Base
   title="Events"
-  description="Upcoming and past events from Loudoun Nature Conservation Project - cleanups, restoration events, workshops, and volunteer opportunities in Loudoun County, Virginia."
+  description="Upcoming and past Loudoun Nature Conservation Project events - stream cleanups, habitat restoration, and volunteer days across Loudoun County, Virginia."
+  breadcrumb={[['Home', '/'], ['Events', '/events/']]}
+  jsonLd={eventJsonLd.length ? eventJsonLd : undefined}
 >
   <div class="bg-paper border-b hairline py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto text-center">

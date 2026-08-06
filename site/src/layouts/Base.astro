@@ -3,30 +3,90 @@ import Nav from '@/components/Nav.astro';
 import Footer from '@/components/Footer.astro';
 import { getSocialLinks } from '@/lib/social';
 import '@/styles/global.css';
+import {
+  SITE_URL,
+  ORG_NAME,
+  buildGraph,
+  organizationNode,
+  websiteNode,
+  webPageNode,
+  breadcrumbNode,
+  truncate,
+} from '@/lib/seo';
 
 interface Props {
   title: string;
   description?: string;
   ogImage?: string;
+  /** Alt text for the social preview image. */
+  ogImageAlt?: string;
   canonicalUrl?: string;
+  /** Page-specific schema.org nodes, merged into the site-wide @graph. */
   jsonLd?: object | object[];
+  /** 'article' switches Open Graph to article + emits article:* meta. */
+  ogType?: 'website' | 'article';
+  publishedTime?: string;
+  /** Suffix after the page title. Defaults to the full org name. */
+  titleSuffix?: string;
+  /** Keep this page out of the index (404, thin utility pages). */
+  noindex?: boolean;
+  /** Preloaded as the LCP candidate. */
+  preloadImage?: string;
+  breadcrumb?: Array<[name: string, path: string]>;
 }
 
 const {
   title,
   description = 'Loudoun Nature Conservation Project - A student-led 501(c)(3) nonprofit advancing sustainability and ecological health across Loudoun County, Virginia.',
   ogImage = '/assets/og-default.jpg',
+  ogImageAlt = `${ORG_NAME} volunteers restoring a Loudoun County stream`,
   canonicalUrl,
   jsonLd,
+  ogType = 'website',
+  publishedTime,
+  titleSuffix = ORG_NAME,
+  noindex = false,
+  preloadImage,
+  breadcrumb,
 } = Astro.props;
 
-const siteUrl = 'https://loudounnatureconservation.org';
-const canonical = canonicalUrl ?? `${siteUrl}${Astro.url.pathname}`;
-const fullTitle = title === 'Home'
-  ? 'Loudoun Nature Conservation Project'
-  : `${title} | Loudoun Nature Conservation Project`;
+const canonical = canonicalUrl ?? `${SITE_URL}${Astro.url.pathname}`;
 
+// Keep <title> inside the ~65 chars Google renders. The budget is computed
+// against the suffix so the *combined* string fits, rather than truncating the
+// title and then blowing the limit by appending. Research article titles run
+// past 150 chars, so they get shortened here; the full title still renders as
+// the visible <h1>.
+const TITLE_MAX = 65;
+const titleBudget = TITLE_MAX - (titleSuffix.length + 3);
+const fullTitle =
+  title === 'Home' ? ORG_NAME : `${truncate(title, titleBudget)} | ${titleSuffix}`;
+
+const metaDescription = truncate(description, 160);
+
+const isArticle = ogType === 'article';
+
+const pageNodes = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+
+// Same source the footer and contact page link from, so the profiles the site
+// shows and the profiles it claims in `sameAs` cannot drift apart.
 const socialUrls = (await getSocialLinks()).map((link) => link.href);
+
+const graph = buildGraph([
+  organizationNode({ sameAs: socialUrls }),
+  websiteNode(),
+  webPageNode({
+    canonical,
+    title: fullTitle,
+    description: metaDescription,
+    isArticle,
+    datePublished: publishedTime,
+    primaryImage: ogImage,
+    breadcrumbId: breadcrumb ? `${canonical}#breadcrumb` : undefined,
+  }),
+  ...(breadcrumb ? [breadcrumbNode(canonical, breadcrumb)] : []),
+  ...pageNodes,
+]);
 ---
 
 <!doctype html>
@@ -37,22 +97,35 @@ const socialUrls = (await getSocialLinks()).map((link) => link.href);
     <meta name="generator" content={Astro.generator} />
 
     <title>{fullTitle}</title>
-    <meta name="description" content={description} />
+    <meta name="description" content={metaDescription} />
     <link rel="canonical" href={canonical} />
+    {
+      noindex ? (
+        <meta name="robots" content="noindex, follow" />
+      ) : (
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+      )
+    }
+
+    {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
 
     <!-- Open Graph -->
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:url" content={canonical} />
     <meta property="og:title" content={fullTitle} />
-    <meta property="og:description" content={description} />
-    <meta property="og:image" content={`${siteUrl}${ogImage}`} />
-    <meta property="og:site_name" content="Loudoun Nature Conservation Project" />
+    <meta property="og:description" content={metaDescription} />
+    <meta property="og:image" content={`${SITE_URL}${ogImage}`} />
+    <meta property="og:image:alt" content={ogImageAlt} />
+    <meta property="og:site_name" content={ORG_NAME} />
+    <meta property="og:locale" content="en_US" />
+    {isArticle && publishedTime && <meta property="article:published_time" content={publishedTime} />}
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={`${siteUrl}${ogImage}`} />
+    <meta name="twitter:description" content={metaDescription} />
+    <meta name="twitter:image" content={`${SITE_URL}${ogImage}`} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
 
     <!-- Favicon. Every file here is generated from public/assets/lncp-logo.png by
          `npm run icons` (scripts/generate-icons.mjs) - regenerate rather than
@@ -65,29 +138,11 @@ const socialUrls = (await getSocialLinks()).map((link) => link.href);
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="theme-color" content="#1B4332" />
 
-    <!-- JSON-LD -->
-    {jsonLd && (
-      <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
-    )}
-
-    <!-- Org JSON-LD on every page -->
-    <script type="application/ld+json" set:html={JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "Loudoun Nature Conservation Project",
-      "alternateName": "LNCP",
-      "url": siteUrl,
-      "logo": `${siteUrl}/assets/lncp-logo.png`,
-      "description": "A student-led 501(c)(3) nonprofit advancing sustainability and ecological health across Loudoun County, Virginia.",
-      "email": "directors@loudounnatureconservation.org",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Loudoun County",
-        "addressRegion": "VA",
-        "addressCountry": "US"
-      },
-      ...(socialUrls.length > 0 && { "sameAs": socialUrls })
-    })} />
+    <!--
+      One linked @graph per page: NGO + WebSite + WebPage, plus any page-specific
+      nodes. Entities join by @id so crawlers merge them into one entity.
+    -->
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(graph)} />
   </head>
   <body class="flex flex-col min-h-screen">
     <Nav />

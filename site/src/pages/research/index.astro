@@ -2,6 +2,7 @@
 import Base from '@/layouts/Base.astro';
 import PublicationCard from '@/components/PublicationCard.astro';
 import reader from '@/lib/reader';
+import { ORG_ID, SITE_URL, truncate } from '@/lib/seo';
 
 const pubs = await reader.collections.publications.all();
 const sorted = pubs.sort((a, b) => {
@@ -9,11 +10,48 @@ const sorted = pubs.sort((a, b) => {
   if (!b.entry.date) return -1;
   return new Date(b.entry.date).getTime() - new Date(a.entry.date).getTime();
 });
+
+// Expose the publication list as a real collection so crawlers (and LLMs) can
+// enumerate every paper from this one URL instead of relying on link discovery.
+const publicationListJsonLd = {
+  '@type': 'ItemList',
+  '@id': `${SITE_URL}/research/#publications`,
+  name: 'LNCP student research publications',
+  numberOfItems: sorted.length,
+  itemListOrder: 'https://schema.org/ItemListOrderDescending',
+  itemListElement: sorted.map((pub, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    url: `${SITE_URL}/research/${pub.slug}/`,
+    item: {
+      '@type': 'ScholarlyArticle',
+      '@id': `${SITE_URL}/research/${pub.slug}/#article`,
+      headline: truncate(pub.entry.title, 110),
+      name: pub.entry.title,
+      url: `${SITE_URL}/research/${pub.slug}/`,
+      author: pub.entry.authors.map((name) => ({ '@type': 'Person', name })),
+      ...(pub.entry.date ? { datePublished: pub.entry.date } : {}),
+      description: truncate(pub.entry.abstract, 300),
+      publisher: { '@id': ORG_ID },
+      isAccessibleForFree: true,
+    },
+  })),
+};
+
+const collectionJsonLd = {
+  '@type': 'CollectionPage',
+  '@id': `${SITE_URL}/research/#collection`,
+  name: 'Research',
+  about: { '@id': ORG_ID },
+  mainEntity: { '@id': `${SITE_URL}/research/#publications` },
+};
 ---
 
 <Base
   title="Research"
-  description="Research publications from Loudoun Nature Conservation Project's student research division - water quality, dissolved oxygen, nitrogen dynamics, and environmental impact studies."
+  description="Student research from Loudoun Nature Conservation Project on water quality, dissolved oxygen, and nitrogen dynamics in Loudoun County streams."
+  breadcrumb={[['Home', '/'], ['Research', '/research/']]}
+  jsonLd={[collectionJsonLd, publicationListJsonLd]}
 >
   <div class="bg-paper border-b hairline py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto text-center">

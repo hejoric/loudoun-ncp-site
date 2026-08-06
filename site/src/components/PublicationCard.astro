@@ -1,4 +1,6 @@
 ---
+import { truncate } from '@/lib/seo';
+
 interface Props {
   title: string;
   authors: readonly string[];
@@ -12,7 +14,8 @@ interface Props {
 const { title, authors, date, abstract, slug, pdfFile, pdfLink } = Astro.props;
 const pdfHref = pdfFile ?? pdfLink;
 const displayDate = date ? new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : '';
-const preview = abstract.length > 160 ? abstract.slice(0, 157) + '…' : abstract;
+// Cut on a word boundary: a raw slice left visible stubs like "localized s…".
+const preview = truncate(abstract, 160);
 ---
 
 <article class="bg-paper border hairline p-7 flex flex-col gap-3 hover:border-forest-800 transition-colors">

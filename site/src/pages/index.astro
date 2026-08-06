@@ -3,6 +3,7 @@ import Base from '@/layouts/Base.astro';
 import FlipCard from '@/components/FlipCard.astro';
 import reader from '@/lib/reader';
 import { resolveAffiliations } from '@/lib/affiliations';
+import { ORG_ID } from '@/lib/seo';
 
 const home = await reader.singletons.home.read();
 const allTeam = await reader.collections.teamMembers.all();
@@ -137,22 +138,33 @@ const stats = [
   { value: home?.statsPartners?.toLocaleString() ?? '17', label: 'Partner Parks & Schools' },
 ];
 
-const orgJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: 'Loudoun Nature Conservation Project',
-  url: 'https://loudounnatureconservation.org',
-  logo: 'https://loudounnatureconservation.org/assets/lncp-logo.png',
-  foundingDate: '2024',
-  description: 'A student-led 501(c)(3) nonprofit advancing sustainability and ecological health across Loudoun County, Virginia.',
-  email: 'directors@loudounnatureconservation.org',
-};
+// No Organization node here: Base emits the canonical one (with a stable @id)
+// on every page. A second, differently-worded copy would read as a rival entity.
+
+// Press coverage as linked NewsArticle nodes. Each one is `about` the org, so a
+// crawler reading the graph can see who covered LNCP and where, rather than
+// finding six bare outbound links it has to guess the significance of. This is
+// third-party corroboration of the claims the rest of the site makes about
+// itself, which is the part an LLM can actually cite.
+const pressJsonLd = (home?.pressLinks ?? [])
+  .filter((p) => p.url && p.headline)
+  .map((p) => ({
+    '@type': 'NewsArticle',
+    '@id': p.url,
+    url: p.url,
+    headline: p.headline,
+    about: { '@id': ORG_ID },
+    ...(p.publication
+      ? { publisher: { '@type': 'NewsMediaOrganization', name: p.publication } }
+      : {}),
+  }));
 ---
 
 <Base
   title="Home"
-  description="Loudoun Nature Conservation Project - A student-led 501(c)(3) nonprofit empowering youth, restoring nature, and fostering community through environmental stewardship in Loudoun County, Virginia."
-  jsonLd={orgJsonLd}
+  description="A student-led 501(c)(3) nonprofit empowering youth to restore nature through cleanups, habitat restoration, and research in Loudoun County, Virginia."
+  preloadImage="/assets/hero-poster.jpg"
+  jsonLd={pressJsonLd}
 >
   <!-- Announcement: back for the new school year -->
   <a
@@ -223,7 +235,7 @@ const orgJsonLd = {
           {ryan.entry.headshot && (
             <img
               src={ryan.entry.headshot}
-              alt={ryan.entry.name}
+              alt={`${ryan.entry.name}, ${ryan.entry.role}`}
               width="44"
               height="44"
               class="w-11 h-11 rounded-full object-cover"

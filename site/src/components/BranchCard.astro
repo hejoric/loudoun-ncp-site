@@ -35,6 +35,13 @@ const MAROON = '#1B4332';
 // screen-reader summary at the bottom only needs to add the ones it does not
 // cover (e.g. the college they were accepted to).
 const otherSchools = affiliationLabel(affiliations.filter((a) => a.source !== 'branch'));
+
+// A vacant seat is a placeholder record literally named "NOVA Branch
+// President", so naming the role again gives "NOVA Branch President, NOVA
+// branch president". When the name already carries the title, it stands alone.
+const headshotAlt = /president/i.test(presidentName)
+  ? presidentName
+  : `${presidentName}, ${branchName} branch president`;
 ---
 
 <!-- Flip behaviour (click, tap, Enter/Space, and keeping the social links on the
@@ -58,7 +65,7 @@ const otherSchools = affiliationLabel(affiliations.filter((a) => a.source !== 'b
         {presidentHeadshot ? (
           <img
             src={presidentHeadshot}
-            alt={`${presidentName}`}
+            alt={headshotAlt}
             class="absolute inset-0 w-full h-full object-cover object-top"
             loading="lazy"
             decoding="async"
