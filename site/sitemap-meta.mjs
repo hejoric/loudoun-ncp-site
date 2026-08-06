@@ -179,6 +179,19 @@ for (const file of listDir('src/content/publications')) {
   });
 }
 
+// Report coverage in the build log. A silently degraded sitemap is the whole
+// failure mode this file guards against, and the first deploy of that guard
+// shipped with 3 of 13 URLs missing `lastmod` because the unshallow step was
+// failing unnoticed. Coverage below 100% is legitimate but always worth seeing.
+{
+  const total = RESOLVED.size;
+  const withLastmod = [...RESOLVED.values()].filter((m) => m.lastmod).length;
+  const detail = SHALLOW_BOUNDARY === null || SHALLOW_BOUNDARY.size > 0
+    ? ' (shallow clone: run `git fetch --unshallow` before building for full coverage)'
+    : '';
+  console.log(`[sitemap] lastmod resolved for ${withLastmod}/${total} URLs${detail}`);
+}
+
 /** `serialize` hook for @astrojs/sitemap. */
 export function serializeSitemapEntry(item) {
   const path = item.url.replace(SITE_ORIGIN, '') || '/';
