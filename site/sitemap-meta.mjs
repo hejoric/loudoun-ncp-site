@@ -26,6 +26,8 @@ function git(args, { timeout } = {}) {
       encoding: 'utf8',
       // stderr is piped, not ignored, so a failure can explain itself.
       stdio: ['ignore', 'pipe', 'pipe'],
+      // Never block a build on a credential prompt.
+      env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
       ...(timeout ? { timeout } : {}),
     }).trim();
   } catch (err) {
@@ -36,15 +38,32 @@ function git(args, { timeout } = {}) {
 }
 
 /**
+ * Where to fetch missing history from, when the checkout has no remote.
+ *
+ * Built from the environment rather than hardcoded so a fork or a rename keeps
+ * working. Only GitHub over HTTPS, and only anonymously - this repo is public,
+ * so no credentials are needed. If it is ever made private this fetch simply
+ * fails and the caller degrades, which is the correct outcome: a build should
+ * not be carrying credentials just to date a sitemap.
+ */
+function originUrlFromEnv() {
+  const { VERCEL_GIT_PROVIDER, VERCEL_GIT_REPO_OWNER, VERCEL_GIT_REPO_SLUG } = process.env;
+  if (VERCEL_GIT_PROVIDER !== 'github') return null;
+  if (!VERCEL_GIT_REPO_OWNER || !VERCEL_GIT_REPO_SLUG) return null;
+  return `https://github.com/${VERCEL_GIT_REPO_OWNER}/${VERCEL_GIT_REPO_SLUG}.git`;
+}
+
+/**
  * Complete a shallow clone, if this is one.
  *
  * Vercel clones at `--depth=10`, which is not enough history to date most of
- * these pages (see SHALLOW_BOUNDARY below). This lives here rather than in the
- * build command because that is where it was tried first and it silently did
- * not run: `vercel.json`'s `buildCommand` reached the deployment (confirmed via
- * the API) but never appeared in the build log, while `npm run build` plainly
- * did. Putting it in the one module that actually needs the history removes the
- * guesswork - if the sitemap is being generated, this ran.
+ * these pages (see SHALLOW_BOUNDARY below), *and* its build container has no
+ * git remote at all - `git remote -v` is empty there, so a plain
+ * `git fetch --unshallow` has nowhere to fetch from and exits 0 having done
+ * nothing. Both facts were established by instrumenting a real deploy, after
+ * the same fetch placed in `vercel.json`'s `buildCommand` turned out never to
+ * run at all despite reaching the deployment. Fetching from an explicit URL,
+ * from the one module that needs the history, is what actually works.
  *
  * Failure is not fatal. The guard below still refuses to publish dates it
  * cannot stand behind, so the worst case is a sitemap with fewer `lastmod`
@@ -52,17 +71,20 @@ function git(args, { timeout } = {}) {
  */
 function completeShallowClone() {
   if (git(['rev-parse', '--is-shallow-repository']) !== 'true') return;
+
+  // With a remote configured, fetch from it; without one, name the URL.
+  const origin = git(['remote']) ? null : originUrlFromEnv();
+  if (!git(['remote']) && !origin) {
+    console.log('[sitemap] shallow clone with no remote to complete it from');
+    return;
+  }
+
   // Capped so a hanging fetch cannot hang a deploy. This repo is small; a
   // full history fetch is well under a second in practice.
   git.lastError = '';
-  const out = git(['fetch', '--unshallow'], { timeout: 60_000 });
+  git(['fetch', '--unshallow', ...(origin ? [origin] : [])], { timeout: 60_000 });
+
   if (git(['rev-parse', '--is-shallow-repository']) === 'true') {
-    // TEMP DIAGNOSTIC - remove once the Vercel failure mode is understood.
-    console.log('[sitemap][diag] fetch returned:', JSON.stringify(out));
-    console.log('[sitemap][diag] fetch error:', JSON.stringify(git.lastError));
-    console.log('[sitemap][diag] remotes:', JSON.stringify(git(['remote', '-v'])));
-    console.log('[sitemap][diag] depth:', git(['rev-list', '--count', 'HEAD']));
-    console.log('[sitemap][diag] config:', JSON.stringify(git(['config', '--get-regexp', '^remote\\.'])));
     console.log(
       `[sitemap] could not complete shallow clone, some lastmod dates will be omitted${
         git.lastError ? `: ${git.lastError.split('\n')[0]}` : ''
