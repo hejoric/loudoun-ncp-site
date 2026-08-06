@@ -20,16 +20,80 @@ import { readdirSync } from 'node:fs';
 
 const SITE_ORIGIN = 'https://loudounnatureconservation.org';
 
-function git(args) {
+function git(args, { timeout } = {}) {
   try {
     return execFileSync('git', args, {
       encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'ignore'],
+      // stderr is piped, not ignored, so a failure can explain itself.
+      stdio: ['ignore', 'pipe', 'pipe'],
+      // Never block a build on a credential prompt.
+      env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+      ...(timeout ? { timeout } : {}),
     }).trim();
-  } catch {
+  } catch (err) {
+    // Surfaced by the caller when the failure is worth explaining.
+    git.lastError = (err?.stderr || err?.message || '').toString().trim();
     return null;
   }
 }
+
+/**
+ * Where to fetch missing history from, when the checkout has no remote.
+ *
+ * Built from the environment rather than hardcoded so a fork or a rename keeps
+ * working. Only GitHub over HTTPS, and only anonymously - this repo is public,
+ * so no credentials are needed. If it is ever made private this fetch simply
+ * fails and the caller degrades, which is the correct outcome: a build should
+ * not be carrying credentials just to date a sitemap.
+ */
+function originUrlFromEnv() {
+  const { VERCEL_GIT_PROVIDER, VERCEL_GIT_REPO_OWNER, VERCEL_GIT_REPO_SLUG } = process.env;
+  if (VERCEL_GIT_PROVIDER !== 'github') return null;
+  if (!VERCEL_GIT_REPO_OWNER || !VERCEL_GIT_REPO_SLUG) return null;
+  return `https://github.com/${VERCEL_GIT_REPO_OWNER}/${VERCEL_GIT_REPO_SLUG}.git`;
+}
+
+/**
+ * Complete a shallow clone, if this is one.
+ *
+ * Vercel clones at `--depth=10`, which is not enough history to date most of
+ * these pages (see SHALLOW_BOUNDARY below), *and* its build container has no
+ * git remote at all - `git remote -v` is empty there, so a plain
+ * `git fetch --unshallow` has nowhere to fetch from and exits 0 having done
+ * nothing. Both facts were established by instrumenting a real deploy, after
+ * the same fetch placed in `vercel.json`'s `buildCommand` turned out never to
+ * run at all despite reaching the deployment. Fetching from an explicit URL,
+ * from the one module that needs the history, is what actually works.
+ *
+ * Failure is not fatal. The guard below still refuses to publish dates it
+ * cannot stand behind, so the worst case is a sitemap with fewer `lastmod`
+ * entries, never a wrong one or a failed deploy.
+ */
+function completeShallowClone() {
+  if (git(['rev-parse', '--is-shallow-repository']) !== 'true') return;
+
+  // With a remote configured, fetch from it; without one, name the URL.
+  const origin = git(['remote']) ? null : originUrlFromEnv();
+  if (!git(['remote']) && !origin) {
+    console.log('[sitemap] shallow clone with no remote to complete it from');
+    return;
+  }
+
+  // Capped so a hanging fetch cannot hang a deploy. This repo is small; a
+  // full history fetch is well under a second in practice.
+  git.lastError = '';
+  git(['fetch', '--unshallow', ...(origin ? [origin] : [])], { timeout: 60_000 });
+
+  if (git(['rev-parse', '--is-shallow-repository']) === 'true') {
+    console.log(
+      `[sitemap] could not complete shallow clone, some lastmod dates will be omitted${
+        git.lastError ? `: ${git.lastError.split('\n')[0]}` : ''
+      }`,
+    );
+  }
+}
+
+completeShallowClone();
 
 /**
  * Commits at the truncation edge of a shallow clone.
@@ -41,11 +105,10 @@ function git(args) {
  * depth window slides forward - restamping untouched pages on future deploys.
  * Any answer that lands on a boundary commit is therefore "unknown", not a date.
  *
- * `vercel.json` prepends `git fetch --unshallow` to the build command so
- * production has full history and this guard stays dormant. It is guarded with
- * `|| true` there, and this code is the reason: if the fetch ever stops working
- * the sitemap quietly loses some lastmod values instead of publishing wrong
- * ones. Don't remove one without the other.
+ * `completeShallowClone()` above tries to remove the truncation before this
+ * runs, so on a healthy build this guard stays dormant. It exists for when that
+ * fails: the sitemap then quietly loses some `lastmod` values rather than
+ * publishing wrong ones. Don't remove one without the other.
  */
 const SHALLOW_BOUNDARY = readShallowBoundary();
 
@@ -177,6 +240,19 @@ for (const file of listDir('src/content/publications')) {
     changefreq: 'yearly',
     priority: 0.7,
   });
+}
+
+// Report coverage in the build log. A silently degraded sitemap is the whole
+// failure mode this file guards against, and the first deploy of that guard
+// shipped with 3 of 13 URLs missing `lastmod` because the unshallow step was
+// failing unnoticed. Coverage below 100% is legitimate but always worth seeing.
+{
+  const total = RESOLVED.size;
+  const withLastmod = [...RESOLVED.values()].filter((m) => m.lastmod).length;
+  const detail = SHALLOW_BOUNDARY === null || SHALLOW_BOUNDARY.size > 0
+    ? ' (history is still truncated; the rest are omitted rather than guessed)'
+    : '';
+  console.log(`[sitemap] lastmod resolved for ${withLastmod}/${total} URLs${detail}`);
 }
 
 /** `serialize` hook for @astrojs/sitemap. */
