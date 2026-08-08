@@ -16,6 +16,11 @@
       "permanent": true
     },
     {
+      "source": "/research/Nitrate_Research__Copy_-2.pdf",
+      "destination": "/research/ai_research.pdf",
+      "permanent": true
+    },
+    {
       "source": "/wp-content/:path*",
       "destination": "/",
       "permanent": true
