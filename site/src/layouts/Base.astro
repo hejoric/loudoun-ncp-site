@@ -1,6 +1,7 @@
 ---
 import Nav from '@/components/Nav.astro';
 import Footer from '@/components/Footer.astro';
+import Analytics from '@/components/Analytics.astro';
 import { getSocialLinks } from '@/lib/social';
 import '@/styles/global.css';
 import {
@@ -143,6 +144,8 @@ const graph = buildGraph([
       nodes. Entities join by @id so crawlers merge them into one entity.
     -->
     <script is:inline type="application/ld+json" set:html={JSON.stringify(graph)} />
+
+    <Analytics />
   </head>
   <body class="flex flex-col min-h-screen">
     <Nav />
