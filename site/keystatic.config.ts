@@ -214,14 +214,47 @@ export default config({
             itemLabel: (props) => props.fields.title.value || 'Spotlight Item',
           }
         ),
+        // Order is editorial, not chronological: the FIRST entry is the story
+        // featured with its photo on the homepage and at the top of /press/.
+        // Everything after it renders as a wordmark in the homepage strip and a
+        // row on /press/. Only `publication`, `headline`, and `url` are needed
+        // for a plain entry - the rest exist so a story worth featuring can
+        // carry its own art and credit line.
         pressLinks: fields.array(
           fields.object({
             publication: fields.text({ label: 'Publication Name' }),
             headline: fields.text({ label: 'Article Headline' }),
             url: fields.url({ label: 'Article URL' }),
+            date: fields.date({
+              label: 'Publication Date',
+              validation: { isRequired: false },
+            }),
+            byline: fields.text({
+              label: 'Byline (reporter name)',
+              validation: { isRequired: false, length: { min: 0 } },
+            }),
+            summary: fields.text({
+              label: 'Summary (shown on /press/, and on the homepage when featured)',
+              multiline: true,
+              validation: { isRequired: false, length: { min: 0 } },
+            }),
+            image: fields.image({
+              label: 'Article photo (landscape, min 1200px wide)',
+              directory: 'public/assets/press',
+              publicPath: '/assets/press/',
+              validation: { isRequired: false },
+            }),
+            imageAlt: fields.text({
+              label: 'Photo alt text',
+              validation: { isRequired: false, length: { min: 0 } },
+            }),
+            imageCredit: fields.text({
+              label: 'Photo credit (required if the outlet supplied the photo)',
+              validation: { isRequired: false, length: { min: 0 } },
+            }),
           }),
           {
-            label: 'Press Links',
+            label: 'Press Links (first entry is the featured story)',
             itemLabel: (props) => props.fields.publication.value || 'Press Link',
           }
         ),

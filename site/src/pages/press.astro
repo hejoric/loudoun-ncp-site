@@ -1,0 +1,175 @@
+---
+import Base from '@/layouts/Base.astro';
+import {
+  getPressItems,
+  groupByPublication,
+  formatPressDate,
+} from '@/lib/press';
+import { ORG_ID, SITE_URL, truncate } from '@/lib/seo';
+
+const items = await getPressItems();
+const groups = groupByPublication(items);
+
+// The lead art doubles as this page's social preview, so a share card shows the
+// most recent story rather than the generic org image.
+const leadImage = items.find((item) => item.image);
+
+// Enumerate every story as a linked NewsArticle so a crawler can read the full
+// coverage list from this one URL. The `@id` is the article URL, which is the
+// same key the homepage uses - the two graphs merge into one entity per story
+// instead of describing each article twice.
+const articleListJsonLd = {
+  '@type': 'ItemList',
+  '@id': `${SITE_URL}/press/#coverage`,
+  name: 'Press coverage of the Loudoun Nature Conservation Project',
+  numberOfItems: items.length,
+  itemListElement: items.map((item, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    url: item.url,
+    item: {
+      '@type': 'NewsArticle',
+      '@id': item.url,
+      url: item.url,
+      headline: truncate(item.headline, 110),
+      name: item.headline,
+      about: { '@id': ORG_ID },
+      publisher: { '@type': 'NewsMediaOrganization', name: item.publication },
+      ...(item.date ? { datePublished: item.date } : {}),
+      ...(item.byline ? { author: { '@type': 'Person', name: item.byline } } : {}),
+      ...(item.summary ? { description: truncate(item.summary, 300) } : {}),
+      ...(item.image ? { image: `${SITE_URL}${item.image}` } : {}),
+    },
+  })),
+};
+
+const collectionJsonLd = {
+  '@type': 'CollectionPage',
+  '@id': `${SITE_URL}/press/#collection`,
+  name: 'Press',
+  about: { '@id': ORG_ID },
+  mainEntity: { '@id': `${SITE_URL}/press/#coverage` },
+};
+---
+
+<Base
+  title="Press"
+  description="Every news story, broadcast, and public record covering the Loudoun Nature Conservation Project, the student-led environmental nonprofit in Loudoun County, Virginia."
+  ogImage={leadImage?.image ?? undefined}
+  ogImageAlt={leadImage?.imageAlt ?? undefined}
+  breadcrumb={[['Home', '/'], ['Press', '/press/']]}
+  jsonLd={[collectionJsonLd, articleListJsonLd]}
+>
+  <div class="bg-paper border-b hairline py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto text-center">
+      <p class="font-display italic text-clay text-lg mb-4">In the News</p>
+      <h1 class="font-display font-medium text-4xl sm:text-5xl text-ink">Press coverage</h1>
+      <p class="mt-5 text-ink-soft max-w-2xl mx-auto">
+        Every story, broadcast, and public record covering LNCP, grouped by the outlet that
+        published it. Each link opens on the publisher's own site.
+      </p>
+    </div>
+  </div>
+
+  <section class="bg-paper-2 py-16 sm:py-20" aria-label="Press coverage by publication">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      {groups.length > 0 ? (
+        <div class="border-b hairline">
+          {groups.map((group) => (
+            <div
+              id={group.slug}
+              class="grid md:grid-cols-[13rem_minmax(0,1fr)] gap-6 md:gap-10 border-t hairline py-10 sm:py-12 scroll-mt-24"
+            >
+              <div class="md:sticky md:top-24 md:self-start">
+                <h2 class="font-display font-medium text-xl text-ink text-balance">
+                  {group.publication}
+                </h2>
+                {group.items.length > 1 && (
+                  <p class="text-xs uppercase tracking-wider text-ink-soft mt-2">
+                    {group.items.length} stories
+                  </p>
+                )}
+              </div>
+
+              <ul class="space-y-10" role="list">
+                {group.items.map((item) => (
+                  <li>
+                    {item.image && (
+                      /* Its own figure, outside the story link: a credit line is
+                         attribution, not a destination, and folding it into the
+                         link would read out as part of the headline. */
+                      <figure class="m-0 mb-6">
+                        <a
+                          href={item.url}
+                          class="group block overflow-hidden border hairline"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          tabindex="-1"
+                          aria-hidden="true"
+                        >
+                          <img
+                            src={item.image}
+                            alt={item.imageAlt ?? ''}
+                            width="1662"
+                            height="1247"
+                            class="w-full aspect-[4/3] sm:aspect-[16/10] object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        </a>
+                        {item.imageCredit && (
+                          <figcaption class="text-xs text-ink-soft mt-3">{item.imageCredit}</figcaption>
+                        )}
+                      </figure>
+                    )}
+
+                    <a
+                      href={item.url}
+                      class="group block focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-4 focus-visible:ring-offset-paper-2"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {formatPressDate(item.date) && (
+                        <p class="text-xs uppercase tracking-wider text-clay mb-2">
+                          <time datetime={item.date}>{formatPressDate(item.date)}</time>
+                          {item.byline && <span> &middot; By {item.byline}</span>}
+                        </p>
+                      )}
+
+                      <h3 class="font-display text-lg sm:text-xl leading-snug text-ink group-hover:text-forest-900 transition-colors text-balance">
+                        {item.headline}
+                      </h3>
+
+                      {/* max-w on the summary caps the measure: the column runs
+                          ~710px wide on desktop, which is ~100 characters at
+                          this size. */}
+                      {item.summary && (
+                        <p class="text-sm text-ink-soft leading-relaxed mt-3 max-w-[62ch]">{item.summary}</p>
+                      )}
+
+                      <span class="inline-block text-sm text-ink border-b border-ink pb-0.5 mt-5 group-hover:text-ink-soft group-hover:border-ink-soft transition-colors">
+                        Read it on {item.publication} <span aria-hidden="true">&rarr;</span>
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p class="text-center text-ink-soft py-20">Press coverage is being collected. Check back shortly.</p>
+      )}
+
+      <p class="text-sm text-ink-soft mt-12">
+        Writing about LNCP?{' '}
+        <a
+          href="/contact/"
+          class="text-ink border-b border-ink pb-0.5 hover:text-ink-soft hover:border-ink-soft transition-colors"
+        >
+          Get in touch with our press contact
+        </a>.
+      </p>
+    </div>
+  </section>
+</Base>

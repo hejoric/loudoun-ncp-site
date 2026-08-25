@@ -204,6 +204,11 @@ const ROUTES = {
     changefreq: 'weekly',
     priority: 0.7,
   },
+  '/press/': {
+    files: ['src/pages/press.astro', 'src/content/singletons/home.yaml'],
+    changefreq: 'monthly',
+    priority: 0.7,
+  },
   '/contact/': {
     files: ['src/pages/contact.astro'],
     changefreq: 'yearly',
