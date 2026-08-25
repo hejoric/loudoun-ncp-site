@@ -117,13 +117,19 @@ editor - so it is simpler to put it there to begin with.
 1. Create `src/content/branches/branch-slug.yaml`:
 
 ```yaml
-name: Branch Name High School
-school: School Full Name
-schoolLogo: null      # /assets/branches/school-name.png once uploaded
-accentColor: '#4c0519'
+name: Heritage                 # short branch name, shown on the card
+school: Heritage High School   # full school name, shown on the badge
+schoolLogo: null               # /assets/branches/heritage/schoolLogo.png once uploaded
 ```
 
-2. Place school logo at `public/assets/branches/school-name.png` (200x200px transparent PNG, <50KB).
+2. Place the school logo at `public/assets/branches/branch-slug/schoolLogo.png`
+   (200x200px transparent PNG, <50KB) and point `schoolLogo` at it. That is the
+   path Keystatic uses when the logo is uploaded in the editor.
+
+A branch with no logo yet is fine - the badge falls back to the school's
+initials ("HHS"). A branch record is only rendered through the members that
+reference it, so adding one ahead of its president changes nothing on the site
+until a member sets `branch: branch-slug`.
 
 ## Adding an Event
 
