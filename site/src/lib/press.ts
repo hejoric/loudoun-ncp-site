@@ -22,6 +22,9 @@ export interface PressItem {
   date: string | null;
   byline: string | null;
   summary: string | null;
+  /** Verbatim pull quote from the article, stored without quote marks. */
+  quote: string | null;
+  quoteAttribution: string | null;
   image: string | null;
   imageAlt: string | null;
   imageCredit: string | null;
@@ -41,6 +44,8 @@ export async function getPressItems(): Promise<PressItem[]> {
       date: p.date || null,
       byline: p.byline || null,
       summary: p.summary || null,
+      quote: p.quote || null,
+      quoteAttribution: p.quoteAttribution || null,
       image: p.image || null,
       imageAlt: p.imageAlt || null,
       imageCredit: p.imageCredit || null,
@@ -77,7 +82,7 @@ export interface PressStripEntry {
 }
 
 /**
- * The homepage wordmark row: exactly one entry per outlet.
+ * The homepage wordmark row: exactly one entry per outlet, every outlet.
  *
  * A wordmark can only carry a publication name, so an outlet that has covered
  * LNCP twice would otherwise render as two identical links. One entry per
@@ -85,23 +90,19 @@ export interface PressStripEntry {
  * article, and with more it points at that outlet's section on /press/, badged
  * with the count, where every story it ran is listed.
  *
- * An outlet whose only story is the one already featured above the row is
- * dropped - repeating it under "Also covered by" would be a dead end back to
- * the article the reader is looking at.
+ * The featured outlet stays in the row even though its story also appears above
+ * it. This row reads as the roster of everyone who has covered LNCP, so an
+ * outlet missing from it reads as an outlet that never ran anything - which is
+ * exactly backwards for the most recent story on the page.
  */
-export function buildPressStrip(
-  items: PressItem[],
-  featured: PressItem | null,
-): PressStripEntry[] {
-  return groupByPublication(items)
-    .filter((g) => !(featured && g.items.length === 1 && g.items[0] === featured))
-    .map((g) => ({
-      publication: g.publication,
-      slug: g.slug,
-      count: g.items.length,
-      url: g.items.length === 1 ? g.items[0].url : null,
-      headline: g.items.length === 1 ? g.items[0].headline : null,
-    }));
+export function buildPressStrip(items: PressItem[]): PressStripEntry[] {
+  return groupByPublication(items).map((g) => ({
+    publication: g.publication,
+    slug: g.slug,
+    count: g.items.length,
+    url: g.items.length === 1 ? g.items[0].url : null,
+    headline: g.items.length === 1 ? g.items[0].headline : null,
+  }));
 }
 
 export interface PressGroup {

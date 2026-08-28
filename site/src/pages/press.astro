@@ -147,6 +147,19 @@ const collectionJsonLd = {
                         <p class="text-sm text-ink-soft leading-relaxed mt-3 max-w-[62ch]">{item.summary}</p>
                       )}
 
+                      {item.quote && (
+                        <figure class="m-0 mt-5 border-l-2 border-clay pl-5">
+                          <blockquote class="font-display text-base sm:text-lg leading-snug text-ink max-w-[52ch]">
+                            &ldquo;{item.quote}&rdquo;
+                          </blockquote>
+                          {item.quoteAttribution && (
+                            <figcaption class="text-xs uppercase tracking-wider text-ink-soft mt-2">
+                              {item.quoteAttribution}
+                            </figcaption>
+                          )}
+                        </figure>
+                      )}
+
                       <span class="inline-block text-sm text-ink border-b border-ink pb-0.5 mt-5 group-hover:text-ink-soft group-hover:border-ink-soft transition-colors">
                         Read it on {item.publication} <span aria-hidden="true">&rarr;</span>
                       </span>

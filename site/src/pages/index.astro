@@ -160,10 +160,10 @@ const pressItems = await getPressItems();
 // Now) from sitting side by side as near-identical labels.
 const { featured: featuredPress } = splitFeatured(pressItems);
 
-// One entry per outlet, built from the full list rather than the leftovers: an
-// outlet that has covered LNCP twice must collapse to a single wordmark even
-// when one of those two stories is the featured one.
-const pressStrip = buildPressStrip(pressItems, featuredPress);
+// One wordmark per outlet, every outlet - including whichever one is featured
+// above. The row is the roster of who has covered LNCP, so leaving the newest
+// outlet out of it reads as though it never ran anything.
+const pressStrip = buildPressStrip(pressItems);
 
 const pressJsonLd = pressItems.map((p) => ({
   '@type': 'NewsArticle',
@@ -567,9 +567,16 @@ const pressJsonLd = pressItems.map((p) => ({
         News on Loudoun Nature Conservation Project
       </h2>
 
+      {/* Three grid children in reading order: photo, story, pull quote.
+          On desktop the quote is placed into the left column under the photo,
+          which is what balances the two columns - the text column runs taller
+          than a 4:3 photo, and stretching the photo to match would crop a
+          quarter off the sides of a group shot. Stacked on mobile the DOM order
+          is what shows, so the quote stays after the story rather than landing
+          between the photo and the headline. */}
       {featuredPress && (
-        <article class="grid lg:grid-cols-[1.05fr_1fr] gap-8 lg:gap-14 items-center mt-12">
-          <figure class="m-0">
+        <article class="grid lg:grid-cols-[1.05fr_1fr] gap-8 lg:gap-x-14 items-start mt-12">
+          <figure class="m-0 lg:col-start-1 lg:row-start-1">
             <a
               href={featuredPress.url}
               class="group block overflow-hidden border hairline focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
@@ -593,7 +600,7 @@ const pressJsonLd = pressItems.map((p) => ({
             )}
           </figure>
 
-          <div>
+          <div class="lg:col-start-2 lg:row-start-1 lg:row-span-2">
             <p class="text-xs font-semibold uppercase tracking-widest text-clay">
               {featuredPress.publication}
               {formatPressDate(featuredPress.date) && (
@@ -632,13 +639,26 @@ const pressJsonLd = pressItems.map((p) => ({
               Read it on {featuredPress.publication} <span aria-hidden="true">&rarr;</span>
             </a>
           </div>
+
+          {featuredPress.quote && (
+            <figure class="m-0 border-l-2 border-clay pl-5 lg:col-start-1 lg:row-start-2">
+              <blockquote class="font-display text-lg sm:text-xl leading-snug text-ink">
+                &ldquo;{featuredPress.quote}&rdquo;
+              </blockquote>
+              {featuredPress.quoteAttribution && (
+                <figcaption class="text-xs uppercase tracking-wider text-ink-soft mt-3">
+                  {featuredPress.quoteAttribution}
+                </figcaption>
+              )}
+            </figure>
+          )}
         </article>
       )}
 
       {pressStrip.length > 0 && (
         <div class:list={['border-t hairline', featuredPress ? 'mt-14 pt-12' : 'mt-10']}>
           <p class="text-xs uppercase tracking-wider text-ink-soft text-center mb-8">
-            {featuredPress ? 'Also covered by' : 'Covered by'}
+            Covered by
           </p>
           <ul class="flex flex-wrap items-center justify-center gap-x-12 gap-y-6" role="list">
             {pressStrip.map((entry) => (

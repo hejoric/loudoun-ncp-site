@@ -238,6 +238,15 @@ export default config({
               multiline: true,
               validation: { isRequired: false, length: { min: 0 } },
             }),
+            quote: fields.text({
+              label: 'Pull quote (verbatim from the article, no quote marks)',
+              multiline: true,
+              validation: { isRequired: false, length: { min: 0 } },
+            }),
+            quoteAttribution: fields.text({
+              label: 'Pull quote attribution (who said it, and their title)',
+              validation: { isRequired: false, length: { min: 0 } },
+            }),
             image: fields.image({
               label: 'Article photo (landscape, min 1200px wide)',
               directory: 'public/assets/press',
