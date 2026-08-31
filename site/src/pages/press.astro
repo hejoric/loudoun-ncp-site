@@ -1,5 +1,6 @@
 ---
 import Base from '@/layouts/Base.astro';
+import { Image, getImage } from 'astro:assets';
 import {
   getPressItems,
   groupByPublication,
@@ -13,6 +14,17 @@ const groups = groupByPublication(items);
 // The lead art doubles as this page's social preview, so a share card shows the
 // most recent story rather than the generic org image.
 const leadImage = items.find((item) => item.image);
+
+// Social crawlers and schema.org consumers want a plain JPEG at a predictable
+// size, not the responsive WebP srcset the page itself renders. Generate one
+// derivative per photo and key it by article URL for the JSON-LD below.
+const shareImages = new Map<string, string>();
+for (const item of items) {
+  if (!item.image) continue;
+  const jpeg = await getImage({ src: item.image, format: 'jpeg', width: 1200 });
+  shareImages.set(item.url, jpeg.src);
+}
+const ogImageSrc = leadImage ? shareImages.get(leadImage.url) : undefined;
 
 // Enumerate every story as a linked NewsArticle so a crawler can read the full
 // coverage list from this one URL. The `@id` is the article URL, which is the
@@ -38,7 +50,9 @@ const articleListJsonLd = {
       ...(item.date ? { datePublished: item.date } : {}),
       ...(item.byline ? { author: { '@type': 'Person', name: item.byline } } : {}),
       ...(item.summary ? { description: truncate(item.summary, 300) } : {}),
-      ...(item.image ? { image: `${SITE_URL}${item.image}` } : {}),
+      ...(shareImages.has(item.url)
+        ? { image: `${SITE_URL}${shareImages.get(item.url)}` }
+        : {}),
     },
   })),
 };
@@ -55,7 +69,7 @@ const collectionJsonLd = {
 <Base
   title="Press"
   description="Every news story, broadcast, and public record covering the Loudoun Nature Conservation Project, the student-led environmental nonprofit in Loudoun County, Virginia."
-  ogImage={leadImage?.image ?? undefined}
+  ogImage={ogImageSrc}
   ogImageAlt={leadImage?.imageAlt ?? undefined}
   breadcrumb={[['Home', '/'], ['Press', '/press/']]}
   jsonLd={[collectionJsonLd, articleListJsonLd]}
@@ -107,11 +121,11 @@ const collectionJsonLd = {
                           tabindex="-1"
                           aria-hidden="true"
                         >
-                          <img
+                          <Image
                             src={item.image}
                             alt={item.imageAlt ?? ''}
-                            width="1662"
-                            height="1247"
+                            widths={[420, 620, 840, 1100, 1400]}
+                            sizes="(min-width: 1024px) 700px, calc(100vw - 2rem)"
                             class="w-full aspect-[4/3] sm:aspect-[16/10] object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                             loading="lazy"
                             decoding="async"
