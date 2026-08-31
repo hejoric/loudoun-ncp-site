@@ -2,9 +2,9 @@
 import Base from '@/layouts/Base.astro';
 import reader from '@/lib/reader';
 import { ORG_ID, SITE_URL } from '@/lib/seo';
+import { getPressItems, formatPressDate } from '@/lib/press';
 
 const about = await reader.singletons.about.read();
-const home = await reader.singletons.home.read();
 
 const timeline = about?.historyTimeline?.length
   ? about.historyTimeline
@@ -38,7 +38,9 @@ const whatWeDo = about?.whatWeDo?.length
       },
     ];
 
-const pressLinks = home?.pressLinks ?? [];
+// Same normalized source as the homepage strip and /press/, so the three can't
+// drift apart. /press/ is the full index; this is the in-page summary.
+const pressLinks = await getPressItems();
 
 const aboutPageJsonLd = {
   '@type': 'AboutPage',
@@ -158,7 +160,14 @@ const aboutPageJsonLd = {
                 rel="noopener noreferrer"
               >
                 <span>
-                  <span class="block font-display text-lg text-ink group-hover:text-forest-900 transition-colors">{link.publication}</span>
+                  <span class="block font-display text-lg text-ink group-hover:text-forest-900 transition-colors">
+                    {link.publication}
+                    {formatPressDate(link.date) && (
+                      <span class="font-body text-xs uppercase tracking-wider text-clay ml-2 align-middle">
+                        <time datetime={link.date}>{formatPressDate(link.date)}</time>
+                      </span>
+                    )}
+                  </span>
                   <span class="block text-sm text-ink-soft mt-1">{link.headline}</span>
                 </span>
                 <span class="text-ink-soft shrink-0" aria-hidden="true">&rarr;</span>
@@ -169,6 +178,14 @@ const aboutPageJsonLd = {
       ) : (
         <p class="text-ink-soft text-sm">Contact us for press inquiries.</p>
       )}
+      <p class="mt-8">
+        <a
+          href="/press/"
+          class="text-sm text-ink border-b border-ink pb-0.5 hover:text-ink-soft hover:border-ink-soft transition-colors"
+        >
+          See the full press page
+        </a>
+      </p>
     </div>
   </section>
 </Base>

@@ -3,7 +3,13 @@ import Base from '@/layouts/Base.astro';
 import FlipCard from '@/components/FlipCard.astro';
 import reader from '@/lib/reader';
 import { resolveAffiliations } from '@/lib/affiliations';
-import { ORG_ID } from '@/lib/seo';
+import { ORG_ID, truncate } from '@/lib/seo';
+import {
+  getPressItems,
+  buildPressStrip,
+  splitFeatured,
+  formatPressDate,
+} from '@/lib/press';
 
 const home = await reader.singletons.home.read();
 const allTeam = await reader.collections.teamMembers.all();
@@ -146,18 +152,31 @@ const stats = [
 // finding six bare outbound links it has to guess the significance of. This is
 // third-party corroboration of the claims the rest of the site makes about
 // itself, which is the part an LLM can actually cite.
-const pressJsonLd = (home?.pressLinks ?? [])
-  .filter((p) => p.url && p.headline)
-  .map((p) => ({
-    '@type': 'NewsArticle',
-    '@id': p.url,
-    url: p.url,
-    headline: p.headline,
-    about: { '@id': ORG_ID },
-    ...(p.publication
-      ? { publisher: { '@type': 'NewsMediaOrganization', name: p.publication } }
-      : {}),
-  }));
+const pressItems = await getPressItems();
+
+// The newest story runs as a featured block with its own photo; the rest stay a
+// row of outlet wordmarks. Featuring it also lifts it out of that row, which is
+// what keeps two similarly named local papers (Loudoun Times-Mirror and Loudoun
+// Now) from sitting side by side as near-identical labels.
+const { featured: featuredPress } = splitFeatured(pressItems);
+
+// One wordmark per outlet, every outlet - including whichever one is featured
+// above. The row is the roster of who has covered LNCP, so leaving the newest
+// outlet out of it reads as though it never ran anything.
+const pressStrip = buildPressStrip(pressItems);
+
+const pressJsonLd = pressItems.map((p) => ({
+  '@type': 'NewsArticle',
+  '@id': p.url,
+  url: p.url,
+  headline: truncate(p.headline, 110),
+  name: p.headline,
+  about: { '@id': ORG_ID },
+  publisher: { '@type': 'NewsMediaOrganization', name: p.publication },
+  ...(p.date ? { datePublished: p.date } : {}),
+  ...(p.byline ? { author: { '@type': 'Person', name: p.byline } } : {}),
+  ...(p.summary ? { description: truncate(p.summary, 300) } : {}),
+}));
 ---
 
 <Base
@@ -541,35 +560,145 @@ const pressJsonLd = (home?.pressLinks ?? [])
     </section>
   )}
 
-  <!-- Press -->
-  <section class="bg-paper border-t hairline py-16" aria-labelledby="press-heading">
+  <!-- Press: featured story + outlet wordmarks -->
+  <section class="bg-paper border-t hairline py-16 sm:py-20" aria-labelledby="press-heading">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 id="press-heading" class="text-xs font-semibold uppercase tracking-widest text-ink-soft text-center mb-10">
+      <h2 id="press-heading" class="text-xs font-semibold uppercase tracking-widest text-ink-soft text-center">
         News on Loudoun Nature Conservation Project
       </h2>
-      <div class="flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
-        {/* Fallback mirrors src/content/singletons/home.yaml so the strip renders
-            before an editor fills the singleton in. Keep the two in sync - this
-            list had already drifted (missing WUSA9, stale WTOP headline). */}
-        {(home?.pressLinks ?? [
-          { publication: 'WUSA9', headline: 'These local students are cleaning up parks in Northern Virginia', url: 'https://www.wusa9.com/video/tech/science/environment/these-local-students-are-cleaning-up-parks-in-northern-virginia/65-71e16312-f011-4edf-a3b5-fb93d8432e6e' },
-          { publication: 'WTOP', headline: "Friends say it was a 'ridiculous idea.' That didn't stop these students from trying to make Loudoun Co. cleaner and greener", url: 'https://wtop.com/loudoun-county/2024/11/still-in-high-school-loudon-county-students-look-to-clean-up-the-environment-for-future-generations/' },
-          { publication: 'Loudoun Now', headline: 'Sterling teens create conservation nonprofit, offer weekly park cleanups', url: 'https://www.loudounnow.com/giving_back/sterling-teens-create-conservation-nonprofit-offer-weekly-park-cleanups/article_f54fbbc6-777a-11ef-a63e-a7c6205f9ce0.html' },
-          { publication: 'InsideNOVA', headline: 'Loudoun high school students are trying to clean up the environment for future generations', url: 'https://www.insidenova.com/headlines/loudoun-high-school-students-are-trying-to-clean-up-the-environment-for-future-generations/article_c7e18406-a369-11ef-a330-23b6f26e801e.html' },
-          { publication: 'U.S. Congressional Record', headline: 'Recognizing the Loudoun Nature Conservation Project', url: 'https://www.congress.gov/congressional-record/volume-172/issue-115/extensions-of-remarks-section/article/E694-2' },
-          { publication: 'Faith Alliance for Climate Solutions', headline: "Celebrating Climate Champions in Northern Virginia and Rockingham County - FACS' 2025 Sustainability Champions Awards Photos & Highlights", url: 'https://faithforclimate.org/celebrating-climate-champions-in-northern-virginia-and-rockingham-county-facs-2025-sustainability-champions-awards-photos-highlights/' },
-        ]).map((link) => (
-          <a
-            href={link.url}
-            class="font-display text-xl sm:text-2xl text-ink hover:text-clay transition-colors"
-            target="_blank"
-            rel="noopener noreferrer"
-            title={link.headline}
-          >
-            {link.publication}
-          </a>
-        ))}
-      </div>
+
+      {/* Three grid children in reading order: photo, story, pull quote.
+          On desktop the quote is placed into the left column under the photo,
+          which is what balances the two columns - the text column runs taller
+          than a 4:3 photo, and stretching the photo to match would crop a
+          quarter off the sides of a group shot. Stacked on mobile the DOM order
+          is what shows, so the quote stays after the story rather than landing
+          between the photo and the headline. */}
+      {featuredPress && (
+        <article class="grid lg:grid-cols-[1.05fr_1fr] gap-8 lg:gap-x-14 items-start mt-12">
+          <figure class="m-0 lg:col-start-1 lg:row-start-1">
+            <a
+              href={featuredPress.url}
+              class="group block overflow-hidden border hairline focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
+              target="_blank"
+              rel="noopener noreferrer"
+              tabindex="-1"
+              aria-hidden="true"
+            >
+              <img
+                src={featuredPress.image}
+                alt={featuredPress.imageAlt ?? ''}
+                width="1662"
+                height="1247"
+                class="w-full aspect-[4/3] sm:aspect-[16/10] object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                loading="lazy"
+                decoding="async"
+              />
+            </a>
+            {featuredPress.imageCredit && (
+              <figcaption class="text-xs text-ink-soft mt-3">{featuredPress.imageCredit}</figcaption>
+            )}
+          </figure>
+
+          <div class="lg:col-start-2 lg:row-start-1 lg:row-span-2">
+            <p class="text-xs font-semibold uppercase tracking-widest text-clay">
+              {featuredPress.publication}
+              {formatPressDate(featuredPress.date) && (
+                <>
+                  <span aria-hidden="true"> &middot; </span>
+                  <time datetime={featuredPress.date}>{formatPressDate(featuredPress.date)}</time>
+                </>
+              )}
+            </p>
+
+            <h3 class="font-display font-medium text-2xl sm:text-3xl leading-snug text-ink mt-4 text-balance">
+              <a
+                href={featuredPress.url}
+                class="hover:text-forest-900 transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {featuredPress.headline}
+              </a>
+            </h3>
+
+            {featuredPress.byline && (
+              <p class="text-sm text-ink-soft mt-3">By {featuredPress.byline}</p>
+            )}
+
+            {featuredPress.summary && (
+              <p class="text-base text-ink-soft leading-relaxed mt-4">{featuredPress.summary}</p>
+            )}
+
+            <a
+              href={featuredPress.url}
+              class="inline-block mt-7 text-sm text-ink border-b border-ink pb-0.5 hover:text-ink-soft hover:border-ink-soft transition-colors"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Read it on {featuredPress.publication} <span aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+
+          {featuredPress.quote && (
+            <figure class="m-0 border-l-2 border-clay pl-5 lg:col-start-1 lg:row-start-2">
+              <blockquote class="font-display text-lg sm:text-xl leading-snug text-ink">
+                &ldquo;{featuredPress.quote}&rdquo;
+              </blockquote>
+              {featuredPress.quoteAttribution && (
+                <figcaption class="text-xs uppercase tracking-wider text-ink-soft mt-3">
+                  {featuredPress.quoteAttribution}
+                </figcaption>
+              )}
+            </figure>
+          )}
+        </article>
+      )}
+
+      {pressStrip.length > 0 && (
+        <div class:list={['border-t hairline', featuredPress ? 'mt-14 pt-12' : 'mt-10']}>
+          <p class="text-xs uppercase tracking-wider text-ink-soft text-center mb-8">
+            Covered by
+          </p>
+          <ul class="flex flex-wrap items-center justify-center gap-x-12 gap-y-6" role="list">
+            {pressStrip.map((entry) => (
+              <li>
+                {entry.url ? (
+                  <a
+                    href={entry.url}
+                    class="font-display text-xl sm:text-2xl text-ink hover:text-clay transition-colors"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={entry.headline}
+                  >
+                    {entry.publication}
+                  </a>
+                ) : (
+                  /* Several stories from this outlet: send the reader to its
+                     section on /press/ rather than picking one arbitrarily. */
+                  <a
+                    href={`/press/#${entry.slug}`}
+                    class="font-display text-xl sm:text-2xl text-ink hover:text-clay transition-colors"
+                  >
+                    {entry.publication}
+                    <span class="align-super text-xs text-ink-soft ml-0.5" aria-hidden="true">{entry.count}</span>
+                    <span class="sr-only"> - {entry.count} stories, see them all on our press page</span>
+                  </a>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <p class="text-center mt-12">
+        <a
+          href="/press/"
+          class="text-sm text-ink border-b border-ink pb-0.5 hover:text-ink-soft hover:border-ink-soft transition-colors"
+        >
+          See all press coverage
+        </a>
+      </p>
     </div>
   </section>
 
