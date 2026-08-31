@@ -8,6 +8,12 @@ interface Props {
   presidentRole: string;
   presidentBio: string;
   presidentHeadshot?: string | null;
+  /** CSS object-position for the headshot crop, e.g. "center 35%". Defaults to
+   *  "top", which is right for a tight square headshot but drops the chin (and
+   *  leaves a band of sky) on a tall phone portrait. Mirrors FlipCard. */
+  presidentHeadshotPosition?: string | null;
+  /** Zoom applied on top of the crop, e.g. "0.9" to pull back. Mirrors FlipCard. */
+  presidentHeadshotScale?: string | null;
   presidentEmail?: string | null;
   presidentInstagram?: string | null;
   presidentLinkedin?: string | null;
@@ -21,6 +27,8 @@ const {
   presidentRole,
   presidentBio,
   presidentHeadshot,
+  presidentHeadshotPosition,
+  presidentHeadshotScale,
   presidentEmail,
   presidentInstagram,
   presidentLinkedin,
@@ -29,6 +37,10 @@ const {
 } = Astro.props;
 
 const MAROON = '#1B4332';
+
+const focalPoint = presidentHeadshotPosition || 'top';
+const scale = Number(presidentHeadshotScale) || 1;
+const photoStyle = `object-position:${focalPoint};${scale !== 1 ? ` transform:scale(${scale}); transform-origin:center bottom;` : ''}`;
 
 // Schools are shown as logo badges on the photo, not as text on the card. The
 // branch school is already the eyebrow above the president's name, so the
@@ -66,7 +78,8 @@ const headshotAlt = /president/i.test(presidentName)
           <img
             src={presidentHeadshot}
             alt={headshotAlt}
-            class="absolute inset-0 w-full h-full object-cover object-top"
+            class="absolute inset-0 w-full h-full object-cover"
+            style={photoStyle}
             loading="lazy"
             decoding="async"
           />
@@ -95,7 +108,8 @@ const headshotAlt = /president/i.test(presidentName)
             <img
               src={presidentHeadshot}
               alt=""
-              class="w-full h-full object-cover object-top"
+              class="w-full h-full object-cover"
+              style={`object-position:${focalPoint};`}
               loading="lazy"
               decoding="async"
               aria-hidden="true"

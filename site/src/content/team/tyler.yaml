@@ -1,11 +1,10 @@
-name: Tyler
+name: Tyler Gorthy
 role: Branch President
 section: branchPresidents
 branch: stone-bridge
 bio: Bio coming soon.
-headshot: /assets/team/placeholder-male.svg
-email: ''
-instagram: ''
-linkedin: ''
+headshot: /assets/team/tyler/headshot.jpeg
+headshotPosition: center 60%
+affiliations: []
 featuredOnHome: false
 sortOrder: 5
