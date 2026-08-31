@@ -247,10 +247,14 @@ export default config({
               label: 'Pull quote attribution (who said it, and their title)',
               validation: { isRequired: false, length: { min: 0 } },
             }),
+            // Lands in src/assets, not public/, so astro:assets optimizes it
+            // at build time - resized srcset plus a modern format - instead of
+            // shipping whatever the outlet happened to send. src/lib/press.ts
+            // maps the stored path back to the imported asset.
             image: fields.image({
               label: 'Article photo (landscape, min 1200px wide)',
-              directory: 'public/assets/press',
-              publicPath: '/assets/press/',
+              directory: 'src/assets/press',
+              publicPath: '/src/assets/press/',
               validation: { isRequired: false },
             }),
             imageAlt: fields.text({

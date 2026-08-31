@@ -12,7 +12,35 @@
  * older entries have none, so sorting by date would silently reshuffle the list
  * around whichever entries happen to be dated.
  */
+import type { ImageMetadata } from 'astro';
 import reader from './reader';
+
+/**
+ * Press photos live in src/assets/press so astro:assets can optimize them.
+ *
+ * Keystatic stores the image as a path string, but astro:assets needs the
+ * imported module to do anything with it, so the directory is globbed eagerly
+ * and the stored path looked up here. A path with no matching file throws at
+ * build time rather than shipping a broken <img> - the whole point of routing
+ * these through the pipeline is that a new upload is optimized automatically,
+ * so a silent miss would defeat it.
+ */
+const PRESS_IMAGES = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/assets/press/*.{jpg,jpeg,png,webp,avif}',
+  { eager: true },
+);
+
+function resolveImage(path: string | null | undefined): ImageMetadata | null {
+  if (!path) return null;
+  const mod = PRESS_IMAGES[path];
+  if (!mod) {
+    throw new Error(
+      `Press image "${path}" is not in src/assets/press. ` +
+        `Known: ${Object.keys(PRESS_IMAGES).join(', ') || '(none)'}`,
+    );
+  }
+  return mod.default;
+}
 
 export interface PressItem {
   publication: string;
@@ -25,7 +53,8 @@ export interface PressItem {
   /** Verbatim pull quote from the article, stored without quote marks. */
   quote: string | null;
   quoteAttribution: string | null;
-  image: string | null;
+  /** Imported asset, ready for <Image>. Null when the entry has no photo. */
+  image: ImageMetadata | null;
   imageAlt: string | null;
   imageCredit: string | null;
 }
@@ -46,7 +75,7 @@ export async function getPressItems(): Promise<PressItem[]> {
       summary: p.summary || null,
       quote: p.quote || null,
       quoteAttribution: p.quoteAttribution || null,
-      image: p.image || null,
+      image: resolveImage(p.image),
       imageAlt: p.imageAlt || null,
       imageCredit: p.imageCredit || null,
     }));
@@ -58,8 +87,11 @@ export async function getPressItems(): Promise<PressItem[]> {
  * The homepage gives `featured` a photo and a summary and lists `rest` as bare
  * wordmarks, so the featured outlet never appears twice in the same section.
  */
+/** A press item known to carry art - what the featured slot requires. */
+export type FeaturedPressItem = PressItem & { image: ImageMetadata };
+
 export function splitFeatured(items: PressItem[]): {
-  featured: PressItem | null;
+  featured: FeaturedPressItem | null;
   rest: PressItem[];
 } {
   if (items.length === 0) return { featured: null, rest: [] };
@@ -68,7 +100,7 @@ export function splitFeatured(items: PressItem[]): {
   // image the featured block would render as an empty half, so fall back to
   // listing everything as wordmarks.
   if (!first.image) return { featured: null, rest: items };
-  return { featured: first, rest };
+  return { featured: first as FeaturedPressItem, rest };
 }
 
 export interface PressStripEntry {

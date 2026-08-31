@@ -1,5 +1,6 @@
 ---
 import Base from '@/layouts/Base.astro';
+import { Image } from 'astro:assets';
 import FlipCard from '@/components/FlipCard.astro';
 import reader from '@/lib/reader';
 import { resolveAffiliations } from '@/lib/affiliations';
@@ -585,11 +586,14 @@ const pressJsonLd = pressItems.map((p) => ({
               tabindex="-1"
               aria-hidden="true"
             >
-              <img
+              {/* The column tops out near 700px CSS, so the widths ladder
+                  covers 1x and 2x without shipping the full-size original to
+                  every visitor. */}
+              <Image
                 src={featuredPress.image}
                 alt={featuredPress.imageAlt ?? ''}
-                width="1662"
-                height="1247"
+                widths={[420, 620, 840, 1100, 1400]}
+                sizes="(min-width: 1280px) 600px, (min-width: 1024px) 46vw, (min-width: 640px) 92vw, calc(100vw - 2rem)"
                 class="w-full aspect-[4/3] sm:aspect-[16/10] object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                 loading="lazy"
                 decoding="async"
