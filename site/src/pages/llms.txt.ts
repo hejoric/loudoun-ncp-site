@@ -9,6 +9,7 @@
  */
 import type { APIRoute } from 'astro';
 import reader from '@/lib/reader';
+import { getPressItems } from '@/lib/press';
 import { ORG_EMAIL, SITE_URL } from '@/lib/seo';
 import { getSocialLinks } from '@/lib/social';
 
@@ -18,6 +19,7 @@ const PAGES: Array<[string, string, string]> = [
   ['Research', '/research/', 'Index of student environmental science publications'],
   ['Team', '/team/', 'Executive team, directors, and school branch presidents'],
   ['Events', '/events/', 'Upcoming and past cleanups, restoration events, and workshops'],
+  ['Press', '/press/', 'Every news story, broadcast, and public record covering LNCP'],
   ['Volunteer', '/volunteer/', 'How to join cleanups and conservation efforts'],
   ['Funding', '/funding/', 'How the nonprofit is funded and how to support it'],
   ['Contact', '/contact/', 'Partnerships, press, and general inquiries'],
@@ -47,8 +49,9 @@ export const GET: APIRoute = async () => {
   // Settings shows up here too instead of leaving a stale URL behind.
   const socialLinks = await getSocialLinks();
 
-  const home = await reader.singletons.home.read();
-  const press = (home?.pressLinks ?? []).filter((p) => p.url && p.headline && p.publication);
+  // Same normalized list the site renders, so this file cannot claim coverage
+  // the pages don't show (or miss coverage they do).
+  const press = await getPressItems();
 
   const leadership = members
     .filter((m) => m.entry.section === 'executive' || m.entry.section === 'directors')
@@ -131,7 +134,13 @@ export const GET: APIRoute = async () => {
     lines.push('Third-party reporting on LNCP, for citation.');
     lines.push('');
     for (const p of press) {
-      lines.push(`- ${p.publication}: [${p.headline}](${p.url})`);
+      // formatDate() prints "undated" for a missing date, which is useful in a
+      // publication list where every paper has one. Most press entries predate
+      // the date field, so here an unknown date is simply omitted.
+      const meta = [p.byline ? `by ${p.byline}` : null, p.date ? formatDate(p.date) : null]
+        .filter(Boolean)
+        .join(', ');
+      lines.push(`- ${p.publication}: [${p.headline}](${p.url})${meta ? ` (${meta})` : ''}`);
     }
     lines.push('');
   }
