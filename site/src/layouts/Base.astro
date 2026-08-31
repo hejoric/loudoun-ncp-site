@@ -31,6 +31,8 @@ interface Props {
   titleSuffix?: string;
   /** Keep this page out of the index (404, thin utility pages). */
   noindex?: boolean;
+  /** Also tell crawlers not to follow this page's links. Only read when `noindex` is set. */
+  nofollow?: boolean;
   /** Preloaded as the LCP candidate. */
   preloadImage?: string;
   breadcrumb?: Array<[name: string, path: string]>;
@@ -47,11 +49,19 @@ const {
   publishedTime,
   titleSuffix = ORG_NAME,
   noindex = false,
+  nofollow = false,
   preloadImage,
   breadcrumb,
 } = Astro.props;
 
 const canonical = canonicalUrl ?? `${SITE_URL}${Astro.url.pathname}`;
+
+// Excluded pages still keep `follow` by default, so link equity from a thin
+// utility page reaches the real pages it points at. `nofollow` is opt-in, for
+// the pages that exist only to be read by one named party.
+const robots = noindex
+  ? `noindex, ${nofollow ? 'nofollow' : 'follow'}`
+  : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
 
 // Keep <title> inside the ~65 chars Google renders. The budget is computed
 // against the suffix so the *combined* string fits, rather than truncating the
@@ -100,13 +110,7 @@ const graph = buildGraph([
     <title>{fullTitle}</title>
     <meta name="description" content={metaDescription} />
     <link rel="canonical" href={canonical} />
-    {
-      noindex ? (
-        <meta name="robots" content="noindex, follow" />
-      ) : (
-        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-      )
-    }
+    <meta name="robots" content={robots} />
 
     {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
 

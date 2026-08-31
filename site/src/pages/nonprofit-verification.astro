@@ -1,0 +1,66 @@
+---
+/**
+ * Hidden, unlinked page for Google Workspace for Nonprofits manual verification.
+ *
+ * It exists so a reviewer can confirm the organization's registered details on
+ * the organization's own domain. It carries the director's home address, which
+ * is the registered address of record, so it is deliberately kept out of every
+ * discovery surface: `noindex, nofollow`, excluded from the sitemap in
+ * astro.config.mjs, and absent from the nav, the footer, and llms.txt. Do not
+ * link to it.
+ */
+import Base from '@/layouts/Base.astro';
+
+const details = [
+  { label: 'Official Organization Name', value: 'LOUDOUN NATURE CONSERVATION PROJECT' },
+  { label: 'Charity ID / EIN', value: '99-2688842' },
+  { label: 'Registered Address', value: '45601 Livingstone Station St\nSterling, VA 20166-9287' },
+  {
+    label: 'Official Contact',
+    value: 'directors@loudounnatureconservation.org',
+    href: 'mailto:directors@loudounnatureconservation.org',
+  },
+];
+---
+
+<Base
+  title="Nonprofit Verification Details"
+  description="Registered organization details for Loudoun Nature Conservation Project, provided for nonprofit program verification."
+  titleSuffix="LNCP"
+  noindex
+  nofollow
+>
+  <section class="py-16 sm:py-24 bg-paper-2">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 class="font-display font-medium text-3xl sm:text-4xl text-ink">
+        Nonprofit Verification Details
+      </h1>
+      <p class="mt-4 text-ink-soft">
+        Provided for manual nonprofit program verification. This page is not linked from anywhere
+        on the site and is not indexed by search engines.
+      </p>
+
+      <dl class="mt-10 bg-paper border hairline divide-y hairline">
+        {details.map((detail) => (
+          <div class="p-6 sm:px-7 sm:grid sm:grid-cols-3 sm:gap-6">
+            <dt class="text-sm font-semibold text-ink">{detail.label}</dt>
+            <dd class="mt-1 sm:mt-0 sm:col-span-2 text-ink-soft whitespace-pre-line">
+              {detail.href ? (
+                <a href={detail.href} class="underline underline-offset-2 hover:text-ink transition-colors">
+                  {detail.value}
+                </a>
+              ) : (
+                detail.value
+              )}
+            </dd>
+          </div>
+        ))}
+      </dl>
+
+      <p class="mt-8 text-xs text-ink-soft">
+        Loudoun Nature Conservation Project is a 501(c)(3) nonprofit incorporated in the
+        Commonwealth of Virginia. Incorporation documents are available on request.
+      </p>
+    </div>
+  </section>
+</Base>

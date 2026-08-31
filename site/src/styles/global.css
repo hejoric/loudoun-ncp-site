@@ -65,6 +65,15 @@ h1, h2, h3, h4, h5, h6 {
   border-color: rgba(23, 40, 31, 0.14);
 }
 
+/* `divide-*` sets only a border *width* on the children, so the rules between
+   rows fell back to `currentColor` and rendered ~7x darker than the container
+   border they were meant to match. Scoped to elements that ask for both, so a
+   plain `.hairline` box does not restyle its descendants' borders. */
+.divide-y.hairline > *,
+.divide-x.hairline > * {
+  border-color: rgba(23, 40, 31, 0.14);
+}
+
 /* Scroll-expand media blocks: JS sets --expand from 0 to 1 as the block
    enters the viewport; without JS (or with reduced motion) it stays at 1. */
 [data-scroll-expand] {
