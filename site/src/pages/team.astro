@@ -45,7 +45,12 @@ if (!allMembers.some((m) => personId(m.slug) === FOUNDER_ID)) {
   );
 }
 
-const personJsonLd = allMembers.map((m) => {
+// A tentative seat is a placeholder for a role nobody has been named to yet, so
+// there is no person for a Person node to describe: its `name` is a stand-in
+// ("To be announced"), not anybody's name. The card still renders on the page,
+// but describing the vacancy as an employee of LNCP in the structured data
+// would assert a person who does not exist.
+const personJsonLd = allMembers.filter((m) => !m.entry.tentative).map((m) => {
   const sameAs = [m.entry.linkedin, m.entry.instagram, m.entry.website].filter(Boolean);
   return {
     '@type': 'Person',
@@ -125,6 +130,8 @@ const rosterJsonLd = {
                 website={m.entry.website ?? undefined}
                 affiliations={schoolsFor(m)}
                 accentColor={ACCENT}
+                cardId={m.slug}
+                tentative={m.entry.tentative ?? false}
               />
             </div>
           ))}
@@ -156,6 +163,8 @@ const rosterJsonLd = {
                 website={m.entry.website ?? undefined}
                 affiliations={schoolsFor(m)}
                 accentColor={ACCENT}
+                cardId={m.slug}
+                tentative={m.entry.tentative ?? false}
               />
             </div>
           ))}
@@ -187,6 +196,8 @@ const rosterJsonLd = {
                 website={m.entry.website ?? undefined}
                 affiliations={schoolsFor(m)}
                 accentColor={ACCENT}
+                cardId={m.slug}
+                tentative={m.entry.tentative ?? false}
               />
             </div>
           ))}
@@ -222,6 +233,7 @@ const rosterJsonLd = {
                   presidentLinkedin={m.entry.linkedin ?? undefined}
                   branchName={branch?.entry.name ?? m.entry.branch ?? 'Branch'}
                   affiliations={schoolsFor(m)}
+                  tentative={m.entry.tentative ?? false}
                 />
               </div>
             );
@@ -257,6 +269,8 @@ const rosterJsonLd = {
                 website={m.entry.website ?? undefined}
                 affiliations={schoolsFor(m)}
                 accentColor={ACCENT}
+                cardId={m.slug}
+                tentative={m.entry.tentative ?? false}
               />
             </div>
           ))}

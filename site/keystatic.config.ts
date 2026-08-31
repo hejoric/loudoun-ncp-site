@@ -87,6 +87,12 @@ export default config({
             itemLabel: (props) => props.fields.name.value || 'Affiliation',
           }
         ),
+        tentative: fields.checkbox({
+          label: 'Vacant seat (no person named yet)',
+          description:
+            'Check this for a placeholder that holds a spot on the roster before anyone has been named to it - e.g. a new branch whose president is still being confirmed. The card still renders, with the neutral silhouette, but the member is left out of the page\'s structured data, because there is no real person to describe there yet. Uncheck it as soon as the seat has a name, even if their photo and bio are still coming.',
+          defaultValue: false,
+        }),
         featuredOnHome: fields.checkbox({
           label: 'Feature on Home Page',
           defaultValue: false,

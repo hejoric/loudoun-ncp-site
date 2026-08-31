@@ -112,7 +112,13 @@ export const GET: APIRoute = async () => {
 
   lines.push('## Branches');
   for (const b of branches) {
-    lines.push(`- ${b.entry.name}${b.entry.school ? ` (${b.entry.school})` : ''}`);
+    // The parenthetical expands the short branch name ("NOVA") into the full
+    // school name. A regional branch names no single school, so its record
+    // repeats the branch name there and the parenthetical would read
+    // "Korea (Korea)".
+    const school = b.entry.school?.trim();
+    const expands = school && school.toLowerCase() !== b.entry.name.toLowerCase();
+    lines.push(`- ${b.entry.name}${expands ? ` (${school})` : ''}`);
   }
   lines.push('');
 

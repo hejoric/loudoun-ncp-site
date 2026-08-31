@@ -20,6 +20,11 @@ interface Props {
   branchName: string;
   /** Branch school first, then any college the president has added. */
   affiliations?: readonly Affiliation[];
+  /** No one has been named to this seat yet, so `presidentName` is a stand-in
+   *  ("To be announced") rather than a person. The card reads the same either
+   *  way; only the strings that would otherwise talk about a nonexistent
+   *  person - the card's accessible name and the photo's alt text - change. */
+  tentative?: boolean;
 }
 
 const {
@@ -34,6 +39,7 @@ const {
   presidentLinkedin,
   branchName,
   affiliations = [],
+  tentative = false,
 } = Astro.props;
 
 const MAROON = '#1B4332';
@@ -48,11 +54,14 @@ const photoStyle = `object-position:${focalPoint};${scale !== 1 ? ` transform:sc
 // cover (e.g. the college they were accepted to).
 const otherSchools = affiliationLabel(affiliations.filter((a) => a.source !== 'branch'));
 
-// A vacant seat is a placeholder record literally named "NOVA Branch
-// President", so naming the role again gives "NOVA Branch President, NOVA
-// branch president". When the name already carries the title, it stands alone.
-const headshotAlt = /president/i.test(presidentName)
-  ? presidentName
+// On a vacant seat there is no one to name, so both of these describe the seat
+// instead of a person: "To be announced's profile" and "To be announced,
+// Heritage branch president" both read as if the placeholder were somebody.
+const cardLabel = tentative
+  ? `${branchName} Branch - branch president to be announced`
+  : `View ${presidentName}'s profile - ${branchName} Branch`;
+const headshotAlt = tentative
+  ? `${branchName} branch president, to be announced`
   : `${presidentName}, ${branchName} branch president`;
 ---
 
@@ -65,7 +74,7 @@ const headshotAlt = /president/i.test(presidentName)
   class="card-flip w-full h-80 cursor-pointer"
   tabindex="0"
   role="button"
-  aria-label={`View ${presidentName}'s profile - ${branchName} Branch`}
+  aria-label={cardLabel}
   aria-pressed="false"
   data-card-flip
 >
@@ -93,8 +102,16 @@ const headshotAlt = /president/i.test(presidentName)
         <AffiliationBadges affiliations={affiliations} />
       </div>
 
-      <!-- Name band -->
-      <div class="px-3 py-2 text-center" style="background:#1B4332;">
+      {/* Name band. Constant height for the same reason as FlipCard's: the photo
+          above is flex-1, so a card whose name wraps to two lines would pull its
+          photo/band seam higher than its row-mates', and the row would step up
+          and down. Every name we have today fits on one line (50px) at both the
+          256px desktop card and the narrower phone one, but names are editor
+          content and a long one will turn up; a two-line name measures 67px, so
+          4.375rem (70px) reserves for it with a little slack. Content is
+          centered so a one-line name reads as a roomier band rather than
+          leaving a gap underneath. */}
+      <div class="px-3 py-2 text-center flex flex-col justify-center min-h-[4.375rem]" style="background:#1B4332;">
         <p class="text-white/70 text-xs uppercase tracking-wide">{branchName}</p>
         <p class="font-display font-bold text-white text-sm leading-tight">{presidentName}</p>
       </div>
@@ -171,7 +188,9 @@ const headshotAlt = /president/i.test(presidentName)
       )}
 
       <span class="sr-only">
-        {presidentName}, {presidentRole} of {branchName}.{otherSchools ? ` ${otherSchools}.` : ''} {presidentBio}
+        {tentative
+          ? `${branchName} ${presidentRole.toLowerCase()}: to be announced.`
+          : `${presidentName}, ${presidentRole} of ${branchName}.`}{otherSchools ? ` ${otherSchools}.` : ''} {presidentBio}
       </span>
     </div>
   </div>
