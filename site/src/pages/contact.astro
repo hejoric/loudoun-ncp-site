@@ -1,7 +1,7 @@
 ---
 import Base from '@/layouts/Base.astro';
 import SocialLinks from '@/components/SocialLinks.astro';
-import { ORG_EMAIL, ORG_ID, SITE_URL } from '@/lib/seo';
+import { ORG_ADDRESS_SHORT, ORG_EIN, ORG_EMAIL, ORG_ID, ORG_NAME, SITE_URL } from '@/lib/seo';
 
 const contactPageJsonLd = {
   '@type': 'ContactPage',
@@ -94,6 +94,48 @@ const contactPageJsonLd = {
           </p>
           <SocialLinks variant="labeled" class="pt-1" />
         </div>
+      </div>
+
+      <!--
+        Registered details. Grant portals, matching-gift programs, and nonprofit
+        program reviewers look for the legal name and Charity ID on a contact
+        page, so they are stated here rather than only in the footer. The street
+        line is not shown: it is a private residence, and lives on the noindex
+        /nonprofit-verification/ page linked below.
+      -->
+      <div class="mt-8 bg-paper border hairline p-8">
+        <h2 class="font-display font-medium text-ink text-xl">Organization Details</h2>
+        <dl class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+          <div>
+            <dt class="font-semibold text-ink">Legal Name</dt>
+            <dd class="text-ink-soft mt-0.5">{ORG_NAME}</dd>
+          </div>
+          <div>
+            <dt class="font-semibold text-ink">Charity ID / EIN</dt>
+            <dd class="text-ink-soft mt-0.5">{ORG_EIN}</dd>
+          </div>
+          <div>
+            <dt class="font-semibold text-ink">Tax Status</dt>
+            <dd class="text-ink-soft mt-0.5">501(c)(3) nonprofit, incorporated in Virginia</dd>
+          </div>
+          <div>
+            <dt class="font-semibold text-ink">Registered Office</dt>
+            <dd class="text-ink-soft mt-0.5">
+              <address class="not-italic">{ORG_ADDRESS_SHORT}</address>
+            </dd>
+          </div>
+        </dl>
+        <p class="mt-5 text-xs text-ink-soft leading-relaxed">
+          For the full physical street address and registration record, see the{' '}
+          <a href="/nonprofit-verification/" class="underline underline-offset-2 hover:text-ink transition-colors">
+            nonprofit verification
+          </a>{' '}
+          page. Incorporation documents are on the{' '}
+          <a href="/proof-of-corporation/" class="underline underline-offset-2 hover:text-ink transition-colors">
+            proof of corporation
+          </a>{' '}
+          page.
+        </p>
       </div>
     </div>
   </section>

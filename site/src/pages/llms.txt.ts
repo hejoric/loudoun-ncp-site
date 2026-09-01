@@ -10,7 +10,7 @@
 import type { APIRoute } from 'astro';
 import reader from '@/lib/reader';
 import { getPressItems } from '@/lib/press';
-import { ORG_EMAIL, SITE_URL } from '@/lib/seo';
+import { ORG_ADDRESS_SHORT, ORG_EIN, ORG_EMAIL, SITE_URL } from '@/lib/seo';
 import { getSocialLinks } from '@/lib/social';
 
 const PAGES: Array<[string, string, string]> = [
@@ -153,7 +153,11 @@ export const GET: APIRoute = async () => {
 
   lines.push('## Facts');
   lines.push('- Type: 501(c)(3) nonprofit, student-led');
+  lines.push(`- Charity ID / EIN: ${ORG_EIN}`);
   lines.push('- Incorporated: April 2024, Commonwealth of Virginia');
+  // Locality only. The street line is the founder's home; it is confined to the
+  // noindex /nonprofit-verification/ page and deliberately absent from here.
+  lines.push(`- Registered office: ${ORG_ADDRESS_SHORT}`);
   lines.push('- Founder: Ryan Nisay (co-founders Christian Shire and Carter Lepuil)');
   lines.push('- Location: Loudoun County, Virginia, USA');
   lines.push(
