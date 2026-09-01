@@ -35,6 +35,8 @@ const showcaseMembers = [
   .filter((m) => m.entry.headshot)
   .map((m) => {
     return {
+      slug: m.slug,
+      tentative: m.entry.tentative ?? false,
       name: m.entry.name,
       role: m.entry.role,
       bio: m.entry.bio,
@@ -532,6 +534,8 @@ const pressJsonLd = pressItems.map((p) => ({
                     website={member.website}
                     affiliations={member.affiliations}
                     accentColor="#1B4332"
+                    cardId={member.slug}
+                    tentative={member.tentative}
                   />
                 </div>
               ))

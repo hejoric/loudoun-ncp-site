@@ -23,6 +23,15 @@ interface Props {
   /** False for the duplicate cards a looping strip renders: they stay clickable
    *  but drop out of the tab order, since they are aria-hidden. */
   focusable?: boolean;
+  /** Identity used to turn every copy of this card together (see flipKey below).
+   *  Pass the member's content slug: it is unique by construction, where the
+   *  display name is not - vacant seats all read "To be announced", and two
+   *  members could share a name. */
+  cardId?: string;
+  /** No one has been named to this seat yet, so `name` is a stand-in rather than
+   *  a person, and the portrait is a generic silhouette. Only the strings that
+   *  would otherwise describe a nonexistent person change. */
+  tentative?: boolean;
 }
 
 const {
@@ -41,14 +50,28 @@ const {
   avatarSize = 'w-10 h-10',
   hoverFlip = true,
   focusable = true,
+  cardId,
+  tentative = false,
 } = Astro.props;
 
 // Every card for the same person shares this key so duplicates (the home strip
-// renders the roster twice to loop seamlessly) turn together.
-const flipKey = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+// renders the roster twice to loop seamlessly) turn together. It has to be the
+// member's identity, not their display name: vacant seats are all named "To be
+// announced", so keying on the name grouped four unrelated cards and clicking
+// any one of them turned all four.
+const flipKey = (cardId ?? name).toLowerCase().replace(/[^a-z0-9]+/g, '-');
 const focalPoint = headshotPosition || 'top';
 const scale = Number(headshotScale) || 1;
 const schools = affiliationLabel(affiliations);
+// On a vacant seat there is no one to name, so anything that would otherwise
+// talk about a person describes the seat instead. "View To be announced's
+// profile" and "To be announced headshot" both read as if the placeholder were
+// somebody; the school, where there is one, keeps the four vacancy cards on the
+// home strip distinguishable from each other. The portrait itself is a generic
+// silhouette carrying no information the card text does not already give, so it
+// drops out of the accessibility tree entirely.
+const seatLabel = [affiliations[0]?.name, role].filter(Boolean).join(' ');
+const cardLabel = tentative ? `${seatLabel} - to be announced` : `View ${name}'s profile`;
 // Links on the back of a duplicate card must not be tab stops either.
 const linkTabIndex = focusable ? undefined : -1;
 ---
@@ -57,7 +80,7 @@ const linkTabIndex = focusable ? undefined : -1;
   class:list={['card-flip w-full h-80 cursor-pointer', { 'card-flip-no-hover': !hoverFlip }]}
   tabindex={focusable ? 0 : -1}
   role="button"
-  aria-label={`View ${name}'s profile`}
+  aria-label={cardLabel}
   aria-pressed="false"
   data-card-flip
   data-flip-key={flipKey}
@@ -70,7 +93,7 @@ const linkTabIndex = focusable ? undefined : -1;
         {headshot ? (
           <img
             src={headshot}
-            alt={`${name} headshot`}
+            alt={tentative ? '' : `${name} headshot`}
             class="absolute inset-0 w-full h-full object-cover"
             style={`object-position:${focalPoint};${scale !== 1 ? ` transform:scale(${scale}); transform-origin:center bottom;` : ''}`}
             loading="lazy"
@@ -202,7 +225,7 @@ const linkTabIndex = focusable ? undefined : -1;
       )}
 
       <!-- Screen-reader bio (always in DOM for SEO) -->
-      <span class="sr-only">{name}, {role}.{schools ? ` ${schools}.` : ''} {bio}</span>
+      <span class="sr-only">{tentative ? `${seatLabel}: to be announced.` : `${name}, ${role}.`}{schools ? ` ${schools}.` : ''} {bio}</span>
     </div>
   </div>
 </div>

@@ -81,6 +81,22 @@ second school (e.g. the college a senior was accepted to) under **Additional
 Affiliations** on their Team Members entry. See "Schools on a card" in the
 README for the field details.
 
+### Holding a spot before you have a name
+
+A new branch can go on the site before its president is confirmed. Add the
+branch under **Branches**, then add a Team Members entry for the seat with
+**Vacant seat (no person named yet)** checked, the name left as
+`To be announced`, and the headshot pointed at
+`/assets/team/placeholder-neutral.svg`. The card renders like any other, with a
+neutral silhouette and the school badge, and the seat is left out of the page's
+structured data so search engines are not told about a person who does not exist
+yet.
+
+When their name arrives, edit that same entry: set the real name, uncheck
+**Vacant seat**, and replace the headshot when you have the photo. Uncheck it as
+soon as there is a name even if the photo and bio are still coming - a real
+person with `Bio coming soon.` is not a vacant seat.
+
 ---
 
 ## Path 2: The director (non-technical) - GitHub web editor
