@@ -1,24 +1,47 @@
 ---
 /**
- * Hidden, unlinked page for Google Workspace for Nonprofits manual verification.
+ * Public verification page for nonprofit program reviewers (Google for
+ * Nonprofits, TechSoup, matching-gift portals).
  *
  * It exists so a reviewer can confirm the organization's registered details on
- * the organization's own domain. It carries the director's home address, which
- * is the registered address of record, so it is deliberately kept out of every
- * discovery surface: `noindex, nofollow`, excluded from the sitemap in
- * astro.config.mjs, and absent from the nav, the footer, and llms.txt. Do not
- * link to it.
+ * the organization's own domain. It is linked from the site footer, because a
+ * reviewer who cannot find the details treats them as absent - that is exactly
+ * why the first Google Workspace for Nonprofits application was rejected.
+ *
+ * It nonetheless carries the founder's home address, which is the registered
+ * address of record, so it is kept out of the surfaces that would spread it:
+ * `noindex` here, excluded from the sitemap in astro.config.mjs, and absent
+ * from llms.txt. Reachable by anyone who follows the footer link; not crawled.
  */
 import Base from '@/layouts/Base.astro';
+import {
+  ORG_ADDRESS,
+  ORG_ADDRESS_FULL,
+  ORG_EIN,
+  ORG_EMAIL,
+  ORG_NAME,
+  SITE_URL,
+} from '@/lib/seo';
 
-const details = [
-  { label: 'Official Organization Name', value: 'LOUDOUN NATURE CONSERVATION PROJECT' },
-  { label: 'Charity ID / EIN', value: '99-2688842' },
-  { label: 'Registered Address', value: '45601 Livingstone Station St\nSterling, VA 20166-9287' },
+const details: Array<{ label: string; value: string; href?: string }> = [
+  { label: 'Legal Organization Name', value: ORG_NAME.toUpperCase() },
+  { label: 'Charity ID / EIN', value: ORG_EIN },
+  { label: 'Tax Status', value: '501(c)(3) tax-exempt charitable organization' },
+  {
+    label: 'Physical Street Address',
+    value: `${ORG_ADDRESS.street}\n${ORG_ADDRESS.locality}, ${ORG_ADDRESS.region} ${ORG_ADDRESS.postalCode}\nUnited States`,
+  },
+  { label: 'State of Incorporation', value: 'Commonwealth of Virginia' },
+  { label: 'Date of Incorporation', value: 'April 26, 2024' },
+  {
+    label: 'Official Domain',
+    value: 'loudounnatureconservation.org',
+    href: `${SITE_URL}/`,
+  },
   {
     label: 'Official Contact',
-    value: 'directors@loudounnatureconservation.org',
-    href: 'mailto:directors@loudounnatureconservation.org',
+    value: ORG_EMAIL,
+    href: `mailto:${ORG_EMAIL}`,
   },
 ];
 ---
@@ -28,16 +51,17 @@ const details = [
   description="Registered organization details for Loudoun Nature Conservation Project, provided for nonprofit program verification."
   titleSuffix="LNCP"
   noindex
-  nofollow
 >
   <section class="py-16 sm:py-24 bg-paper-2">
     <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p class="font-display italic text-clay text-lg mb-3">Legal</p>
       <h1 class="font-display font-medium text-3xl sm:text-4xl text-ink">
         Nonprofit Verification Details
       </h1>
-      <p class="mt-4 text-ink-soft">
-        Provided for manual nonprofit program verification. This page is not linked from anywhere
-        on the site and is not indexed by search engines.
+      <p class="mt-4 text-ink-soft leading-relaxed">
+        {ORG_NAME} is a student-led 501(c)(3) nonprofit corporation registered in the Commonwealth
+        of Virginia. The details below are the organization's registration of record, published
+        here on its official domain for nonprofit program verification.
       </p>
 
       <dl class="mt-10 bg-paper border hairline divide-y hairline">
@@ -57,9 +81,25 @@ const details = [
         ))}
       </dl>
 
-      <p class="mt-8 text-xs text-ink-soft">
-        Loudoun Nature Conservation Project is a 501(c)(3) nonprofit incorporated in the
-        Commonwealth of Virginia. Incorporation documents are available on request.
+      <div class="mt-8 bg-paper border hairline p-6 sm:p-7">
+        <h2 class="font-display font-medium text-ink text-lg">Supporting documentation</h2>
+        <p class="mt-2 text-sm text-ink-soft leading-relaxed">
+          The Virginia State Corporation Commission Certificate of Incorporation, the articles of
+          incorporation, and the organization's bylaws are published in full on the{' '}
+          <a href="/proof-of-corporation/" class="underline underline-offset-2 hover:text-ink transition-colors">
+            Proof of Corporation
+          </a>{' '}
+          page. IRS determination documentation is available on request at{' '}
+          <a href={`mailto:${ORG_EMAIL}`} class="underline underline-offset-2 hover:text-ink transition-colors">
+            {ORG_EMAIL}
+          </a>.
+        </p>
+      </div>
+
+      <p class="mt-8 text-xs text-ink-soft leading-relaxed">
+        Mailing address for correspondence: {ORG_ADDRESS_FULL}. This address is the organization's
+        registered office and is also a private residence, so this page is excluded from search
+        engine indexing. Donations to {ORG_NAME} are tax-deductible as allowed by law.
       </p>
     </div>
   </section>

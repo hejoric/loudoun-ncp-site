@@ -1,5 +1,6 @@
 ---
 import Base from '@/layouts/Base.astro';
+import { ORG_EIN, ORG_EMAIL, ORG_NAME } from '@/lib/seo';
 
 const docs = [
   {
@@ -37,6 +38,9 @@ const docs = [
       <p class="mt-5 text-ink-soft max-w-2xl mx-auto">
         Loudoun Nature Conservation Project is a legally incorporated 501(c)(3) nonprofit organization in the Commonwealth of Virginia, effective April 26, 2024.
       </p>
+      <p class="mt-4 text-sm text-ink-soft">
+        Charity ID / EIN <span class="text-ink font-medium">{ORG_EIN}</span>
+      </p>
     </div>
   </div>
 
@@ -62,8 +66,17 @@ const docs = [
         </div>
       ))}
 
-      <p class="text-xs text-ink-soft mt-8 text-center">
-        EIN and additional legal documentation available upon request at directors@loudounnatureconservation.org
+      <p class="text-xs text-ink-soft mt-8 text-center leading-relaxed">
+        {ORG_NAME} is a nonprofit, tax-exempt charitable organization under Section 501(c)(3) of
+        the U.S. Internal Revenue Code, Charity ID / EIN {ORG_EIN}. Full registration details,
+        including the organization's physical street address, are on the{' '}
+        <a href="/nonprofit-verification/" class="underline underline-offset-2 hover:text-ink transition-colors">
+          nonprofit verification
+        </a>{' '}
+        page. Additional legal documentation is available on request at{' '}
+        <a href={`mailto:${ORG_EMAIL}`} class="underline underline-offset-2 hover:text-ink transition-colors">
+          {ORG_EMAIL}
+        </a>.
       </p>
     </div>
   </section>

@@ -7,7 +7,7 @@
  */
 import type { APIRoute } from 'astro';
 import reader from '@/lib/reader';
-import { ORG_EMAIL, SITE_URL } from '@/lib/seo';
+import { ORG_ADDRESS_SHORT, ORG_EIN, ORG_EMAIL, SITE_URL } from '@/lib/seo';
 
 function formatDate(date: string | null) {
   if (!date) return 'undated';
@@ -41,6 +41,8 @@ export const GET: APIRoute = async () => {
   lines.push('');
   lines.push(`Canonical site: ${SITE_URL}/`);
   lines.push(`Contact: ${ORG_EMAIL}`);
+  lines.push(`Charity ID / EIN: ${ORG_EIN}`);
+  lines.push(`Registered office: ${ORG_ADDRESS_SHORT}`);
   lines.push('');
 
   if (about?.mission) {

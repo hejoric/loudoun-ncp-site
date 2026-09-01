@@ -16,9 +16,10 @@ export default defineConfig({
       // which is what drives recrawl priority. See sitemap-meta.mjs.
       serialize: serializeSitemapEntry,
       // 404 is excluded automatically; keep utility routes out of the index too.
-      // /nonprofit-verification/ is a noindex page holding the director's home
-      // address, shared only with nonprofit program reviewers - listing it in the
-      // sitemap would invite exactly the crawling its robots tag forbids.
+      // /nonprofit-verification/ is linked from the footer so nonprofit program
+      // reviewers can reach it, but it holds the founder's home address, so it
+      // stays noindex - listing it in the sitemap would invite exactly the
+      // crawling its robots tag forbids.
       filter: (page) =>
         !page.includes('/keystatic') && !page.includes('/nonprofit-verification'),
     }),
