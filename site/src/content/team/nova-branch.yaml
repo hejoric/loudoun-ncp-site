@@ -3,9 +3,9 @@ role: Branch President
 section: branchPresidents
 branch: nova
 bio: NOVA branch president position - in progress.
-headshot: /assets/team/placeholder-neutral.svg
-email: ''
-instagram: ''
-linkedin: ''
+headshot: /assets/team/nova-branch/headshot.jpg
+headshotPosition: center 35%
+affiliations: []
+tentative: false
 featuredOnHome: false
 sortOrder: 6
