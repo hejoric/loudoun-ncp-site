@@ -2,9 +2,19 @@ name: Jerson Lorton
 role: Branch President
 section: branchPresidents
 branch: nova
-bio: NOVA branch president position - in progress.
-headshot: /assets/team/nova-branch/headshot.jpg
-headshotPosition: center 35%
+bio: >-
+  Joining in 2026 and a first year at Northern Virginia Community College,
+  Jerson serves as the President of LNCP’s NOVA Branch and is thrilled to work
+  alongside the team to achieve their mission. Jerson is incredibly ambitious
+  and dedicated to protecting Loudoun County’s natural spaces. His goals as
+  NOVA’s President isn’t only to lead cleanups, restore habitats, and conserve
+  the greenish of the land, but to inspire young-minds and show them that our
+  contributions can make a difference. He also believes that although a single
+  conserved natural site may seem small, it is a step closer to paving a path
+  for a greener, healthier planet. 
+headshot: /assets/team/nova-branch/headshot.heic
+headshotScale: '1.3'
+linkedin: https://www.linkedin.com/in/jersoncmd/
 affiliations: []
 tentative: false
 featuredOnHome: false
