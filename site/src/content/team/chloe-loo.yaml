@@ -1,18 +1,16 @@
 name: Chloe Loo
 role: Grant Manager
 section: executiveStaff
-branch: ''
 bio: >-
   Chloe studies applied economics and management at Cornell University's Dyson
   School. After working with LNCP part time, she joined the organization full
   time as Grant Manager, leading the grant research and applications that fund
   LNCP's cleanups, research, and branch expansion.
 headshot: /assets/team/chloe-loo/headshot.webp
-email: ''
-instagram: ''
-linkedin: ''
+linkedin: https://www.linkedin.com/in/chloe-loo/
 affiliations:
   - name: Cornell University
     logo: /assets/affiliations/chloe-loo/affiliations/0/logo.png
+tentative: false
 featuredOnHome: false
 sortOrder: 2
