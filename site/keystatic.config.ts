@@ -38,17 +38,21 @@ export default config({
         }),
         bio: fields.text({ label: 'Bio', multiline: true }),
         headshot: fields.image({
-          label: 'Headshot (square, min 800x800)',
+          label: 'Headshot - point this at the cropped file, not a raw photo',
           directory: 'public/assets/team',
           publicPath: '/assets/team/',
           validation: { isRequired: false },
         }),
         headshotPosition: fields.text({
-          label: 'Headshot crop position (CSS object-position, e.g. "center 20%") - leave blank for top',
+          label: 'Headshot crop position (CSS object-position, e.g. "center 20%") - leave blank',
+          description:
+            'Leave this blank. Headshots are cropped to one house framing by `npm run headshots` (see docs/EDITING.md), so every card already shows the face at the same size and height. Setting this shifts one card out of line with the rest, and because the cards reflow at different shapes on phones and desktops, a value that looks right on one is wrong on the other. If a card looks off, the photo needs re-cropping, not a nudge here.',
           validation: { isRequired: false, length: { min: 0 } },
         }),
         headshotScale: fields.text({
-          label: 'Headshot zoom (e.g. "0.9" to zoom out a little, "1.1" to zoom in) - leave blank for 1',
+          label: 'Headshot zoom (e.g. "1.1" to zoom in) - leave blank',
+          description:
+            'Leave this blank, for the same reason as the crop position above. It can only zoom in, never out, so it cannot rescue a photo taken too close - that needs a new photo.',
           validation: { isRequired: false, length: { min: 0 } },
         }),
         email: fields.text({

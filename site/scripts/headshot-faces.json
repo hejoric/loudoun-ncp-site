@@ -1,0 +1,93 @@
+{
+  "alyssa-nisay": {
+    "file": "alyssa-nisay.jpg",
+    "faceTop": 0.2419,
+    "faceHeight": 0.3135,
+    "faceCenterX": 0.4791,
+    "eyeLine": 0.3295
+  },
+  "chloe-loo": {
+    "file": "chloe-loo.webp",
+    "faceTop": 0.2616,
+    "faceHeight": 0.2312,
+    "faceCenterX": 0.5150,
+    "eyeLine": 0.3295
+  },
+  "christian-shire": {
+    "file": "christian-shire.jpg",
+    "faceTop": 0.1361,
+    "faceHeight": 0.0946,
+    "faceCenterX": 0.2884,
+    "eyeLine": 0.1680
+  },
+  "enzo-garcia-eguiluz": {
+    "file": "enzo-garcia-eguiluz.webp",
+    "faceTop": 0.3102,
+    "faceHeight": 0.2430,
+    "faceCenterX": 0.4909,
+    "eyeLine": 0.3787
+  },
+  "evan-g": {
+    "file": "evan-g.jpeg",
+    "faceTop": 0.2141,
+    "faceHeight": 0.4042,
+    "faceCenterX": 0.4371,
+    "eyeLine": 0.3330
+  },
+  "jenna": {
+    "file": "jenna.jpeg",
+    "faceTop": 0.4079,
+    "faceHeight": 0.1349,
+    "faceCenterX": 0.5203,
+    "eyeLine": 0.4458
+  },
+  "jose-herrera": {
+    "file": "jose-herrera.jpg",
+    "faceTop": 0.2627,
+    "faceHeight": 0.4421,
+    "faceCenterX": 0.4939,
+    "eyeLine": 0.3861
+  },
+  "karthik": {
+    "file": "karthik.jpeg",
+    "faceTop": 0.1129,
+    "faceHeight": 0.2208,
+    "faceCenterX": 0.4467,
+    "eyeLine": 0.1743
+  },
+  "nawaf-shehzad": {
+    "file": "nawaf-shehzad.jpg",
+    "faceTop": 0.3467,
+    "faceHeight": 0.2462,
+    "faceCenterX": 0.4954,
+    "eyeLine": 0.4172
+  },
+  "nova-branch": {
+    "file": "nova-branch.webp",
+    "faceTop": 0.4020,
+    "faceHeight": 0.0614,
+    "faceCenterX": 0.6113,
+    "eyeLine": 0.4196
+  },
+  "ryan-nisay": {
+    "file": "ryan-nisay.jpeg",
+    "faceTop": 0.4391,
+    "faceHeight": 0.1627,
+    "faceCenterX": 0.4990,
+    "eyeLine": 0.4830
+  },
+  "shray-vij": {
+    "file": "shray-vij.jpeg",
+    "faceTop": 0.2170,
+    "faceHeight": 0.2176,
+    "faceCenterX": 0.4878,
+    "eyeLine": 0.2816
+  },
+  "tyler": {
+    "file": "tyler.jpeg",
+    "faceTop": 0.3746,
+    "faceHeight": 0.4132,
+    "faceCenterX": 0.4411,
+    "eyeLine": 0.4914
+  }
+}
