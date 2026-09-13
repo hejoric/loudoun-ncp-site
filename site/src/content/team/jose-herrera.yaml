@@ -1,5 +1,5 @@
 name: Jose R. Herrera
-role: Webmaster
+role: Tech Lead
 section: executiveStaff
 branch: dominion
 bio: >-
@@ -12,11 +12,12 @@ bio: >-
   major at UVA (class of 2027), Jose builds and maintains the digital backbone
   of a mission he believes in.
 headshot: /assets/team/jose-herrera/headshot.webp
-email: hejoric@outlook.com
+email: hejoric@loudounnatureconservation.org
 linkedin: https://www.linkedin.com/in/hejoric/
 website: https://hejoric.com
 affiliations:
   - name: University of Virginia
     logo: /assets/affiliations/jose-herrera/affiliations/0/logo.jpg
+tentative: false
 featuredOnHome: false
 sortOrder: 1
