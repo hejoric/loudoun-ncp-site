@@ -70,10 +70,36 @@ manual steps - there's no bot doing this for you.
 | About page | About Page | `src/content/singletons/about/index.yaml` |
 | Contact info, social links | Site Settings | `src/content/singletons/settings/index.yaml` |
 
-Images go in `public/assets/` (team headshots in `public/assets/team/`,
-school logos in `public/assets/branches/`, college logos in
-`public/assets/affiliations/`). Keystatic places uploaded images there
-automatically; you can also copy files in manually.
+Images go in `public/assets/` (school logos in `public/assets/branches/`,
+college logos in `public/assets/affiliations/`). Keystatic places uploaded
+images there automatically; you can also copy files in manually.
+
+Team headshots are the exception - see below.
+
+### Headshots
+
+Every headshot on the site is cropped to one house framing: the same shape, with
+the face the same size and the eyes at the same height. That is what keeps a row
+of cards looking like a set instead of a pile of whatever each person sent. The
+crop is baked into the file rather than nudged per-card in the YAML, because the
+cards reflow at different shapes on phones and desktops and a per-card nudge that
+looks right on one is wrong on the other.
+
+So a new photo takes an extra step:
+
+1. Put the original in `assets-src/team/<slug>.<ext>` - the same slug as the
+   YAML file, e.g. `assets-src/team/jenna.jpeg`. Do not put it in `public/`;
+   originals are kept out of the build so visitors never download them.
+2. Re-measure the faces (macOS, needs Xcode command line tools):
+   `swift scripts/measure-faces.swift assets-src/team/* > scripts/headshot-faces.json`
+3. `npm run headshots`
+4. Point the member's `headshot` field at `/assets/team/<slug>/headshot.webp`.
+
+Step 3 prints a row per person and flags any photo it could not frame properly -
+"needs a wider photo" means the shot is too close-up to crop back out to the
+house framing, and the only fix is a photo taken from further away. Aim for a
+head-and-shoulders shot with some space above the head, taken at least a couple
+of metres back, and the crop will have room to work.
 
 A team member's card badges every school they are affiliated with. Their own
 school comes from the branch you set on them, so it needs no logo upload; add a

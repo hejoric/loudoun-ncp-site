@@ -17,6 +17,7 @@
     "preview": "astro preview",
     "check": "astro check",
     "icons": "node scripts/generate-icons.mjs",
+    "headshots": "node scripts/crop-headshots.mjs",
     "astro": "astro"
   },
   "dependencies": {
