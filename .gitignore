@@ -19,6 +19,10 @@ site/node_modules/
 # Environment
 site/.env
 .env
+.env*.local
+
+# Vercel CLI local state (.env.local holds an OIDC token - never commit)
+.vercel
 
 # OS
 .DS_Store
