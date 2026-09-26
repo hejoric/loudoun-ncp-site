@@ -1,12 +1,15 @@
-name: To be announced
+name: Salaar
 role: Branch President
 section: branchPresidents
 branch: loudoun-county
-bio: Loudoun County HS branch president position - in progress.
-headshot: /assets/team/placeholder-neutral.svg
-email: ''
-instagram: ''
-linkedin: ''
-tentative: true
+bio: >-
+  Founding the Loudoun County High School branch in 2026, Salaar is a senior at
+  Loudoun County High School who became interested in helping the environment
+  after writing a report on the harmful impact data centers have on the
+  environment. He is happy to bring LNCP to his school and to work on cleaning
+  its surrounding environment.
+headshot: /assets/team/loudoun-county-branch/headshot.webp
+affiliations: []
+tentative: false
 featuredOnHome: false
 sortOrder: 9
