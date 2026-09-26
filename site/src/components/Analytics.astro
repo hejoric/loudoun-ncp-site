@@ -2,10 +2,15 @@
 /**
  * Google Analytics 4 (gtag.js).
  *
- * The tag is injected at runtime rather than emitted as a plain <script src>
- * so that it only ever loads on the production hostname. Without that guard,
- * local dev and every Vercel preview deploy report into the same GA property
- * and quietly inflate the real numbers.
+ * The tag is injected at runtime rather than emitted as a plain script tag
+ * with a src, so that it only ever loads on the production hostname. Without
+ * that guard, local dev and every Vercel preview deploy report into the same
+ * GA property and quietly inflate the real numbers.
+ *
+ * Never write a literal script tag in this comment (or any .astro
+ * frontmatter): Vite's dependency scanner finds scripts with a regex that
+ * ignores frontmatter, fails to parse what follows, and skips pre-bundling
+ * for the whole app - which leaves the Keystatic editor a blank page.
  */
 import { SITE_URL } from '@/lib/seo';
 

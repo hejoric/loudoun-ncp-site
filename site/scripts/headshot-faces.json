@@ -34,6 +34,13 @@
     "faceCenterX": 0.4371,
     "eyeLine": 0.3330
   },
+  "heritage-branch": {
+    "file": "heritage-branch.jpeg",
+    "faceTop": 0.1594,
+    "faceHeight": 0.1450,
+    "faceCenterX": 0.5030,
+    "eyeLine": 0.2028
+  },
   "jenna": {
     "file": "jenna.jpeg",
     "faceTop": 0.4079,
@@ -54,6 +61,13 @@
     "faceHeight": 0.2208,
     "faceCenterX": 0.4467,
     "eyeLine": 0.1743
+  },
+  "loudoun-county-branch": {
+    "file": "loudoun-county-branch.jpeg",
+    "faceTop": 0.2540,
+    "faceHeight": 0.3532,
+    "faceCenterX": 0.4999,
+    "eyeLine": 0.3557
   },
   "nawaf-shehzad": {
     "file": "nawaf-shehzad.jpg",
