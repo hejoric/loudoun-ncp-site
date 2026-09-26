@@ -62,6 +62,13 @@
     "faceCenterX": 0.4467,
     "eyeLine": 0.1743
   },
+  "korea-branch": {
+    "file": "korea-branch.jpeg",
+    "faceTop": 0.3450,
+    "faceHeight": 0.1562,
+    "faceCenterX": 0.4918,
+    "eyeLine": 0.3915
+  },
   "loudoun-county-branch": {
     "file": "loudoun-county-branch.jpeg",
     "faceTop": 0.2540,
