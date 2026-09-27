@@ -284,7 +284,7 @@ const pressJsonLd = pressItems.map((p) => ({
         hidden
       >
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-icon="pause"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
-        <svg class="w-5 h-5 translate-x-px" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-icon="play" hidden><path d="M8 5v14l11-7z"/></svg>
+        <svg class="w-5 h-5 translate-x-px hidden" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-icon="play"><path d="M8 5v14l11-7z"/></svg>
       </button>
     </div>
   </section>
@@ -785,8 +785,8 @@ const pressJsonLd = pressItems.map((p) => ({
       const sync = () => {
         const paused = heroVideo.paused;
         toggle.setAttribute('aria-label', paused ? 'Play background video' : 'Pause background video');
-        pauseIcon.toggleAttribute('hidden', paused);
-        playIcon.toggleAttribute('hidden', !paused);
+        pauseIcon.classList.toggle('hidden', paused);
+        playIcon.classList.toggle('hidden', !paused);
       };
       heroVideo.addEventListener('play', () => {
         toggle.hidden = false;
