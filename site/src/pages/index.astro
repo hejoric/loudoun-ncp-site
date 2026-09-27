@@ -902,7 +902,17 @@ const pressJsonLd = pressItems.map((p) => ({
     const SPEED = 0.4; // px per frame - a slow, unobtrusive drift
     let pos = viewport.scrollLeft;
     let active = false;
+    // The loop only runs while the strip is on screen. Otherwise it would
+    // write scrollLeft 60 times a second for the whole visit, including the
+    // long stretch spent reading everything above and below it.
+    let onScreen = false;
+    let frame = 0;
     const drift = () => {
+      if (!onScreen) {
+        frame = 0;
+        active = false;
+        return;
+      }
       const canMove = !reduced && !isHovering() && performance.now() >= resumeAt;
       if (canMove) {
         if (!active) {
@@ -919,12 +929,15 @@ const pressJsonLd = pressItems.map((p) => ({
       } else {
         active = false;
       }
-      requestAnimationFrame(drift);
+      frame = requestAnimationFrame(drift);
     };
     // Wait one frame so the track has laid out and copyWidth() is measurable.
     requestAnimationFrame(() => {
       wrap();
-      requestAnimationFrame(drift);
+      new IntersectionObserver(([entry]) => {
+        onScreen = entry.isIntersecting;
+        if (onScreen && !frame) frame = requestAnimationFrame(drift);
+      }).observe(viewport);
     });
 
     // How far one button press travels: three members (card width + its gap).
