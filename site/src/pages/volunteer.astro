@@ -35,7 +35,8 @@ const reasons = [
         {reasons.map(({ title, body }, i) => (
           <div class="bg-paper border-r border-b hairline p-8">
             <p class="font-display italic text-clay text-sm mb-3">{String(i + 1).padStart(2, '0')}</p>
-            <h3 class="font-display font-medium text-ink text-xl mb-3">{title}</h3>
+            {/* h2: the reasons sit directly under the page's h1. */}
+            <h2 class="font-display font-medium text-ink text-xl mb-3">{title}</h2>
             <p class="text-ink-soft text-sm leading-relaxed">{body}</p>
           </div>
         ))}

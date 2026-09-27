@@ -879,8 +879,7 @@ const pressJsonLd = pressItems.map((p) => ({
       // default. Touch taps are left alone - there is no "moving away" there.
       if (e.pointerType !== 'mouse') return;
       track.querySelectorAll<HTMLElement>('[data-card-flip][data-flip]').forEach((card) => {
-        delete card.dataset.flip;
-        card.setAttribute('aria-pressed', 'false');
+        card.dispatchEvent(new Event('card-flip:reset'));
       });
     });
     // Scoped to the card track, not the whole marquee: clicking a nav button

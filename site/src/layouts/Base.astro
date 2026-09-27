@@ -152,8 +152,16 @@ const graph = buildGraph([
     <Analytics />
   </head>
   <body class="flex flex-col min-h-screen">
+    <!-- First tab stop on every page, so keyboard users can jump past the
+         navigation. Invisible until focused. -->
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:px-4 focus:py-2.5 focus:bg-forest-900 focus:text-paper focus:text-sm focus:font-semibold"
+    >
+      Skip to content
+    </a>
     <Nav />
-    <main class="flex-1">
+    <main id="main" class="flex-1">
       <slot />
     </main>
     <Footer />

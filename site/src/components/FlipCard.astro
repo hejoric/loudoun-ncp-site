@@ -76,30 +76,43 @@ const focalPoint = headshotPosition || 'top';
 const scale = Number(headshotScale) || 1;
 const schools = affiliationLabel(affiliations);
 // On a vacant seat there is no one to name, so anything that would otherwise
-// talk about a person describes the seat instead. "View To be announced's
-// profile" and "To be announced headshot" both read as if the placeholder were
-// somebody; the school, where there is one, keeps the four vacancy cards on the
-// home strip distinguishable from each other. The portrait itself is a generic
-// silhouette carrying no information the card text does not already give, so it
-// drops out of the accessibility tree entirely.
+// talk about a person describes the seat instead. "To be announced, Branch
+// President" reads as if the placeholder were somebody; the school, where there
+// is one, keeps the four vacancy cards on the home strip distinguishable from
+// each other.
 const seatLabel = [affiliations[0]?.name, role].filter(Boolean).join(' ');
-const cardLabel = tentative ? `${seatLabel} - to be announced` : `View ${name}'s profile`;
+// The toggle's name repeats the name and role printed on the front, so what a
+// screen reader announces matches the words a sighted user sees on the card.
+const toggleLabel = tentative ? `${seatLabel}: to be announced` : `${name}, ${role}`;
 // Links on the back of a duplicate card must not be tab stops either.
 const linkTabIndex = focusable ? undefined : -1;
 ---
 
+<!-- The card itself is not the control. It used to be a role="button" div,
+     which made everything inside it - the bio and the social links on the
+     back - presentational to a screen reader, and gave it an accessible name
+     that could never match the text it visibly contains. The control is the
+     visually hidden disclosure button below; the card draws its focus ring
+     (see .card-flip in global.css) and still turns on a click anywhere. -->
 <div
-  class:list={['card-flip w-full h-80 cursor-pointer', { 'card-flip-no-hover': !hoverFlip }]}
-  tabindex={focusable ? 0 : -1}
-  role="button"
-  aria-label={cardLabel}
-  aria-pressed="false"
+  class:list={['card-flip relative w-full h-80 cursor-pointer', { 'card-flip-no-hover': !hoverFlip }]}
   data-card-flip
   data-flip-key={flipKey}
 >
+  <button
+    type="button"
+    class="sr-only"
+    aria-expanded="false"
+    tabindex={focusable ? undefined : -1}
+    data-flip-toggle
+  >
+    {toggleLabel}
+  </button>
   <div class="card-flip-inner">
-    <!-- Front -->
-    <div class="card-flip-front flex flex-col bg-paper border hairline">
+    <!-- Front: hidden from assistive tech, because the toggle above already
+         says everything it shows (the portrait adds nothing a screen reader
+         user needs, and the school badges are spelled out on the back). -->
+    <div class="card-flip-front flex flex-col bg-paper border hairline" aria-hidden="true">
       <!-- Headshot -->
       <div class="flex-1 relative overflow-hidden bg-gray-100">
         {photo ? (
@@ -140,9 +153,12 @@ const linkTabIndex = focusable ? undefined : -1;
       </div>
     </div>
 
-    <!-- Back -->
+    <!-- Back. The script keeps it inert while the front is showing, so its
+         links are not invisible tab stops and a screen reader reaches the bio
+         by expanding the toggle, the same step a sighted visitor takes. -->
     <div
       class="card-flip-back flex flex-col p-4 bg-paper border hairline"
+      data-flip-back
     >
       <!-- Header band + small avatar -->
       <div class="flex items-center gap-2 pb-3 border-b border-gray-100" style={`border-color:${accentColor}33;`}>
@@ -175,13 +191,15 @@ const linkTabIndex = focusable ? undefined : -1;
            the home strip lands on seven bios inside the aria-hidden copy. -->
       <p class="text-xs text-gray-600 leading-relaxed flex-1 mt-3 overflow-y-auto" tabindex={linkTabIndex}>{bio || 'Bio coming soon.'}</p>
 
-      <!-- Social icons -->
+      <!-- Social icons. Each link pads its 16px icon out to a 24px target (the
+           WCAG 2.2 minimum) and takes the padding back with a negative margin,
+           so the icons sit exactly where they did. -->
       {(email || instagram || linkedin || website) && (
         <div class="flex items-center gap-3 mt-3 pt-3 border-t border-gray-100">
           {email && (
             <a
               href={`mailto:${email}`}
-              class="text-gray-600 hover:text-[#1B4332] transition-colors"
+              class="p-1 -m-1 text-gray-600 hover:text-[#1B4332] transition-colors"
               aria-label={`Email ${name}`}
               tabindex={linkTabIndex}
             >
@@ -193,7 +211,7 @@ const linkTabIndex = focusable ? undefined : -1;
           {instagram && (
             <a
               href={`https://instagram.com/${instagram}`}
-              class="text-gray-600 hover:text-[#1B4332] transition-colors"
+              class="p-1 -m-1 text-gray-600 hover:text-[#1B4332] transition-colors"
               aria-label={`${name} on Instagram`}
               target="_blank"
               rel="noopener noreferrer"
@@ -207,7 +225,7 @@ const linkTabIndex = focusable ? undefined : -1;
           {linkedin && (
             <a
               href={linkedin}
-              class="text-gray-600 hover:text-[#1B4332] transition-colors"
+              class="p-1 -m-1 text-gray-600 hover:text-[#1B4332] transition-colors"
               aria-label={`${name} on LinkedIn`}
               target="_blank"
               rel="noopener noreferrer"
@@ -221,7 +239,7 @@ const linkTabIndex = focusable ? undefined : -1;
           {website && (
             <a
               href={website}
-              class="text-gray-600 hover:text-[#1B4332] transition-colors"
+              class="p-1 -m-1 text-gray-600 hover:text-[#1B4332] transition-colors"
               aria-label={`${name}'s personal website`}
               target="_blank"
               rel="noopener noreferrer"
@@ -235,8 +253,9 @@ const linkTabIndex = focusable ? undefined : -1;
         </div>
       )}
 
-      <!-- Screen-reader bio (always in DOM for SEO) -->
-      <span class="sr-only">{tentative ? `${seatLabel}: to be announced.` : `${name}, ${role}.`}{schools ? ` ${schools}.` : ''} {bio}</span>
+      <!-- The schools are logo badges only (aria-hidden, on the front), so name
+           them for screen readers here. -->
+      {schools && <span class="sr-only">{schools}.</span>}
     </div>
   </div>
 </div>
@@ -248,6 +267,10 @@ const linkTabIndex = focusable ? undefined : -1;
   // and appear to do nothing. Pinning the side explicitly means every click,
   // tap, and keypress visibly turns the card.
   document.querySelectorAll<HTMLElement>('[data-card-flip]').forEach((el) => {
+    const toggleButton = el.querySelector<HTMLButtonElement>('[data-flip-toggle]');
+    const back = el.querySelector<HTMLElement>('[data-flip-back]');
+    if (!toggleButton || !back) return;
+
     const hoverFlips = !el.classList.contains('card-flip-no-hover');
     // Duplicate cards for the same person (the home strip renders the roster
     // twice for a seamless loop) turn together, so the copy the visitor is
@@ -257,14 +280,6 @@ const linkTabIndex = focusable ? undefined : -1;
       key
         ? document.querySelectorAll<HTMLElement>(`[data-card-flip][data-flip-key="${key}"]`)
         : [el];
-
-    const show = (side: 'front' | 'back' | null) => {
-      group().forEach((card) => {
-        if (side) card.dataset.flip = side;
-        else delete card.dataset.flip;
-        card.setAttribute('aria-pressed', String(side === 'back'));
-      });
-    };
 
     // Which pointer drove the current interaction. Blink applies :hover to a
     // tapped element, so on a touchscreen an untouched card reads as hovered the
@@ -281,7 +296,29 @@ const linkTabIndex = focusable ? undefined : -1;
         ? el.dataset.flip === 'back'
         : hoverFlips && pointerKind === 'mouse' && el.matches(':hover');
 
+    // The back is inert whenever it is not the side on screen: its links are
+    // then not invisible tab stops, and a screen reader meets the bio only once
+    // the toggle is expanded. Each card in a group decides for itself, because
+    // hover belongs to one card while a pinned side is shared.
+    const syncBack = () => {
+      back.inert = !showingBack();
+    };
+    el.addEventListener('card-flip:sync', syncBack);
+
+    const show = (side: 'front' | 'back' | null) => {
+      group().forEach((card) => {
+        if (side) card.dataset.flip = side;
+        else delete card.dataset.flip;
+        card.querySelector('[data-flip-toggle]')?.setAttribute('aria-expanded', String(side === 'back'));
+        card.dispatchEvent(new Event('card-flip:sync'));
+      });
+    };
+    // Lets the home strip turn every open card back when the mouse wanders off.
+    el.addEventListener('card-flip:reset', () => show(null));
+
     const toggle = () => show(showingBack() ? 'front' : 'back');
+
+    syncBack();
 
     // A click on a control inside the card (the social links on the back) belongs
     // to that control, not to the flip. This replaces the per-anchor
@@ -289,29 +326,24 @@ const linkTabIndex = focusable ? undefined : -1;
     // as a static HTML attribute there is no event in scope, so it only worked
     // by reading the deprecated window.event global. Matching on 'a, button'
     // rather than a marker attribute means any control added to a card later is
-    // covered without remembering to tag it.
+    // covered without remembering to tag it. The toggle itself is the exception:
+    // Enter and Space on it arrive here as a click, which is how the keyboard
+    // turns the card.
     el.addEventListener('click', (e) => {
-      if (e.target instanceof Element && e.target.closest('a, button')) return;
+      const control = e.target instanceof Element ? e.target.closest('a, button') : null;
+      if (control && control !== toggleButton) return;
       toggle();
     });
 
+    // Escape closes an open card from anywhere inside it, including from a
+    // focused social link, and returns focus to the toggle. Without this a
+    // keyboard user who opens a bio has no way to dismiss it, which the
+    // aria-expanded control implies they should. Focus moves first, since the
+    // back turns inert as it closes and would otherwise drop focus on the page.
     el.addEventListener('keydown', (e) => {
-      // Escape closes an open card from anywhere inside it, including from a
-      // focused social link, and returns focus to the card. Without this a
-      // keyboard user who opens a bio has no way to dismiss it, which the
-      // aria-pressed control implies they should.
       if (e.key === 'Escape' && showingBack()) {
+        toggleButton.focus();
         show('front');
-        el.focus();
-        return;
-      }
-      // Only keys typed on the card itself flip it. Enter on a focused social
-      // link bubbles up here, and flipping would preventDefault() away the
-      // link's own activation - the card would turn and the link never open.
-      if (e.target !== el) return;
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        toggle();
       }
     });
 
@@ -319,8 +351,16 @@ const linkTabIndex = focusable ? undefined : -1;
     // the card again. Touch and pen keep the pinned side - there is no hover to
     // fall back to, and clearing it would shut the bio the moment it opened.
     if (hoverFlips) {
+      el.addEventListener('pointerenter', (e) => {
+        if (e.pointerType === 'mouse') {
+          pointerKind = 'mouse';
+          syncBack();
+        }
+      });
       el.addEventListener('pointerleave', (e) => {
-        if (e.pointerType === 'mouse') show(null);
+        if (e.pointerType !== 'mouse') return;
+        if (back.contains(document.activeElement)) toggleButton.focus({ preventScroll: true });
+        show(null);
       });
     }
   });

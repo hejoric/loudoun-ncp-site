@@ -21,11 +21,12 @@ const preview = truncate(abstract, 160);
 <article class="bg-paper border hairline p-7 flex flex-col gap-3 hover:border-forest-800 transition-colors">
   <div>
     {displayDate && <p class="text-xs font-semibold text-clay uppercase tracking-wider mb-2">{displayDate}</p>}
-    <h3 class="font-display font-medium text-ink text-xl leading-snug">
+    {/* h2: the cards sit directly under the page's h1 on /research/. */}
+    <h2 class="font-display font-medium text-ink text-xl leading-snug">
       <a href={`/research/${slug}/`} class="hover:text-forest-900 transition-colors">
         {title}
       </a>
-    </h3>
+    </h2>
     <p class="text-sm text-ink-soft mt-1">{authors.join(', ')}</p>
   </div>
   <p class="text-sm text-ink-soft leading-relaxed flex-1">{preview}</p>
@@ -34,7 +35,7 @@ const preview = truncate(abstract, 160);
       href={`/research/${slug}/`}
       class="text-sm text-ink border-b border-ink pb-0.5 hover:text-ink-soft hover:border-ink-soft transition-colors"
     >
-      Read more
+      Read more<span class="sr-only"> about {title}</span>
     </a>
     {pdfHref && (
       <a
@@ -47,7 +48,7 @@ const preview = truncate(abstract, 160);
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
-        PDF
+        PDF<span class="sr-only"> of {title}</span>
       </a>
     )}
   </div>

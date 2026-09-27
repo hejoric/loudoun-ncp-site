@@ -129,6 +129,14 @@ h1, h2, h3, h4, h5, h6 {
   transform: rotateY(180deg);
 }
 
+/* The card's control is a visually hidden button (see FlipCard.astro), so the
+   card draws the focus ring the button cannot show itself - the same ring
+   :focus-visible gives every other control. */
+.card-flip:has(> [data-flip-toggle]:focus-visible) {
+  outline: 3px solid var(--color-forest-800);
+  outline-offset: 2px;
+}
+
 /* Must stay after the face rules above so these overrides win. */
 @media (prefers-reduced-motion: reduce) {
   /* Swap the two faces instead of rotating. The back's own 180deg rotation has
