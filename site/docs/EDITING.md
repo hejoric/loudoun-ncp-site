@@ -7,13 +7,13 @@ nothing.
 ## How the site works (30-second version)
 
 - The website is a **static site**: every page is pre-built into plain HTML
-  files and served from Cloudflare's CDN. There is no server, no database, and
+  files and served from Vercel's CDN. There is no server, no database, and
   no admin panel on the live site. This is why it is fast, free to host, and
   has essentially nothing to hack.
 - All content (team members, events, publications, page text) lives as **YAML
   files** in this git repository, under `site/src/content/`.
-- When a change lands on the `main` branch on GitHub, Cloudflare Pages
-  automatically rebuilds and deploys the site. Live in about a minute.
+- When a change lands on the `main` branch on GitHub, Vercel automatically
+  rebuilds and deploys the site. Live in about a minute.
 - **`main` is protected.** Nobody - not even the repo owner - can push
   directly to it. Every change has to arrive as a **pull request (PR)** that
   passes an automated build check first. This is a safety net, not red tape:
@@ -50,11 +50,11 @@ gh pr create --fill     # opens a PR into main; short alias: gpr
 
 That PR triggers an automated check (type-checking + a full production
 build). Once it's green, merge the PR - `gh pr merge --merge`, or click
-**Merge** on the PR page on github.com. *Only after the merge* does Cloudflare
+**Merge** on the PR page on github.com. *Only after the merge* does Vercel
 notice the change and redeploy the live site, usually within a minute.
 
 Nothing in this chain is automatic except two links: the build check running
-when you open/update the PR, and Cloudflare redeploying after a merge.
+when you open/update the PR, and Vercel redeploying after a merge.
 Writing the YAML, committing, pushing, opening the PR, and merging it are all
 manual steps - there's no bot doing this for you.
 
@@ -171,7 +171,7 @@ webmaster instead.
   (your laptop only)  →   (you do this)         →   (automatic CI     →     (you click
                                                        check runs)             the button)
                                                                                    ↓
-                                                                          Cloudflare notices
+                                                                          Vercel notices
                                                                           the merge and
                                                                           rebuilds the site
                                                                           (automatic, ~1 min)
@@ -198,9 +198,9 @@ reviewers, a human always clicks the button.
   `gh pr checks` (`prc`) - green means the build passed.
   `gh pr view --web` (`prv`) opens it in your browser.
 - **"Is it actually live yet?"** Check the
-  [Cloudflare Pages dashboard](https://dash.cloudflare.com) - it lists every
-  deployment with the exact commit it built and a Success/Failed status. Only
-  a deployment tied to a `main` commit is the real live site.
+  [Vercel dashboard](https://vercel.com/dashboard) - it lists every
+  deployment with the exact commit it built and a Ready/Error status. Only
+  a production deployment tied to a `main` commit is the real live site.
 
 ### Shortcuts (webmaster's shell)
 
@@ -232,7 +232,7 @@ gh pr merge --merge     # once the build check passes
 
 Or in the GitHub UI: open the bad commit, click **"Revert"** - GitHub creates
 the revert PR for you automatically. Merge it the same way as any PR.
-Cloudflare redeploys the previous content within a minute of the merge.
+Vercel redeploys the previous content within a minute of the merge.
 
 ---
 
@@ -244,10 +244,9 @@ form UI as Path 1, but hosted on the live site behind a GitHub login.
 
 Know before starting:
 
-- It requires a small server for its login/API routes. **Cloudflare Pages
-  cannot run it** (its Workers runtime has no filesystem, which this site's
-  build needs - this was tested, not guessed). Hosting would move to Netlify
-  or Vercel, where Keystatic + Astro work natively.
+- It requires a small server for its login/API routes, so the site would stop
+  being purely static: it needs an Astro server adapter (`@astrojs/vercel` on
+  the current host) and Keystatic's routes enabled in production.
 - Editors still need GitHub accounts with repo access - which is exactly what
   Path 2 already requires. So the only gain over Path 2 is a nicer form UI.
 - Setup: GitHub OAuth app + env vars + `storage: { kind: 'github' }` in

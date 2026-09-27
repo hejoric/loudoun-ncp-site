@@ -9,8 +9,8 @@ Static site for [loudounnatureconservation.org](https://loudounnatureconservatio
 | Framework | Astro 7 (static output) |
 | Styles | Tailwind CSS v4 |
 | CMS | Keystatic (git-based, YAML files) |
-| Hosting | Cloudflare Pages |
-| Font | Montserrat (self-hosted) |
+| Hosting | Vercel (static) |
+| Fonts | System font stacks (serif display, sans body) - no web fonts are loaded |
 
 ## Local Development
 
@@ -198,17 +198,14 @@ about 6 MB as H.264 and 3.7 MB as AV1. The video only starts downloading after
 the page has loaded, and never for visitors with reduced motion or Save-Data
 turned on.
 
-## Deployment (Cloudflare Pages)
+## Deployment (Vercel)
 
-1. Push to GitHub.
-2. In Cloudflare Pages dashboard, connect the repo.
-3. Set build settings:
-   - Build command: `npm run build`
-   - Build output directory: `site/dist`
-   - Root directory: `site`
-   - Node.js version: `22`
+Merging to `main` deploys to production; every PR gets a preview URL. The
+Vercel project's Root Directory is `site`, and `vercel.json` pins the build,
+redirects, and headers. No environment variables are required.
 
-No environment variables are required.
+See **[docs/DEPLOY.md](docs/DEPLOY.md)** for manual deploys, post-deploy checks,
+and DNS.
 
 ## Editing Workflows
 
@@ -221,12 +218,14 @@ edits the site:
 
 There is intentionally no web-hosted CMS: the deployed site is 100% static
 with zero attack surface. `docs/EDITING.md` documents the supported upgrade
-path (Keystatic GitHub mode on Netlify/Vercel) if that ever becomes necessary -
-note it cannot run on Cloudflare Pages.
+path (Keystatic GitHub mode) if that ever becomes necessary.
 
 ## URL Redirects
 
-`public/_redirects` handles old WordPress paths. Cloudflare Pages does not support query-string matching, so `/?page_id=NNN` redirects from the old WordPress site cannot be handled here - they would require a Cloudflare Worker if needed.
+The `redirects` in `vercel.json` handle old WordPress paths (see
+[docs/DEPLOY.md](docs/DEPLOY.md) for the trailing-slash rule they depend on).
+Query-string URLs from the old WordPress site (`/?page_id=NNN`) are not
+redirected.
 
 ## Project Structure
 
@@ -243,9 +242,10 @@ site/
   public/
     assets/         # Favicons, OG image, hero video, PDFs
     research/       # PDFs
-    _redirects      # Cloudflare Pages URL redirects
   docs/
+    DEPLOY.md       # Hosting, deploys, headers, DNS
     EDITING.md      # Editing runbook for webmaster + non-technical editors
   keystatic.config.ts
   astro.config.mjs
+  vercel.json       # Redirects, cache and security headers
 ```
