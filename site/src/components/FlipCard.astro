@@ -1,7 +1,9 @@
 ---
+import { Image } from 'astro:assets';
 import InitialsAvatar from './InitialsAvatar.astro';
 import AffiliationBadges from './AffiliationBadges.astro';
 import { affiliationLabel, type Affiliation } from '@/lib/affiliations';
+import { resolveImage, responsive, CARD_PHOTO_WIDTHS, AVATAR_WIDTHS, TEAM_CARD_SIZES } from '@/lib/images';
 
 interface Props {
   name: string;
@@ -32,6 +34,12 @@ interface Props {
    *  a person, and the portrait is a generic silhouette. Only the strings that
    *  would otherwise describe a nonexistent person change. */
   tentative?: boolean;
+  /** `sizes` for the headshot, matching the width of the column this card sits
+   *  in. Defaults to the team page grid. */
+  photoSizes?: string;
+  /** Load the headshot eagerly at high priority: for the cards that paint
+   *  above the fold, where the headshot is the page's largest image. */
+  priority?: boolean;
 }
 
 const {
@@ -52,7 +60,11 @@ const {
   focusable = true,
   cardId,
   tentative = false,
+  photoSizes = TEAM_CARD_SIZES,
+  priority = false,
 } = Astro.props;
+
+const photo = resolveImage(headshot);
 
 // Every card for the same person shares this key so duplicates (the home strip
 // renders the roster twice to loop seamlessly) turn together. It has to be the
@@ -90,14 +102,14 @@ const linkTabIndex = focusable ? undefined : -1;
     <div class="card-flip-front flex flex-col bg-paper border hairline">
       <!-- Headshot -->
       <div class="flex-1 relative overflow-hidden bg-gray-100">
-        {headshot ? (
-          <img
-            src={headshot}
+        {photo ? (
+          <Image
+            src={photo}
             alt={tentative ? '' : `${name} headshot`}
+            {...responsive(photo, CARD_PHOTO_WIDTHS, photoSizes)}
             class="absolute inset-0 w-full h-full object-cover"
             style={`object-position:${focalPoint};${scale !== 1 ? ` transform:scale(${scale}); transform-origin:center bottom;` : ''}`}
-            loading="lazy"
-            decoding="async"
+            priority={priority}
           />
         ) : (
           <div class="absolute inset-0 flex items-center justify-center">
@@ -135,14 +147,13 @@ const linkTabIndex = focusable ? undefined : -1;
       <!-- Header band + small avatar -->
       <div class="flex items-center gap-2 pb-3 border-b border-gray-100" style={`border-color:${accentColor}33;`}>
         <div class={`${avatarSize} rounded-full overflow-hidden shrink-0`} style={`background:${accentColor};`}>
-          {headshot ? (
-            <img
-              src={headshot}
+          {photo ? (
+            <Image
+              src={photo}
               alt=""
+              {...responsive(photo, AVATAR_WIDTHS, '40px')}
               class="w-full h-full object-cover"
               style={`object-position:${headshotPosition || 'top'};`}
-              loading="lazy"
-              decoding="async"
               aria-hidden="true"
             />
           ) : (

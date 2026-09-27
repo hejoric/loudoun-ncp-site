@@ -1,9 +1,16 @@
 ---
 import Base from '@/layouts/Base.astro';
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
+import heroPosterImage from '@/assets/photos/hero-poster.jpg';
+import spotlightPosterImage from '@/assets/photos/wusa-spotlight-poster.jpg';
+import largeGroupCleanup from '@/assets/photos/large-group-cleanup.jpg';
+import eightPeopleCleanup from '@/assets/photos/8-people-cleanup-done.jpg';
+import outdoorCrew from '@/assets/photos/outdoor7peoplecrew.jpg';
+import outdoorThree from '@/assets/photos/outdoor3people.jpg';
 import FlipCard from '@/components/FlipCard.astro';
 import reader from '@/lib/reader';
 import { resolveAffiliations } from '@/lib/affiliations';
+import { resolveImage, responsive } from '@/lib/images';
 import { ORG_ID, truncate } from '@/lib/seo';
 import {
   getPressItems,
@@ -16,6 +23,7 @@ const home = await reader.singletons.home.read();
 const allTeam = await reader.collections.teamMembers.all();
 const allBranches = await reader.collections.branches.all();
 const ryan = allTeam.find((m) => m.slug === 'ryan-nisay') ?? null;
+const ryanPhoto = resolveImage(ryan?.entry.headshot);
 
 // Home showcase: a continuously scrolling strip of the people leading LNCP,
 // ordered executive -> directors -> branch presidents. Each card badges every
@@ -131,10 +139,22 @@ const spotlight = {
       },
     ],
 };
-// A real still from the WUSA segment (dropped in by an editor) makes the best
-// poster and is guaranteed to exist, unlike YouTube's maxres thumbnail which
-// 404s for some videos. Falls back to a cleanup photo if the still is missing.
-const spotlightPoster = '/assets/wusa-spotlight-poster.jpg';
+// A real still from the WUSA segment makes the best poster and is guaranteed
+// to exist, unlike YouTube's maxres thumbnail which 404s for some videos.
+const spotlightPoster = spotlightPosterImage;
+
+// The hero video's poster is the page's LCP. A <video poster> takes a single
+// URL (no srcset), so it is one WebP at the video's own 1280px width.
+const heroPoster = await getImage({ src: heroPosterImage, width: 1280, format: 'webp' });
+
+// `sizes` for an image spanning the max-w-7xl content column, whose side
+// padding is px-4 / sm:px-6 / lg:px-8.
+const PAGE_WIDTH_SIZES =
+  '(min-width: 1280px) 1216px, (min-width: 1024px) calc(100vw - 4rem), (min-width: 640px) calc(100vw - 3rem), calc(100vw - 2rem)';
+const PHOTO_WIDTHS = [480, 640, 800, 1024, 1280, 1600, 2048];
+// Half of that column on sm+ (grid-cols-2, gap-8), full width below.
+const HALF_WIDTH_SIZES =
+  '(min-width: 1280px) 592px, (min-width: 640px) calc(50vw - 2.5rem), calc(100vw - 2rem)';
 
 // Split the hero headline on the semicolon so it renders on two lines.
 const heroHeadline = home?.heroHeadline ?? 'Youth unite for Earth; inspire change piece by piece';
@@ -185,7 +205,7 @@ const pressJsonLd = pressItems.map((p) => ({
 <Base
   title="Home"
   description="A student-led 501(c)(3) nonprofit empowering youth to restore nature through cleanups, habitat restoration, and research in Loudoun County, Virginia."
-  preloadImage="/assets/hero-poster.jpg"
+  preloadImage={heroPoster.src}
   jsonLd={pressJsonLd}
 >
   <!-- Announcement: back for the new school year -->
@@ -208,7 +228,7 @@ const pressJsonLd = pressItems.map((p) => ({
         muted
         loop
         playsinline
-        poster="/assets/hero-poster.jpg"
+        poster={heroPoster.src}
         aria-hidden="true"
       >
         <source src="/assets/hero.mp4" type="video/mp4" />
@@ -254,14 +274,12 @@ const pressJsonLd = pressItems.map((p) => ({
           &ldquo;{home?.founderQuote ?? "LNCP was born from a simple belief - students don't have to wait to protect our environment. We can lead that change right now, in our own community."}&rdquo;
         </blockquote>
         <div class="flex items-center justify-center gap-3 mt-8">
-          {ryan.entry.headshot && (
-            <img
-              src={ryan.entry.headshot}
+          {ryanPhoto && (
+            <Image
+              src={ryanPhoto}
               alt={`${ryan.entry.name}, ${ryan.entry.role}`}
-              width="44"
-              height="44"
+              {...responsive(ryanPhoto, [44, 88, 132], '44px')}
               class="w-11 h-11 rounded-full object-cover"
-              loading="lazy"
             />
           )}
           <div class="text-left">
@@ -297,14 +315,11 @@ const pressJsonLd = pressItems.map((p) => ({
             aria-label={`Play video: ${spotlight.videoTitle}`}
             class="group relative block w-full aspect-video overflow-hidden border hairline bg-forest-950 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
           >
-            <img
+            <Image
               src={spotlightPoster}
               alt={spotlight.videoTitle}
-              width="1280"
-              height="720"
+              {...responsive(spotlightPoster, PHOTO_WIDTHS, PAGE_WIDTH_SIZES)}
               class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-              loading="lazy"
-              decoding="async"
             />
             <div class="absolute inset-0 bg-forest-950/25 group-hover:bg-forest-950/15 transition-colors"></div>
             <div class="absolute inset-0 flex items-center justify-center">
@@ -321,14 +336,11 @@ const pressJsonLd = pressItems.map((p) => ({
             aria-label={`Watch on ${spotlight.videoSource}: ${spotlight.videoTitle} (opens in a new tab)`}
             class="group relative block w-full aspect-video overflow-hidden border hairline bg-forest-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
           >
-            <img
+            <Image
               src={spotlightPoster}
               alt={spotlight.videoTitle}
-              width="1440"
-              height="810"
+              {...responsive(spotlightPoster, PHOTO_WIDTHS, PAGE_WIDTH_SIZES)}
               class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-              loading="lazy"
-              decoding="async"
             />
             <div class="absolute inset-0 bg-gradient-to-t from-forest-950/80 via-forest-950/30 to-forest-950/20"></div>
             <div class="absolute inset-0 flex items-center justify-center">
@@ -426,28 +438,22 @@ const pressJsonLd = pressItems.map((p) => ({
   <section class="bg-paper pb-24" aria-label="In the field">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
       <figure data-scroll-expand class="m-0">
-        <img
-          src="/assets/large-group-cleanup.jpg"
+        <Image
+          src={largeGroupCleanup}
           alt="A large group of LNCP student volunteers gathered after a park cleanup"
-          width="1440"
-          height="1085"
+          {...responsive(largeGroupCleanup, PHOTO_WIDTHS, PAGE_WIDTH_SIZES)}
           class="w-full object-cover border hairline"
-          loading="lazy"
-          decoding="async"
         />
         <figcaption class="text-xs uppercase tracking-wider text-ink-soft mt-3">
           Student volunteers after a Loudoun County park cleanup
         </figcaption>
       </figure>
       <figure data-scroll-expand class="m-0">
-        <img
-          src="/assets/8-people-cleanup-done.jpg"
+        <Image
+          src={eightPeopleCleanup}
           alt="LNCP volunteers with collected trash bags at the end of a cleanup"
-          width="2048"
-          height="1536"
+          {...responsive(eightPeopleCleanup, PHOTO_WIDTHS, PAGE_WIDTH_SIZES)}
           class="w-full object-cover border hairline"
-          loading="lazy"
-          decoding="async"
         />
         <figcaption class="text-xs uppercase tracking-wider text-ink-soft mt-3">
           Bags collected, piece by piece
@@ -455,28 +461,22 @@ const pressJsonLd = pressItems.map((p) => ({
       </figure>
       <div class="grid sm:grid-cols-2 gap-6 sm:gap-8">
         <figure class="m-0">
-          <img
-            src="/assets/outdoor7peoplecrew.jpg"
+          <Image
+            src={outdoorCrew}
             alt="An LNCP cleanup crew posing together outdoors"
-            width="1600"
-            height="2133"
+            {...responsive(outdoorCrew, PHOTO_WIDTHS, HALF_WIDTH_SIZES)}
             class="w-full h-105 object-cover border hairline"
-            loading="lazy"
-            decoding="async"
           />
           <figcaption class="text-xs uppercase tracking-wider text-ink-soft mt-3">
             Crew day in the field
           </figcaption>
         </figure>
         <figure class="m-0">
-          <img
-            src="/assets/outdoor3people.jpg"
+          <Image
+            src={outdoorThree}
             alt="Three LNCP volunteers working outdoors"
-            width="1440"
-            height="1080"
+            {...responsive(outdoorThree, PHOTO_WIDTHS, HALF_WIDTH_SIZES)}
             class="w-full h-105 object-cover border hairline"
-            loading="lazy"
-            decoding="async"
           />
           <figcaption class="text-xs uppercase tracking-wider text-ink-soft mt-3">
             Hands-on restoration
@@ -522,6 +522,7 @@ const pressJsonLd = pressItems.map((p) => ({
                   <FlipCard
                     hoverFlip={false}
                     focusable={copy === 0}
+                    photoSizes="(min-width: 640px) 240px, 208px"
                     name={member.name}
                     role={member.role}
                     bio={member.bio}

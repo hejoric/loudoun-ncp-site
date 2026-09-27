@@ -1,5 +1,5 @@
 /**
- * Regenerates every favicon / app icon from public/assets/lncp-logo.png.
+ * Regenerates every favicon / app icon from src/assets/brand/lncp-logo.png.
  *
  * Run with `npm run icons` after the logo changes. The icons used to be made by
  * hand, which is how they drifted: the logo was re-saved but the icons were not,
@@ -19,7 +19,7 @@ import path from 'node:path';
 import sharp from 'sharp';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
-const SRC = path.join(ROOT, 'public/assets/lncp-logo.png');
+const SRC = path.join(ROOT, 'src/assets/brand/lncp-logo.png');
 
 /** The disc fill in lncp-logo.png. Used as the Apple touch icon's matte so the
  *  flattened corners disappear into the artwork instead of reading as a frame. */
@@ -97,5 +97,11 @@ await out('public/assets/apple-touch-icon.png', await render(180, CORAL));
 for (const size of [192, 512]) {
   await out(`public/assets/android-chrome-${size}x${size}.png`, await render(size, TRANSPARENT));
 }
+
+// The logo at a stable, unhashed URL: the schema.org Organization `logo`
+// (ORG_LOGO in src/lib/seo.ts) points here, and crawlers expect that URL to
+// keep working across deploys. The pages themselves render the master through
+// astro:assets instead, at the few dozen pixels the nav and footer paint.
+await out('public/assets/lncp-logo.png', await render(512, TRANSPARENT));
 
 console.log('Done.');

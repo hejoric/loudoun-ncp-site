@@ -70,9 +70,11 @@ manual steps - there's no bot doing this for you.
 | About page | About Page | `src/content/singletons/about/index.yaml` |
 | Contact info, social links | Site Settings | `src/content/singletons/settings/index.yaml` |
 
-Images go in `public/assets/` (school logos in `public/assets/branches/`,
-college logos in `public/assets/affiliations/`). Keystatic places uploaded
-images there automatically; you can also copy files in manually.
+Images go in `src/assets/` (school logos in `src/assets/branches/`,
+college logos in `src/assets/affiliations/`). Keystatic places uploaded
+images there automatically; you can also copy files in manually. The build
+resizes every one of them to what the page actually shows and converts it to
+WebP, so there is no need to shrink a logo before uploading it.
 
 Team headshots are the exception - see below.
 
@@ -88,12 +90,13 @@ looks right on one is wrong on the other.
 So a new photo takes an extra step:
 
 1. Put the original in `assets-src/team/<slug>.<ext>` - the same slug as the
-   YAML file, e.g. `assets-src/team/jenna.jpeg`. Do not put it in `public/`;
-   originals are kept out of the build so visitors never download them.
+   YAML file, e.g. `assets-src/team/jenna.jpeg`. Do not put it in `public/`
+   or `src/assets/`; originals are kept out of the build so visitors never
+   download them.
 2. Re-measure the faces (macOS, needs Xcode command line tools):
    `swift scripts/measure-faces.swift assets-src/team/* > scripts/headshot-faces.json`
 3. `npm run headshots`
-4. Point the member's `headshot` field at `/assets/team/<slug>/headshot.webp`.
+4. Point the member's `headshot` field at `/src/assets/team/<slug>/headshot.webp`.
 
 Step 3 prints a row per person and flags any photo it could not frame properly -
 "needs a wider photo" means the shot is too close-up to crop back out to the
@@ -113,7 +116,7 @@ A new branch can go on the site before its president is confirmed. Add the
 branch under **Branches**, then add a Team Members entry for the seat with
 **Vacant seat (no person named yet)** checked, the name left as
 `To be announced`, and the headshot pointed at
-`/assets/team/placeholder-neutral.svg`. The card renders like any other, with a
+`/src/assets/team/placeholder-neutral.svg`. The card renders like any other, with a
 neutral silhouette and the school badge, and the seat is left out of the page's
 structured data so search engines are not told about a person who does not exist
 yet.

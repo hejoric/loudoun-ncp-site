@@ -5,6 +5,7 @@ import BranchCard from '@/components/BranchCard.astro';
 import reader from '@/lib/reader';
 import { resolveAffiliations } from '@/lib/affiliations';
 import { FOUNDER_ID, ORG_ID, SITE_URL, absoluteUrl, truncate } from '@/lib/seo';
+import { resolveImage } from '@/lib/images';
 
 const allMembers = await reader.collections.teamMembers.all();
 const allBranches = await reader.collections.branches.all();
@@ -68,7 +69,9 @@ const personJsonLd = allMembers.filter((m) => !m.entry.tentative).map((m) => {
       ...schoolsFor(m).map((a) => ({ '@type': 'EducationalOrganization', name: a.name })),
     ],
     ...(m.entry.bio ? { description: truncate(m.entry.bio, 300) } : {}),
-    ...(m.entry.headshot ? { image: absoluteUrl(m.entry.headshot) } : {}),
+    // The full-size crop, not a card-sized derivative: this is what a search
+    // engine would show as the person's image.
+    ...(m.entry.headshot ? { image: absoluteUrl(resolveImage(m.entry.headshot).src) } : {}),
     ...(m.entry.email ? { email: m.entry.email } : {}),
     ...(sameAs.length ? { sameAs } : {}),
     ...(personId(m.slug) === FOUNDER_ID ? { award: FOUNDER_AWARDS } : {}),
@@ -117,7 +120,10 @@ const rosterJsonLd = {
         <div class="flex flex-wrap justify-center gap-4 sm:gap-6">
           {bySection.executive.map((m) => (
             <div class="w-[calc(50%-0.5rem)] sm:w-56 lg:w-64">
+              {/* The executive row is the first thing under the page header, and
+                  its headshots are the page's largest paint. */}
               <FlipCard
+                priority
                 name={m.entry.name}
                 role={m.entry.role}
                 bio={m.entry.bio}

@@ -1,5 +1,8 @@
 ---
 import Base from '@/layouts/Base.astro';
+import { Image } from 'astro:assets';
+import mainstreetBankLogo from '@/assets/photos/mainstreet-bank-logo.png';
+import { responsive } from '@/lib/images';
 import { ORG_ID, SITE_URL } from '@/lib/seo';
 
 // The MainStreet Bank grant stated in the prose below, as a linked entity.
@@ -51,14 +54,11 @@ const grantJsonLd = {
       <div>
         <p class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">Our Grants</p>
         <div class="bg-paper border hairline p-8 sm:p-10">
-          <img
-            src="/assets/mainstreet-bank-logo.png"
+          <Image
+            src={mainstreetBankLogo}
             alt="MainStreet Bank"
-            width="832"
-            height="189"
+            {...responsive(mainstreetBankLogo, [208, 416, 624], '208px')}
             class="w-52 h-auto mb-6"
-            loading="lazy"
-            decoding="async"
           />
           <h2 class="font-display font-medium text-2xl text-ink mb-4">MainStreet Bank Grant</h2>
           <p class="text-ink-soft text-sm leading-relaxed">

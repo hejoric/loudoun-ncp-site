@@ -11,9 +11,9 @@ bio: >-
   LNCP's community partnerships, media presence, and inter-branch collaboration.
   He attends Northern Virginia Community College with plans to transfer to the
   University of Virginia.
-headshot: /assets/team/enzo-garcia-eguiluz/headshot.webp
+headshot: /src/assets/team/enzo-garcia-eguiluz/headshot.webp
 affiliations:
   - name: Northern Virginia Community College
-    logo: /assets/affiliations/enzo-garcia-eguiluz/affiliations/0/logo.jpg
+    logo: /src/assets/affiliations/enzo-garcia-eguiluz/affiliations/0/logo.jpg
 featuredOnHome: false
 sortOrder: 1

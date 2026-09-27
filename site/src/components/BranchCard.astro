@@ -1,7 +1,9 @@
 ---
+import { Image } from 'astro:assets';
 import InitialsAvatar from './InitialsAvatar.astro';
 import AffiliationBadges from './AffiliationBadges.astro';
 import { affiliationLabel, type Affiliation } from '@/lib/affiliations';
+import { resolveImage, responsive, CARD_PHOTO_WIDTHS, AVATAR_WIDTHS, TEAM_CARD_SIZES } from '@/lib/images';
 
 interface Props {
   presidentName: string;
@@ -44,6 +46,8 @@ const {
 
 const MAROON = '#1B4332';
 
+const photo = resolveImage(presidentHeadshot);
+
 const focalPoint = presidentHeadshotPosition || 'top';
 const scale = Number(presidentHeadshotScale) || 1;
 const photoStyle = `object-position:${focalPoint};${scale !== 1 ? ` transform:scale(${scale}); transform-origin:center bottom;` : ''}`;
@@ -83,14 +87,13 @@ const headshotAlt = tentative
     <div class="card-flip-front flex flex-col bg-paper border hairline">
       <!-- Photo area -->
       <div class="flex-1 relative overflow-hidden bg-gray-200">
-        {presidentHeadshot ? (
-          <img
-            src={presidentHeadshot}
+        {photo ? (
+          <Image
+            src={photo}
             alt={headshotAlt}
+            {...responsive(photo, CARD_PHOTO_WIDTHS, TEAM_CARD_SIZES)}
             class="absolute inset-0 w-full h-full object-cover"
             style={photoStyle}
-            loading="lazy"
-            decoding="async"
           />
         ) : (
           <div class="absolute inset-0 flex items-center justify-center bg-[#1B4332]/10">
@@ -121,14 +124,13 @@ const headshotAlt = tentative
     <div class="card-flip-back flex flex-col p-4 bg-paper border hairline">
       <div class="flex items-center gap-2 pb-3 border-b" style="border-color:#1B433233;">
         <div class="w-10 h-10 rounded-full overflow-hidden shrink-0 ring-2 ring-[#1B4332]/20">
-          {presidentHeadshot ? (
-            <img
-              src={presidentHeadshot}
+          {photo ? (
+            <Image
+              src={photo}
               alt=""
+              {...responsive(photo, AVATAR_WIDTHS, '40px')}
               class="w-full h-full object-cover"
               style={`object-position:${focalPoint};`}
-              loading="lazy"
-              decoding="async"
               aria-hidden="true"
             />
           ) : (

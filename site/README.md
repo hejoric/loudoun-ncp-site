@@ -70,7 +70,7 @@ role: Your Role
 section: Executive  # Executive | Directors | Executive Staff | Branch Presidents | Branch Staff
 branch: null        # branch slug (e.g. "potomac-falls") - their school, see "Schools on a card"
 bio: A short bio paragraph.
-headshot: null      # /assets/team/first-last/headshot.jpg once uploaded
+headshot: null      # /src/assets/team/first-last/headshot.webp once cropped
 headshotPosition: null  # CSS object-position, e.g. "center 27%" - leave blank for top
 headshotScale: null     # e.g. "0.9" to zoom out - leave blank for 1
 email: null
@@ -82,7 +82,9 @@ featuredOnHome: false
 sortOrder: 99
 ```
 
-2. Place headshot at `public/assets/team/first-last/headshot.jpg` (400x400px, <100KB).
+2. Crop the headshot with `npm run headshots` (see "Headshots" in
+   [docs/EDITING.md](docs/EDITING.md)), which writes
+   `src/assets/team/first-last/headshot.webp`, and point `headshot` at it.
 
 ### Schools on a card
 
@@ -100,7 +102,7 @@ badge side by side. The two come from different places:
 branch: dominion            # Dominion High School badge, from the branch record
 affiliations:
   - name: University of Virginia
-    logo: /assets/affiliations/first-last/affiliations/0/logo.png
+    logo: /src/assets/affiliations/first-last/affiliations/0/logo.png
 ```
 
 An entry with no `logo` yet still gets its name printed under the card, so a
@@ -108,7 +110,7 @@ college can be announced before its logo is sourced. Up to three badges are
 shown per card; any beyond that appear as names only.
 
 The `affiliations/<index>/logo` path above is where Keystatic files an uploaded
-logo. Any path under `public/` works if you hand-write the YAML, but Keystatic
+logo. Any path under `src/assets/affiliations/` works if you hand-write the YAML, but Keystatic
 moves the file to that canonical path the next time the entry is saved in the
 editor - so it is simpler to put it there to begin with.
 
@@ -119,12 +121,12 @@ editor - so it is simpler to put it there to begin with.
 ```yaml
 name: Heritage                 # short branch name, shown on the card
 school: Heritage High School   # full school name, shown on the badge
-schoolLogo: null               # /assets/branches/heritage/schoolLogo.png once uploaded
+schoolLogo: null               # /src/assets/branches/heritage/schoolLogo.png once uploaded
 ```
 
-2. Place the school logo at `public/assets/branches/branch-slug/schoolLogo.png`
-   (200x200px transparent PNG, <50KB) and point `schoolLogo` at it. That is the
-   path Keystatic uses when the logo is uploaded in the editor.
+2. Place the school logo at `src/assets/branches/branch-slug/schoolLogo.png`
+   (square transparent PNG, at least 200x200px) and point `schoolLogo` at it.
+   That is the path Keystatic uses when the logo is uploaded in the editor.
 
 A branch with no logo yet is fine - the badge falls back to the school's
 initials ("HHS"). A branch record is only rendered through the members that
@@ -165,18 +167,26 @@ pdfLink: null   # or external DOI URL
 
 | Asset | Path | Spec |
 |---|---|---|
-| Team headshots | `public/assets/team/` | 400x400px, JPEG, <100KB |
-| School logos | `public/assets/branches/` | 200x200px transparent PNG, <50KB |
-| College logos | `public/assets/affiliations/` | 200x200px square, trimmed of margins, <50KB |
+| Team headshots | `src/assets/team/` | WebP written by `npm run headshots` |
+| School logos | `src/assets/branches/` | Square transparent PNG, at least 200x200px |
+| College logos | `src/assets/affiliations/` | Square, trimmed of margins, at least 200x200px |
+| Page photos | `src/assets/photos/` | JPEG, at least 1600px wide |
 | Hero video | `public/assets/hero.mp4` | 1280px wide, H.264, CRF 26, no audio, <2MB |
-| Hero poster | `public/assets/hero-poster.jpg` | JPEG still from video, same dimensions |
+| Hero poster | `src/assets/photos/hero-poster.jpg` | JPEG still from video, same dimensions |
 | Research PDFs | `public/research/` | PDF, any size |
+
+Images under `src/assets/` go through `astro:assets` at build time: each one is
+resized to the sizes its slot actually paints and served as WebP, so a large
+original costs nothing at runtime. A content image path that points anywhere
+else fails the build (see `src/lib/images.ts`). `public/` is copied into the
+build verbatim, so keep it for files that need a stable URL: favicons, PDFs,
+the Open Graph image, and the video.
 
 ### Recompressing the hero video
 
 ```bash
 ffmpeg -i input.mp4 -vf scale=1280:-2 -c:v libx264 -crf 26 -an -movflags +faststart public/assets/hero.mp4
-ffmpeg -i public/assets/hero.mp4 -vframes 1 -ss 00:00:02 -update 1 public/assets/hero-poster.jpg
+ffmpeg -i public/assets/hero.mp4 -vframes 1 -ss 00:00:02 -update 1 src/assets/photos/hero-poster.jpg
 ```
 
 ## Deployment (Cloudflare Pages)
@@ -214,6 +224,7 @@ note it cannot run on Cloudflare Pages.
 ```
 site/
   src/
+    assets/         # Images optimized by astro:assets: headshots, logos, photos
     components/     # Nav, Footer, SocialLinks, FlipCard, BranchCard, PublicationCard, InitialsAvatar
     content/        # YAML content files (Keystatic collections + singletons)
     layouts/        # Base.astro (HTML shell with meta/SEO)
@@ -221,7 +232,7 @@ site/
     pages/          # One .astro file per route
     styles/         # global.css (Tailwind + custom theme tokens)
   public/
-    assets/         # Fonts, logos, headshots, hero video
+    assets/         # Favicons, OG image, hero video, PDFs
     research/       # PDFs
     _redirects      # Cloudflare Pages URL redirects
   docs/

@@ -89,7 +89,7 @@ const collectionJsonLd = {
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
       {groups.length > 0 ? (
         <div class="border-b hairline">
-          {groups.map((group) => (
+          {groups.map((group, groupIndex) => (
             <div
               id={group.slug}
               class="grid md:grid-cols-[13rem_minmax(0,1fr)] gap-6 md:gap-10 border-t hairline py-10 sm:py-12 scroll-mt-24"
@@ -106,7 +106,7 @@ const collectionJsonLd = {
               </div>
 
               <ul class="space-y-10" role="list">
-                {group.items.map((item) => (
+                {group.items.map((item, itemIndex) => (
                   <li>
                     {item.image && (
                       /* Its own figure, outside the story link: a credit line is
@@ -127,8 +127,7 @@ const collectionJsonLd = {
                             widths={[420, 620, 840, 1100, 1400]}
                             sizes="(min-width: 1024px) 700px, calc(100vw - 2rem)"
                             class="w-full aspect-[4/3] sm:aspect-[16/10] object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                            loading="lazy"
-                            decoding="async"
+                            priority={groupIndex === 0 && itemIndex === 0}
                           />
                         </a>
                         {item.imageCredit && (
