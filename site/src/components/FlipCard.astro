@@ -281,20 +281,16 @@ const linkTabIndex = focusable ? undefined : -1;
         ? document.querySelectorAll<HTMLElement>(`[data-card-flip][data-flip-key="${key}"]`)
         : [el];
 
-    // Which pointer drove the current interaction. Blink applies :hover to a
-    // tapped element, so on a touchscreen an untouched card reads as hovered the
-    // instant it is tapped. Inferring the visible side from :hover then pins the
-    // side already showing and the first tap does nothing at all - two taps to
-    // open a bio. Only a real mouse gets to seed the state from :hover.
-    let pointerKind = 'mouse';
-    el.addEventListener('pointerdown', (e) => {
-      pointerKind = e.pointerType || 'mouse';
-    });
+    // Whether a mouse is over the card, tracked from the pointer events rather
+    // than read back from :hover. Blink applies :hover to a tapped element, so on
+    // a touchscreen an untouched card reads as hovered the instant it is tapped,
+    // and the first tap would pin the side already showing. Gecko, for its part,
+    // may not have set :hover yet when pointerenter fires, which would leave the
+    // back inert under a hovered card. Only a mouse sets this flag.
+    let hovered = false;
 
     const showingBack = () =>
-      el.dataset.flip
-        ? el.dataset.flip === 'back'
-        : hoverFlips && pointerKind === 'mouse' && el.matches(':hover');
+      el.dataset.flip ? el.dataset.flip === 'back' : hoverFlips && hovered;
 
     // The back is inert whenever it is not the side on screen: its links are
     // then not invisible tab stops, and a screen reader meets the bio only once
@@ -353,12 +349,13 @@ const linkTabIndex = focusable ? undefined : -1;
     if (hoverFlips) {
       el.addEventListener('pointerenter', (e) => {
         if (e.pointerType === 'mouse') {
-          pointerKind = 'mouse';
+          hovered = true;
           syncBack();
         }
       });
       el.addEventListener('pointerleave', (e) => {
         if (e.pointerType !== 'mouse') return;
+        hovered = false;
         if (back.contains(document.activeElement)) toggleButton.focus({ preventScroll: true });
         show(null);
       });

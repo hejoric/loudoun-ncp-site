@@ -143,9 +143,11 @@ const graph = buildGraph([
     <meta name="twitter:image" content={`${SITE_URL}${shareImage}`} />
     <meta name="twitter:image:alt" content={ogImageAlt} />
 
-    <!-- Favicon. Every file here is generated from public/assets/lncp-logo.png by
-         `npm run icons` (scripts/generate-icons.mjs) - regenerate rather than
-         editing one by hand, or they drift out of sync with the logo again. -->
+    <!-- Favicon. Every file here, and public/assets/lncp-logo.png itself, is
+         generated from the master src/assets/brand/lncp-logo.png by
+         `npm run icons` (scripts/generate-icons.mjs) - replace the master and
+         regenerate rather than editing one by hand, or they drift out of sync
+         with the logo again. -->
     <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
     <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48x48.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png" />
