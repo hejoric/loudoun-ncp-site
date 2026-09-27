@@ -1,5 +1,7 @@
 ---
+import { Image } from 'astro:assets';
 import type { Affiliation } from '@/lib/affiliations';
+import { resolveImage, responsive } from '@/lib/images';
 
 interface Props {
   affiliations: readonly Affiliation[];
@@ -24,13 +26,13 @@ function initials(name: string) {
 //
 // High school + college is the common case and three still fits the card;
 // anything beyond that lives in the card's screen-reader summary only.
-const shown = affiliations.slice(0, 3);
+const shown = affiliations.slice(0, 3).map((a) => ({ ...a, image: resolveImage(a.logo) }));
 ---
 
 {shown.length > 0 && (
   <div class="absolute bottom-2 right-2 flex items-center gap-1.5">
     {shown.map((a) =>
-      a.logo ? (
+      a.image ? (
         <div
           class="w-10 h-10 rounded-full ring-2 ring-white overflow-hidden bg-white flex items-center justify-center shadow"
           title={a.name}
@@ -42,12 +44,11 @@ const shown = affiliations.slice(0, 3);
           {/* Decorative: the card text already names the school, so the badge
               is hidden from assistive tech. alt="" rather than a description,
               because aria-hidden wins and any alt string here is dead code. */}
-          <img
-            src={a.logo}
+          <Image
+            src={a.image}
             alt=""
+            {...responsive(a.image, [32, 64, 96], '28px')}
             class="w-[71%] h-[71%] object-contain"
-            loading="lazy"
-            decoding="async"
             aria-hidden="true"
           />
         </div>

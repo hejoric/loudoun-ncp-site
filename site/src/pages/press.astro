@@ -18,13 +18,17 @@ const leadImage = items.find((item) => item.image);
 // Social crawlers and schema.org consumers want a plain JPEG at a predictable
 // size, not the responsive WebP srcset the page itself renders. Generate one
 // derivative per photo and key it by article URL for the JSON-LD below.
-const shareImages = new Map<string, string>();
+const shareImages = new Map<string, { src: string; width: number; height: number }>();
 for (const item of items) {
   if (!item.image) continue;
   const jpeg = await getImage({ src: item.image, format: 'jpeg', width: 1200 });
-  shareImages.set(item.url, jpeg.src);
+  shareImages.set(item.url, {
+    src: jpeg.src,
+    width: Number(jpeg.attributes.width),
+    height: Number(jpeg.attributes.height),
+  });
 }
-const ogImageSrc = leadImage ? shareImages.get(leadImage.url) : undefined;
+const ogImage = leadImage ? shareImages.get(leadImage.url) : undefined;
 
 // Enumerate every story as a linked NewsArticle so a crawler can read the full
 // coverage list from this one URL. The `@id` is the article URL, which is the
@@ -51,7 +55,7 @@ const articleListJsonLd = {
       ...(item.byline ? { author: { '@type': 'Person', name: item.byline } } : {}),
       ...(item.summary ? { description: truncate(item.summary, 300) } : {}),
       ...(shareImages.has(item.url)
-        ? { image: `${SITE_URL}${shareImages.get(item.url)}` }
+        ? { image: `${SITE_URL}${shareImages.get(item.url)!.src}` }
         : {}),
     },
   })),
@@ -69,7 +73,8 @@ const collectionJsonLd = {
 <Base
   title="Press"
   description="Every news story, broadcast, and public record covering the Loudoun Nature Conservation Project, the student-led environmental nonprofit in Loudoun County, Virginia."
-  ogImage={ogImageSrc}
+  ogImage={ogImage?.src}
+  ogImageSize={ogImage && { width: ogImage.width, height: ogImage.height }}
   ogImageAlt={leadImage?.imageAlt ?? undefined}
   breadcrumb={[['Home', '/'], ['Press', '/press/']]}
   jsonLd={[collectionJsonLd, articleListJsonLd]}
@@ -89,7 +94,7 @@ const collectionJsonLd = {
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
       {groups.length > 0 ? (
         <div class="border-b hairline">
-          {groups.map((group) => (
+          {groups.map((group, groupIndex) => (
             <div
               id={group.slug}
               class="grid md:grid-cols-[13rem_minmax(0,1fr)] gap-6 md:gap-10 border-t hairline py-10 sm:py-12 scroll-mt-24"
@@ -106,7 +111,7 @@ const collectionJsonLd = {
               </div>
 
               <ul class="space-y-10" role="list">
-                {group.items.map((item) => (
+                {group.items.map((item, itemIndex) => (
                   <li>
                     {item.image && (
                       /* Its own figure, outside the story link: a credit line is
@@ -127,8 +132,7 @@ const collectionJsonLd = {
                             widths={[420, 620, 840, 1100, 1400]}
                             sizes="(min-width: 1024px) 700px, calc(100vw - 2rem)"
                             class="w-full aspect-[4/3] sm:aspect-[16/10] object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                            loading="lazy"
-                            decoding="async"
+                            priority={groupIndex === 0 && itemIndex === 0}
                           />
                         </a>
                         {item.imageCredit && (

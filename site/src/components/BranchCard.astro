@@ -1,7 +1,9 @@
 ---
+import { Image } from 'astro:assets';
 import InitialsAvatar from './InitialsAvatar.astro';
 import AffiliationBadges from './AffiliationBadges.astro';
 import { affiliationLabel, type Affiliation } from '@/lib/affiliations';
+import { resolveImage, responsive, CARD_PHOTO_WIDTHS, AVATAR_WIDTHS, TEAM_CARD_SIZES } from '@/lib/images';
 
 interface Props {
   presidentName: string;
@@ -44,53 +46,58 @@ const {
 
 const MAROON = '#1B4332';
 
+const photo = resolveImage(presidentHeadshot);
+
 const focalPoint = presidentHeadshotPosition || 'top';
 const scale = Number(presidentHeadshotScale) || 1;
 const photoStyle = `object-position:${focalPoint};${scale !== 1 ? ` transform:scale(${scale}); transform-origin:center bottom;` : ''}`;
 
 // Schools are shown as logo badges on the photo, not as text on the card. The
-// branch school is already the eyebrow above the president's name, so the
-// screen-reader summary at the bottom only needs to add the ones it does not
+// branch is already named on the back ("Branch President - Heritage"), so the
+// screen-reader line at the bottom only needs to add the schools it does not
 // cover (e.g. the college they were accepted to).
 const otherSchools = affiliationLabel(affiliations.filter((a) => a.source !== 'branch'));
 
 // On a vacant seat there is no one to name, so both of these describe the seat
-// instead of a person: "To be announced's profile" and "To be announced,
-// Heritage branch president" both read as if the placeholder were somebody.
-const cardLabel = tentative
-  ? `${branchName} Branch - branch president to be announced`
-  : `View ${presidentName}'s profile - ${branchName} Branch`;
+// instead of a person: "To be announced, Heritage branch president" reads as
+// if the placeholder were somebody. The toggle's name follows the front of the
+// card - branch eyebrow, then the name - so it matches what a sighted user sees.
+const toggleLabel = tentative
+  ? `${branchName}: ${presidentRole.toLowerCase()} to be announced`
+  : `${branchName}: ${presidentName}, ${presidentRole}`;
 const headshotAlt = tentative
   ? `${branchName} branch president, to be announced`
   : `${presidentName}, ${branchName} ${presidentRole.toLowerCase()}`;
 ---
 
-<!-- Flip behaviour (click, tap, Enter/Space, and keeping the social links on the
-     back from turning the card) comes from the [data-card-flip] script in
-     FlipCard.astro, which owns every card on the page. Both components are only
-     ever rendered together on the team page; if a branch card ever ships on a
-     page without a FlipCard, that script has to come along too. -->
+<!-- Flip behaviour (click, tap, the toggle button, keeping the back inert while
+     it is hidden, and keeping the social links on the back from turning the
+     card) comes from the [data-card-flip] script in FlipCard.astro, which owns
+     every card on the page. The markup contract - a visually hidden
+     [data-flip-toggle] button, an aria-hidden front, a [data-flip-back] back -
+     mirrors FlipCard's, which explains why it is shaped this way. Both
+     components are only ever rendered together on the team page; if a branch
+     card ever ships on a page without a FlipCard, that script has to come along
+     too. -->
 <div
-  class="card-flip w-full h-80 cursor-pointer"
-  tabindex="0"
-  role="button"
-  aria-label={cardLabel}
-  aria-pressed="false"
+  class="card-flip relative w-full h-80 cursor-pointer"
   data-card-flip
 >
+  <button type="button" class="sr-only" aria-expanded="false" data-flip-toggle>
+    {toggleLabel}
+  </button>
   <div class="card-flip-inner">
     <!-- Front: headshot fills card, school logo badge, branch + name below -->
-    <div class="card-flip-front flex flex-col bg-paper border hairline">
+    <div class="card-flip-front flex flex-col bg-paper border hairline" aria-hidden="true">
       <!-- Photo area -->
       <div class="flex-1 relative overflow-hidden bg-gray-200">
-        {presidentHeadshot ? (
-          <img
-            src={presidentHeadshot}
+        {photo ? (
+          <Image
+            src={photo}
             alt={headshotAlt}
+            {...responsive(photo, CARD_PHOTO_WIDTHS, TEAM_CARD_SIZES)}
             class="absolute inset-0 w-full h-full object-cover"
             style={photoStyle}
-            loading="lazy"
-            decoding="async"
           />
         ) : (
           <div class="absolute inset-0 flex items-center justify-center bg-[#1B4332]/10">
@@ -118,17 +125,16 @@ const headshotAlt = tentative
     </div>
 
     <!-- Back -->
-    <div class="card-flip-back flex flex-col p-4 bg-paper border hairline">
+    <div class="card-flip-back flex flex-col p-4 bg-paper border hairline" data-flip-back>
       <div class="flex items-center gap-2 pb-3 border-b" style="border-color:#1B433233;">
         <div class="w-10 h-10 rounded-full overflow-hidden shrink-0 ring-2 ring-[#1B4332]/20">
-          {presidentHeadshot ? (
-            <img
-              src={presidentHeadshot}
+          {photo ? (
+            <Image
+              src={photo}
               alt=""
+              {...responsive(photo, AVATAR_WIDTHS, '40px')}
               class="w-full h-full object-cover"
               style={`object-position:${focalPoint};`}
-              loading="lazy"
-              decoding="async"
               aria-hidden="true"
             />
           ) : (
@@ -150,7 +156,7 @@ const headshotAlt = tentative
           {presidentEmail && (
             <a
               href={`mailto:${presidentEmail}`}
-              class="text-gray-600 hover:text-[#1B4332] transition-colors"
+              class="p-1 -m-1 text-gray-600 hover:text-[#1B4332] transition-colors"
               aria-label={`Email ${presidentName}`}
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -161,7 +167,7 @@ const headshotAlt = tentative
           {presidentInstagram && (
             <a
               href={`https://instagram.com/${presidentInstagram}`}
-              class="text-gray-600 hover:text-[#1B4332] transition-colors"
+              class="p-1 -m-1 text-gray-600 hover:text-[#1B4332] transition-colors"
               aria-label={`${presidentName} on Instagram`}
               target="_blank"
               rel="noopener noreferrer"
@@ -174,7 +180,7 @@ const headshotAlt = tentative
           {presidentLinkedin && (
             <a
               href={presidentLinkedin}
-              class="text-gray-600 hover:text-[#1B4332] transition-colors"
+              class="p-1 -m-1 text-gray-600 hover:text-[#1B4332] transition-colors"
               aria-label={`${presidentName} on LinkedIn`}
               target="_blank"
               rel="noopener noreferrer"
@@ -187,11 +193,7 @@ const headshotAlt = tentative
         </div>
       )}
 
-      <span class="sr-only">
-        {tentative
-          ? `${branchName} ${presidentRole.toLowerCase()}: to be announced.`
-          : `${presidentName}, ${presidentRole} of ${branchName}.`}{otherSchools ? ` ${otherSchools}.` : ''} {presidentBio}
-      </span>
+      {otherSchools && <span class="sr-only">{otherSchools}.</span>}
     </div>
   </div>
 </div>

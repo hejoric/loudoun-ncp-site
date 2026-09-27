@@ -9,8 +9,8 @@ Static site for [loudounnatureconservation.org](https://loudounnatureconservatio
 | Framework | Astro 7 (static output) |
 | Styles | Tailwind CSS v4 |
 | CMS | Keystatic (git-based, YAML files) |
-| Hosting | Cloudflare Pages |
-| Font | Montserrat (self-hosted) |
+| Hosting | Vercel (static) |
+| Fonts | System font stacks (serif display, sans body) - no web fonts are loaded |
 
 ## Local Development
 
@@ -70,7 +70,7 @@ role: Your Role
 section: Executive  # Executive | Directors | Executive Staff | Branch Presidents | Branch Staff
 branch: null        # branch slug (e.g. "potomac-falls") - their school, see "Schools on a card"
 bio: A short bio paragraph.
-headshot: null      # /assets/team/first-last/headshot.jpg once uploaded
+headshot: null      # /src/assets/team/first-last/headshot.webp once cropped
 headshotPosition: null  # CSS object-position, e.g. "center 27%" - leave blank for top
 headshotScale: null     # e.g. "0.9" to zoom out - leave blank for 1
 email: null
@@ -82,7 +82,9 @@ featuredOnHome: false
 sortOrder: 99
 ```
 
-2. Place headshot at `public/assets/team/first-last/headshot.jpg` (400x400px, <100KB).
+2. Crop the headshot with `npm run headshots` (see "Headshots" in
+   [docs/EDITING.md](docs/EDITING.md)), which writes
+   `src/assets/team/first-last/headshot.webp`, and point `headshot` at it.
 
 ### Schools on a card
 
@@ -100,7 +102,7 @@ badge side by side. The two come from different places:
 branch: dominion            # Dominion High School badge, from the branch record
 affiliations:
   - name: University of Virginia
-    logo: /assets/affiliations/first-last/affiliations/0/logo.png
+    logo: /src/assets/affiliations/first-last/affiliations/0/logo.png
 ```
 
 An entry with no `logo` yet still gets its name printed under the card, so a
@@ -108,7 +110,7 @@ college can be announced before its logo is sourced. Up to three badges are
 shown per card; any beyond that appear as names only.
 
 The `affiliations/<index>/logo` path above is where Keystatic files an uploaded
-logo. Any path under `public/` works if you hand-write the YAML, but Keystatic
+logo. Any path under `src/assets/affiliations/` works if you hand-write the YAML, but Keystatic
 moves the file to that canonical path the next time the entry is saved in the
 editor - so it is simpler to put it there to begin with.
 
@@ -119,12 +121,12 @@ editor - so it is simpler to put it there to begin with.
 ```yaml
 name: Heritage                 # short branch name, shown on the card
 school: Heritage High School   # full school name, shown on the badge
-schoolLogo: null               # /assets/branches/heritage/schoolLogo.png once uploaded
+schoolLogo: null               # /src/assets/branches/heritage/schoolLogo.png once uploaded
 ```
 
-2. Place the school logo at `public/assets/branches/branch-slug/schoolLogo.png`
-   (200x200px transparent PNG, <50KB) and point `schoolLogo` at it. That is the
-   path Keystatic uses when the logo is uploaded in the editor.
+2. Place the school logo at `src/assets/branches/branch-slug/schoolLogo.png`
+   (square transparent PNG, at least 200x200px) and point `schoolLogo` at it.
+   That is the path Keystatic uses when the logo is uploaded in the editor.
 
 A branch with no logo yet is fine - the badge falls back to the school's
 initials ("HHS"). A branch record is only rendered through the members that
@@ -165,31 +167,45 @@ pdfLink: null   # or external DOI URL
 
 | Asset | Path | Spec |
 |---|---|---|
-| Team headshots | `public/assets/team/` | 400x400px, JPEG, <100KB |
-| School logos | `public/assets/branches/` | 200x200px transparent PNG, <50KB |
-| College logos | `public/assets/affiliations/` | 200x200px square, trimmed of margins, <50KB |
-| Hero video | `public/assets/hero.mp4` | 1280px wide, H.264, CRF 26, no audio, <2MB |
-| Hero poster | `public/assets/hero-poster.jpg` | JPEG still from video, same dimensions |
+| Team headshots | `src/assets/team/` | WebP written by `npm run headshots` |
+| School logos | `src/assets/branches/` | Square transparent PNG, at least 200x200px |
+| College logos | `src/assets/affiliations/` | Square, trimmed of margins, at least 200x200px |
+| Page photos | `src/assets/photos/` | JPEG, at least 1600px wide |
+| Hero video | `public/assets/hero.mp4` | 1280px wide, H.264, CRF 26, no audio |
+| Hero video (AV1) | `public/assets/hero-av1.mp4` | Same clip in AV1, served first to browsers that decode it |
+| Hero poster | `src/assets/photos/hero-poster.jpg` | JPEG still from video, same dimensions |
 | Research PDFs | `public/research/` | PDF, any size |
+
+Images under `src/assets/` go through `astro:assets` at build time: each one is
+resized to the sizes its slot actually paints and served as WebP, so a large
+original costs nothing at runtime. A content image path that points anywhere
+else fails the build (see `src/lib/images.ts`). `public/` is copied into the
+build verbatim, so keep it for files that need a stable URL: favicons, PDFs,
+the Open Graph image, and the video.
 
 ### Recompressing the hero video
 
 ```bash
 ffmpeg -i input.mp4 -vf scale=1280:-2 -c:v libx264 -crf 26 -an -movflags +faststart public/assets/hero.mp4
-ffmpeg -i public/assets/hero.mp4 -vframes 1 -ss 00:00:02 -update 1 public/assets/hero-poster.jpg
+ffmpeg -i public/assets/hero.mp4 -map 0:v:0 -dn -map_metadata -1 -c:v libsvtav1 -crf 42 -preset 4 -g 240 -pix_fmt yuv420p -an -movflags +faststart public/assets/hero-av1.mp4
+ffmpeg -i public/assets/hero.mp4 -vframes 1 -ss 00:00:02 -update 1 src/assets/photos/hero-poster.jpg
 ```
 
-## Deployment (Cloudflare Pages)
+Re-encode both files whenever the clip changes: the page offers the AV1 file
+first, so a stale one keeps playing the old clip in Chrome, Edge and Firefox.
+Size scales with length, so keep the clip short - the current 42 seconds is
+about 6 MB as H.264 and 3.7 MB as AV1. The video only starts downloading after
+the page has loaded, and never for visitors with reduced motion or Save-Data
+turned on.
 
-1. Push to GitHub.
-2. In Cloudflare Pages dashboard, connect the repo.
-3. Set build settings:
-   - Build command: `npm run build`
-   - Build output directory: `site/dist`
-   - Root directory: `site`
-   - Node.js version: `22`
+## Deployment (Vercel)
 
-No environment variables are required.
+Merging to `main` deploys to production; every PR gets a preview URL. The
+Vercel project's Root Directory is `site`, and `vercel.json` pins the build,
+redirects, and headers. No environment variables are required.
+
+See **[docs/DEPLOY.md](docs/DEPLOY.md)** for manual deploys, post-deploy checks,
+and DNS.
 
 ## Editing Workflows
 
@@ -202,18 +218,21 @@ edits the site:
 
 There is intentionally no web-hosted CMS: the deployed site is 100% static
 with zero attack surface. `docs/EDITING.md` documents the supported upgrade
-path (Keystatic GitHub mode on Netlify/Vercel) if that ever becomes necessary -
-note it cannot run on Cloudflare Pages.
+path (Keystatic GitHub mode) if that ever becomes necessary.
 
 ## URL Redirects
 
-`public/_redirects` handles old WordPress paths. Cloudflare Pages does not support query-string matching, so `/?page_id=NNN` redirects from the old WordPress site cannot be handled here - they would require a Cloudflare Worker if needed.
+The `redirects` in `vercel.json` handle old WordPress paths (see
+[docs/DEPLOY.md](docs/DEPLOY.md) for the trailing-slash rule they depend on).
+Query-string URLs from the old WordPress site (`/?page_id=NNN`) are not
+redirected.
 
 ## Project Structure
 
 ```
 site/
   src/
+    assets/         # Images optimized by astro:assets: headshots, logos, photos
     components/     # Nav, Footer, SocialLinks, FlipCard, BranchCard, PublicationCard, InitialsAvatar
     content/        # YAML content files (Keystatic collections + singletons)
     layouts/        # Base.astro (HTML shell with meta/SEO)
@@ -221,11 +240,12 @@ site/
     pages/          # One .astro file per route
     styles/         # global.css (Tailwind + custom theme tokens)
   public/
-    assets/         # Fonts, logos, headshots, hero video
+    assets/         # Favicons, OG image, hero video, PDFs
     research/       # PDFs
-    _redirects      # Cloudflare Pages URL redirects
   docs/
+    DEPLOY.md       # Hosting, deploys, headers, DNS
     EDITING.md      # Editing runbook for webmaster + non-technical editors
   keystatic.config.ts
   astro.config.mjs
+  vercel.json       # Redirects, cache and security headers
 ```

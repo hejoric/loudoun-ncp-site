@@ -56,8 +56,8 @@ Pages syntax and is ignored by Vercel.
 | `/history/`, `/our-history/` | 308 to `/about/#history` |
 | `/wp-content/*`, `/wp-includes/*`, `/xmlrpc.php` | 308 to `/` |
 | Trailing slashes | `trailingSlash: true`, matching Astro's directory output and every internal link |
-| Caching | `_astro/*` 1y immutable (content-hashed); `assets/*` 1 week; HTML revalidates |
-| Security | `nosniff`, `Referrer-Policy`, `X-Frame-Options`, HSTS |
+| Caching | `_astro/*` 1y immutable (content-hashed); `assets/*` and `favicon.ico` 1 week; HTML revalidates |
+| Security | `nosniff`, `Referrer-Policy`, `X-Frame-Options`, HSTS, COOP, `Permissions-Policy`, and a CSP limited to `frame-ancestors`, `base-uri`, `object-src` and `upgrade-insecure-requests` |
 | HTTPS + certs | Automatic, nothing to configure |
 
 **The one non-obvious rule: redirect `source` values must carry the trailing
@@ -87,7 +87,16 @@ curl -s $SITE/definitely-not-a-page/ | grep -o '<title>[^<]*'
 # Cache tiers
 curl -sI $SITE/ | grep -i ^cache-control                      # max-age=0, must-revalidate
 curl -sI $SITE/assets/lncp-logo.png | grep -i ^cache-control  # max-age=604800
+
+# Security headers
+curl -sI $SITE/ | grep -iE '^(content-security-policy|permissions-policy|cross-origin-opener-policy):'
 ```
+
+The CSP deliberately stops short of `script-src`/`style-src`. The pages carry
+inline scripts (the analytics bootstrap, Astro's hoisted module scripts) and
+inline `style` attributes (headshot crops), and load Google Analytics, a
+YouTube embed and a Google Form, so a restrictive policy needs per-build
+hashes and a tested allowlist - it is not something to add blind.
 
 Card flips are script-driven and invisible to curl. After a deploy that touches
 `FlipCard.astro`, `BranchCard.astro`, or the `.card-flip*` rules in

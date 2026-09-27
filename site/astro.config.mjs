@@ -10,7 +10,6 @@ export default defineConfig({
   site: 'https://loudounnatureconservation.org',
   output: 'static',
   integrations: [
-    react(),
     sitemap({
       // Accurate lastmod (from git history) tells Google what actually changed,
       // which is what drives recrawl priority. See sitemap-meta.mjs.
@@ -25,7 +24,10 @@ export default defineConfig({
     }),
     // Keystatic (the local content editor at /keystatic) runs in dev only.
     // Production builds are fully static - no server routes, no adapter.
-    ...(isDev ? [(await import('@keystatic/astro')).default()] : []),
+    // React is only there for the Keystatic UI - no page uses it - so it is
+    // dev-only too; in a production build it only emitted an unused 220 KB
+    // client bundle.
+    ...(isDev ? [react(), (await import('@keystatic/astro')).default()] : []),
   ],
   vite: {
     plugins: [tailwindcss()],

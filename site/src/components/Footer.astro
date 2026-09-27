@@ -1,4 +1,7 @@
 ---
+import { Image } from 'astro:assets';
+import logo from '@/assets/brand/lncp-logo.png';
+import { responsive } from '@/lib/images';
 import SocialLinks from './SocialLinks.astro';
 import { ORG_ADDRESS_SHORT, ORG_EIN, ORG_EMAIL, ORG_NAME } from '@/lib/seo';
 
@@ -11,13 +14,10 @@ const year = new Date().getFullYear();
       <!-- Brand -->
       <div class="space-y-4">
         <div class="flex items-center gap-3">
-          <img
-            src="/assets/lncp-logo.png"
+          <Image
+            src={logo}
             alt="Loudoun Nature Conservation Project logo"
-            width="48"
-            height="48"
-            loading="lazy"
-            decoding="async"
+            {...responsive(logo, [48, 96, 144], '48px')}
             class="w-12 h-12 object-contain"
           />
           <div>
@@ -41,7 +41,7 @@ const year = new Date().getFullYear();
 
       <!-- Site map -->
       <div>
-        <h3 class="font-body font-semibold text-ink text-xs uppercase tracking-widest mb-4">Site Map</h3>
+        <h2 class="font-body font-semibold text-ink text-xs uppercase tracking-widest mb-4">Site Map</h2>
         <ul class="space-y-2 text-sm">
           {[
             ['/', 'Home'],
@@ -63,7 +63,7 @@ const year = new Date().getFullYear();
 
       <!-- Legal -->
       <div>
-        <h3 class="font-body font-semibold text-ink text-xs uppercase tracking-widest mb-4">Legal</h3>
+        <h2 class="font-body font-semibold text-ink text-xs uppercase tracking-widest mb-4">Legal</h2>
         <ul class="space-y-2 text-sm">
           <li>
             <a href="/proof-of-corporation/" class="text-ink-soft hover:text-ink transition-colors">

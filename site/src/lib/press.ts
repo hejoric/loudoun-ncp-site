@@ -14,33 +14,7 @@
  */
 import type { ImageMetadata } from 'astro';
 import reader from './reader';
-
-/**
- * Press photos live in src/assets/press so astro:assets can optimize them.
- *
- * Keystatic stores the image as a path string, but astro:assets needs the
- * imported module to do anything with it, so the directory is globbed eagerly
- * and the stored path looked up here. A path with no matching file throws at
- * build time rather than shipping a broken <img> - the whole point of routing
- * these through the pipeline is that a new upload is optimized automatically,
- * so a silent miss would defeat it.
- */
-const PRESS_IMAGES = import.meta.glob<{ default: ImageMetadata }>(
-  '/src/assets/press/*.{jpg,jpeg,png,webp,avif}',
-  { eager: true },
-);
-
-function resolveImage(path: string | null | undefined): ImageMetadata | null {
-  if (!path) return null;
-  const mod = PRESS_IMAGES[path];
-  if (!mod) {
-    throw new Error(
-      `Press image "${path}" is not in src/assets/press. ` +
-        `Known: ${Object.keys(PRESS_IMAGES).join(', ') || '(none)'}`,
-    );
-  }
-  return mod.default;
-}
+import { resolveImage } from './images';
 
 export interface PressItem {
   publication: string;

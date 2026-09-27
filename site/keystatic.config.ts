@@ -37,10 +37,14 @@ export default config({
           validation: { isRequired: false, length: { min: 0 } },
         }),
         bio: fields.text({ label: 'Bio', multiline: true }),
+        // Team, branch, and affiliation images land in src/assets rather than
+        // public/ for the same reason press photos do: astro:assets resizes them
+        // to the few hundred pixels a card actually paints and serves a modern
+        // format. src/lib/images.ts maps the stored path back to the asset.
         headshot: fields.image({
           label: 'Headshot - point this at the cropped file, not a raw photo',
-          directory: 'public/assets/team',
-          publicPath: '/assets/team/',
+          directory: 'src/assets/team',
+          publicPath: '/src/assets/team/',
           validation: { isRequired: false },
         }),
         headshotPosition: fields.text({
@@ -79,8 +83,8 @@ export default config({
             }),
             logo: fields.image({
               label: 'Logo (transparent PNG/SVG preferred)',
-              directory: 'public/assets/affiliations',
-              publicPath: '/assets/affiliations/',
+              directory: 'src/assets/affiliations',
+              publicPath: '/src/assets/affiliations/',
               validation: { isRequired: false },
             }),
           }),
@@ -115,8 +119,8 @@ export default config({
         school: fields.text({ label: 'Full School Name' }),
         schoolLogo: fields.image({
           label: 'School Logo (transparent PNG/SVG preferred)',
-          directory: 'public/assets/branches',
-          publicPath: '/assets/branches/',
+          directory: 'src/assets/branches',
+          publicPath: '/src/assets/branches/',
           validation: { isRequired: false },
         }),
         accentColor: fields.text({
@@ -259,7 +263,7 @@ export default config({
             }),
             // Lands in src/assets, not public/, so astro:assets optimizes it
             // at build time - resized srcset plus a modern format - instead of
-            // shipping whatever the outlet happened to send. src/lib/press.ts
+            // shipping whatever the outlet happened to send. src/lib/images.ts
             // maps the stored path back to the imported asset.
             image: fields.image({
               label: 'Article photo (landscape, min 1200px wide)',

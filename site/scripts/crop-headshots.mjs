@@ -1,6 +1,7 @@
 /**
  * Crops every team headshot to one house framing and writes it to
- * public/assets/team/<slug>/headshot.webp.
+ * src/assets/team/<slug>/headshot.webp, where astro:assets picks it up and
+ * resizes it to the card sizes the pages actually paint.
  *
  * Run with `npm run headshots` after adding or replacing a photo in
  * assets-src/team/ (and after re-running scripts/measure-faces.swift).
@@ -20,9 +21,9 @@
  * `cover` treats them all identically at every breakpoint and the cards stay
  * aligned with each other no matter how the grid reflows.
  *
- * Originals stay in assets-src/team/ rather than public/: they are the input to
- * this script, and public/ is copied verbatim into the build, so keeping them
- * there would ship ~7MB of photos nobody downloads.
+ * Originals stay in assets-src/team/ rather than src/assets/: they are the
+ * input to this script, not something a page renders, so keeping them out of
+ * the build means nobody downloads ~7MB of photos.
  */
 import { mkdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -30,7 +31,7 @@ import sharp from 'sharp';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const SOURCES = path.join(ROOT, 'assets-src/team');
-const OUTPUT = path.join(ROOT, 'public/assets/team');
+const OUTPUT = path.join(ROOT, 'src/assets/team');
 const MANIFEST = path.join(ROOT, 'scripts/headshot-faces.json');
 
 /** The card's photo well is 254x242 CSS px from 1024px up (FlipCard.astro: a

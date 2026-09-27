@@ -1,4 +1,8 @@
 ---
+import { Image } from 'astro:assets';
+import logo from '@/assets/brand/lncp-logo.png';
+import { responsive } from '@/lib/images';
+
 const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/about/', label: 'About' },
@@ -20,11 +24,10 @@ function isActive(href: string) {
     <div class="relative flex items-center justify-center md:justify-between h-18">
       <!-- Logo -->
       <a href="/" class="flex items-center gap-2 sm:gap-3 shrink-0" aria-label="Loudoun Nature Conservation Project home">
-        <img
-          src="/assets/lncp-logo.png"
+        <Image
+          src={logo}
           alt="LNCP Logo"
-          width="40"
-          height="40"
+          {...responsive(logo, [32, 40, 64, 80, 96, 120], '(min-width: 640px) 40px, 32px')}
           class="w-8 h-8 sm:w-10 sm:h-10 object-contain shrink-0"
           loading="eager"
         />
