@@ -19,6 +19,9 @@ interface Props {
   title: string;
   description?: string;
   ogImage?: string;
+  /** Pixel size of `ogImage`. Declaring it lets a social crawler lay out the
+   *  share card on the first share instead of fetching the image first. */
+  ogImageSize?: { width: number; height: number };
   /** Alt text for the social preview image. */
   ogImageAlt?: string;
   canonicalUrl?: string;
@@ -41,7 +44,8 @@ interface Props {
 const {
   title,
   description = 'Loudoun Nature Conservation Project - A student-led 501(c)(3) nonprofit advancing sustainability and ecological health across Loudoun County, Virginia.',
-  ogImage = '/assets/og-default.jpg',
+  ogImage,
+  ogImageSize,
   ogImageAlt = `${ORG_NAME} volunteers restoring a Loudoun County stream`,
   canonicalUrl,
   jsonLd,
@@ -55,6 +59,11 @@ const {
 } = Astro.props;
 
 const canonical = canonicalUrl ?? `${SITE_URL}${Astro.url.pathname}`;
+
+// public/assets/og-default.jpg is 1200x630, the size every major network
+// renders a large card at.
+const shareImage = ogImage ?? '/assets/og-default.jpg';
+const shareImageSize = ogImage ? ogImageSize : { width: 1200, height: 630 };
 
 // Excluded pages still keep `follow` by default, so link equity from a thin
 // utility page reaches the real pages it points at. `nofollow` is opt-in, for
@@ -92,7 +101,7 @@ const graph = buildGraph([
     description: metaDescription,
     isArticle,
     datePublished: publishedTime,
-    primaryImage: ogImage,
+    primaryImage: shareImage,
     breadcrumbId: breadcrumb ? `${canonical}#breadcrumb` : undefined,
   }),
   ...(breadcrumb ? [breadcrumbNode(canonical, breadcrumb)] : []),
@@ -119,7 +128,9 @@ const graph = buildGraph([
     <meta property="og:url" content={canonical} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={metaDescription} />
-    <meta property="og:image" content={`${SITE_URL}${ogImage}`} />
+    <meta property="og:image" content={`${SITE_URL}${shareImage}`} />
+    {shareImageSize && <meta property="og:image:width" content={String(shareImageSize.width)} />}
+    {shareImageSize && <meta property="og:image:height" content={String(shareImageSize.height)} />}
     <meta property="og:image:alt" content={ogImageAlt} />
     <meta property="og:site_name" content={ORG_NAME} />
     <meta property="og:locale" content="en_US" />
@@ -129,7 +140,7 @@ const graph = buildGraph([
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={metaDescription} />
-    <meta name="twitter:image" content={`${SITE_URL}${ogImage}`} />
+    <meta name="twitter:image" content={`${SITE_URL}${shareImage}`} />
     <meta name="twitter:image:alt" content={ogImageAlt} />
 
     <!-- Favicon. Every file here is generated from public/assets/lncp-logo.png by
