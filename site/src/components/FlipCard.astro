@@ -286,8 +286,10 @@ const linkTabIndex = focusable ? undefined : -1;
     // a touchscreen an untouched card reads as hovered the instant it is tapped,
     // and the first tap would pin the side already showing. Gecko, for its part,
     // may not have set :hover yet when pointerenter fires, which would leave the
-    // back inert under a hovered card. Only a mouse sets this flag.
-    let hovered = false;
+    // back inert under a hovered card. Only a mouse sets this flag. It is seeded
+    // from :hover once, here, because the deferred script can attach after the
+    // cursor already came to rest on a card and its pointerenter has passed.
+    let hovered = hoverFlips && el.matches(':hover');
 
     const showingBack = () =>
       el.dataset.flip ? el.dataset.flip === 'back' : hoverFlips && hovered;
@@ -347,12 +349,13 @@ const linkTabIndex = focusable ? undefined : -1;
     // the card again. Touch and pen keep the pinned side - there is no hover to
     // fall back to, and clearing it would shut the bio the moment it opened.
     if (hoverFlips) {
-      el.addEventListener('pointerenter', (e) => {
-        if (e.pointerType === 'mouse') {
-          hovered = true;
-          syncBack();
-        }
-      });
+      const markHovered = (e: PointerEvent) => {
+        if (e.pointerType !== 'mouse' || hovered) return;
+        hovered = true;
+        syncBack();
+      };
+      el.addEventListener('pointerenter', markHovered);
+      el.addEventListener('pointermove', markHovered);
       el.addEventListener('pointerleave', (e) => {
         if (e.pointerType !== 'mouse') return;
         hovered = false;
