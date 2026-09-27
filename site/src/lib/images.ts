@@ -27,9 +27,13 @@ export function resolveImage(path: string | null | undefined): ImageMetadata | n
   if (!path) return null;
   const mod = CONTENT_IMAGES[path];
   if (!mod) {
+    const dir = path.slice(0, path.lastIndexOf('/') + 1);
+    const siblings = Object.keys(CONTENT_IMAGES).filter((key) => key.slice(0, key.lastIndexOf('/') + 1) === dir);
     throw new Error(
-      `Image "${path}" is not under src/assets. Content images must live in ` +
-        `src/assets/{team,branches,affiliations,press} so astro:assets can optimize them.`,
+      `Image "${path}" does not match a file in src/assets/{team,branches,affiliations,press}. ` +
+        (siblings.length
+          ? `Files in ${dir}: ${siblings.join(', ')}.`
+          : `Content images must live there so astro:assets can optimize them.`),
     );
   }
   return mod.default;

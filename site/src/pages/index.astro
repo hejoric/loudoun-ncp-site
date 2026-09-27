@@ -272,6 +272,20 @@ const pressJsonLd = pressItems.map((p) => ({
           </div>
         </div>
       </div>
+
+      <!-- Pause control for the background video (WCAG 2.2.2). It stays hidden
+           until the video actually starts playing, so visitors who only ever
+           see the poster get no control for motion that is not there. -->
+      <button
+        type="button"
+        class="absolute bottom-4 right-4 z-20 flex items-center justify-center w-11 h-11 rounded-full bg-forest-950/80 text-paper border border-paper/70 hover:bg-forest-900 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper motion-reduce:hidden"
+        aria-label="Pause background video"
+        data-hero-video-toggle
+        hidden
+      >
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-icon="pause"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
+        <svg class="w-5 h-5 translate-x-px" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-icon="play" hidden><path d="M8 5v14l11-7z"/></svg>
+      </button>
     </div>
   </section>
 
@@ -763,6 +777,27 @@ const pressJsonLd = pressItems.map((p) => ({
     };
     if (document.readyState === 'complete') attach();
     else window.addEventListener('load', attach, { once: true });
+
+    const toggle = document.querySelector<HTMLButtonElement>('[data-hero-video-toggle]');
+    if (toggle) {
+      const pauseIcon = toggle.querySelector<SVGElement>('[data-icon="pause"]')!;
+      const playIcon = toggle.querySelector<SVGElement>('[data-icon="play"]')!;
+      const sync = () => {
+        const paused = heroVideo.paused;
+        toggle.setAttribute('aria-label', paused ? 'Play background video' : 'Pause background video');
+        pauseIcon.toggleAttribute('hidden', paused);
+        playIcon.toggleAttribute('hidden', !paused);
+      };
+      heroVideo.addEventListener('play', () => {
+        toggle.hidden = false;
+        sync();
+      });
+      heroVideo.addEventListener('pause', sync);
+      toggle.addEventListener('click', () => {
+        if (heroVideo.paused) heroVideo.play().catch(() => {});
+        else heroVideo.pause();
+      });
+    }
   }
 
   // Spotlight video: lazy YouTube facade. We render a thumbnail + play button
