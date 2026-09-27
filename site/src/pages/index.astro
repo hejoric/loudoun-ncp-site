@@ -1,6 +1,6 @@
 ---
 import Base from '@/layouts/Base.astro';
-import { Image, getImage } from 'astro:assets';
+import { Image } from 'astro:assets';
 import heroPosterImage from '@/assets/photos/hero-poster.jpg';
 import spotlightPosterImage from '@/assets/photos/wusa-spotlight-poster.jpg';
 import largeGroupCleanup from '@/assets/photos/large-group-cleanup.jpg';
@@ -144,8 +144,10 @@ const spotlight = {
 const spotlightPoster = spotlightPosterImage;
 
 // The hero video's poster is the page's LCP. A <video poster> takes a single
-// URL (no srcset), so it is one WebP at the video's own 1280px width.
-const heroPoster = await getImage({ src: heroPosterImage, width: 1280, format: 'webp' });
+// URL (no srcset), so it ships as-is: a grainy video still is one of the few
+// images WebP makes larger (117 KB against the 92 KB JPEG at the default
+// quality). Importing it still earns a hashed, immutably cached URL.
+const heroPoster = heroPosterImage;
 
 // `sizes` for an image spanning the max-w-7xl content column, whose side
 // padding is px-4 / sm:px-6 / lg:px-8.
@@ -220,7 +222,12 @@ const pressJsonLd = pressItems.map((p) => ({
   <!-- Hero: editorial headline over a full-bleed background video -->
   <section class="bg-paper pb-16 sm:pb-24" aria-label="Hero">
     <div class="relative overflow-hidden border-b hairline bg-forest-950">
-      <!-- Background video: spans the full page width; the even scrim keeps text legible -->
+      <!-- Background video: spans the full page width; the even scrim keeps text legible.
+           The sources carry data-src, not src, so nothing downloads until the
+           script below attaches them once the page has loaded: the poster is
+           the LCP, and a multi-megabyte video starting at the same moment
+           competes with it for bandwidth. AV1 comes first for browsers that
+           decode it (about 40% smaller); everything else takes the H.264. -->
       <video
         id="hero-video"
         class="absolute inset-0 w-full h-full object-cover pointer-events-none motion-reduce:hidden"
@@ -230,8 +237,10 @@ const pressJsonLd = pressItems.map((p) => ({
         playsinline
         poster={heroPoster.src}
         aria-hidden="true"
+        data-hero-video
       >
-        <source src="/assets/hero.mp4" type="video/mp4" />
+        <source data-src="/assets/hero-av1.mp4" type='video/mp4; codecs="av01.0.05M.08"' />
+        <source data-src="/assets/hero.mp4" type="video/mp4" />
       </video>
       <!-- Even scrim: uniform brand-tinted darkening for consistent legibility -->
       <div class="absolute inset-0 bg-forest-950/55 pointer-events-none"></div>
@@ -739,6 +748,23 @@ const pressJsonLd = pressItems.map((p) => ({
 </Base>
 
 <script>
+  // Hero video: attach the sources after the load event (see the markup
+  // comment). Visitors who asked for reduced motion never see the video - it
+  // is display:none for them - and visitors with Save-Data on get the poster
+  // alone, so neither pays for the download.
+  const heroVideo = document.querySelector<HTMLVideoElement>('[data-hero-video]');
+  const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+  if (heroVideo && !saveData && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const attach = () => {
+      heroVideo.querySelectorAll<HTMLSourceElement>('source[data-src]').forEach((source) => {
+        source.src = source.dataset.src!;
+      });
+      heroVideo.load();
+    };
+    if (document.readyState === 'complete') attach();
+    else window.addEventListener('load', attach, { once: true });
+  }
+
   // Spotlight video: lazy YouTube facade. We render a thumbnail + play button
   // and only inject the heavy iframe once the visitor chooses to play, keeping
   // the initial page fast and avoiding YouTube cookies until intent is clear.

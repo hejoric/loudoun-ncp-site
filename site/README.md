@@ -171,7 +171,8 @@ pdfLink: null   # or external DOI URL
 | School logos | `src/assets/branches/` | Square transparent PNG, at least 200x200px |
 | College logos | `src/assets/affiliations/` | Square, trimmed of margins, at least 200x200px |
 | Page photos | `src/assets/photos/` | JPEG, at least 1600px wide |
-| Hero video | `public/assets/hero.mp4` | 1280px wide, H.264, CRF 26, no audio, <2MB |
+| Hero video | `public/assets/hero.mp4` | 1280px wide, H.264, CRF 26, no audio |
+| Hero video (AV1) | `public/assets/hero-av1.mp4` | Same clip in AV1, served first to browsers that decode it |
 | Hero poster | `src/assets/photos/hero-poster.jpg` | JPEG still from video, same dimensions |
 | Research PDFs | `public/research/` | PDF, any size |
 
@@ -186,8 +187,16 @@ the Open Graph image, and the video.
 
 ```bash
 ffmpeg -i input.mp4 -vf scale=1280:-2 -c:v libx264 -crf 26 -an -movflags +faststart public/assets/hero.mp4
+ffmpeg -i public/assets/hero.mp4 -map 0:v:0 -dn -map_metadata -1 -c:v libsvtav1 -crf 42 -preset 4 -g 240 -pix_fmt yuv420p -an -movflags +faststart public/assets/hero-av1.mp4
 ffmpeg -i public/assets/hero.mp4 -vframes 1 -ss 00:00:02 -update 1 src/assets/photos/hero-poster.jpg
 ```
+
+Re-encode both files whenever the clip changes: the page offers the AV1 file
+first, so a stale one keeps playing the old clip in Chrome, Edge and Firefox.
+Size scales with length, so keep the clip short - the current 42 seconds is
+about 6 MB as H.264 and 3.7 MB as AV1. The video only starts downloading after
+the page has loaded, and never for visitors with reduced motion or Save-Data
+turned on.
 
 ## Deployment (Cloudflare Pages)
 
