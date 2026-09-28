@@ -10,7 +10,7 @@ Static site for [loudounnatureconservation.org](https://loudounnatureconservatio
 | Styles | Tailwind CSS v4 |
 | CMS | Keystatic (git-based, YAML files) |
 | Hosting | Vercel (static) |
-| Fonts | System font stacks (serif display, sans body) - no web fonts are loaded |
+| Fonts | Instrument Serif (display) and Instrument Sans (body), self-hosted from the `@fontsource` packages |
 
 ## Local Development
 
@@ -177,9 +177,9 @@ pdfLink: null   # or external DOI URL
 | School logos | `src/assets/branches/` | Square transparent PNG, at least 200x200px |
 | College logos | `src/assets/affiliations/` | Square, trimmed of margins, at least 200x200px |
 | Page photos | `src/assets/photos/` | JPEG, at least 1600px wide |
-| Hero video | `public/assets/hero.mp4` | 1280px wide, H.264, CRF 26, no audio |
+| Hero video | `public/assets/hero.mp4` | Landscape-only loop (no people or city scenes), 1280px wide, H.264, no audio |
 | Hero video (AV1) | `public/assets/hero-av1.mp4` | Same clip in AV1, served first to browsers that decode it |
-| Hero poster | `src/assets/photos/hero-poster.jpg` | JPEG still from video, same dimensions |
+| Hero poster | `src/assets/photos/hero-poster.jpg` | JPEG still of the video's first frame, same dimensions |
 | Research PDFs | `public/research/` | PDF, any size |
 
 Images under `src/assets/` go through `astro:assets` at build time: each one is
@@ -194,7 +194,7 @@ the Open Graph image, and the video.
 ```bash
 ffmpeg -i input.mp4 -vf scale=1280:-2 -c:v libx264 -crf 26 -an -movflags +faststart public/assets/hero.mp4
 ffmpeg -i public/assets/hero.mp4 -map 0:v:0 -dn -map_metadata -1 -c:v libsvtav1 -crf 42 -preset 4 -g 240 -pix_fmt yuv420p -an -movflags +faststart public/assets/hero-av1.mp4
-ffmpeg -i public/assets/hero.mp4 -vframes 1 -ss 00:00:02 -update 1 src/assets/photos/hero-poster.jpg
+ffmpeg -i public/assets/hero.mp4 -vframes 1 -q:v 6 -update 1 src/assets/photos/hero-poster.jpg
 ```
 
 Re-encode both files whenever the clip changes: the page offers the AV1 file

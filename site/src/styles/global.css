@@ -282,8 +282,12 @@
     object-fit: cover;
   }
   /* Two layers: a fade from paper at the top, so the navigation sits on light
-     ground the way GCC's does, and a near-neutral shade toward the bottom that
-     carries the white type. */
+     ground the way GCC's does, and a near-neutral shade under the white type.
+     The shade never drops below ~30%, because the brightest stills (grey sky
+     over the river, sunlit rock) otherwise leave the white subtitle under AA. */
+  .hero {
+    --hero-shade: linear-gradient(to bottom, rgb(15 22 17 / 0.3) 25%, rgb(15 22 17 / 0.45) 50%, rgb(15 22 17 / 0.58) 75%, rgb(15 22 17 / 0.66) 100%);
+  }
   .hero::before {
     content: '';
     position: absolute;
@@ -291,8 +295,8 @@
     z-index: -1;
     pointer-events: none;
     background:
-      linear-gradient(to bottom, rgb(245 244 239 / 0.96) 0, rgb(245 244 239 / 0.55) 110px, rgb(245 244 239 / 0) 240px),
-      linear-gradient(to bottom, rgb(15 22 17 / 0.12) 30%, rgb(15 22 17 / 0.45) 62%, rgb(15 22 17 / 0.6) 100%);
+      linear-gradient(to bottom, rgb(245 244 239 / 0.96) 0, rgb(245 244 239 / 0.55) 90px, rgb(245 244 239 / 0) 190px),
+      var(--hero-shade);
   }
   .hero-home {
     min-height: min(100svh, 940px);
@@ -349,7 +353,7 @@
     .hero::before {
       background:
         linear-gradient(to bottom, rgb(245 244 239 / 0.97) 0, rgb(245 244 239 / 0.88) 128px, rgb(245 244 239 / 0) 250px),
-        linear-gradient(to bottom, rgb(15 22 17 / 0.12) 30%, rgb(15 22 17 / 0.45) 62%, rgb(15 22 17 / 0.6) 100%);
+        var(--hero-shade);
     }
     .hero {
       padding-top: 210px;
@@ -446,9 +450,11 @@
   }
 }
 
-/* Anything dark takes a light focus ring, since the forest ring would vanish
-   against it. */
-.on-dark :focus-visible {
+/* Anything dark - the footer, the green bands, a photo hero - takes a light
+   focus ring, since the forest ring would vanish against it. */
+.on-dark :focus-visible,
+.hero:not(.hero-plain) :focus-visible,
+.photo-card :focus-visible {
   outline-color: var(--color-paper);
 }
 

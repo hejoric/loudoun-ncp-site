@@ -70,12 +70,12 @@ const eventJsonLd = [
         <ol class="grid gap-4 max-w-5xl" role="list">
           {upcoming.map((event) => {
             const date = new Date(event.entry.date!);
-            const displayDate = date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            const displayDate = date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
             return (
               <li class="panel p-6 sm:p-8 flex flex-col sm:flex-row gap-6">
                 <div class="shrink-0 text-center rounded-control bg-forest-900 text-paper p-3 w-18 h-fit">
-                  <p class="text-xs uppercase tracking-wide">{date.toLocaleDateString('en-US', { month: 'short' })}</p>
-                  <p class="font-display text-4xl leading-none mt-1">{date.getDate()}</p>
+                  <p class="text-xs uppercase tracking-wide">{date.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' })}</p>
+                  <p class="font-display text-4xl leading-none mt-1">{date.getUTCDate()}</p>
                 </div>
                 <div class="flex-1">
                   <h3 class="text-[1.875rem] leading-tight">{event.entry.title}</h3>
@@ -140,7 +140,7 @@ const eventJsonLd = [
         <ol class="border-t border-ink" role="list">
           {past.map((event) => {
             const date = new Date(event.entry.date!);
-            const displayDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            const displayDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
             return (
               <li class="grid sm:grid-cols-[11rem_minmax(0,1fr)] gap-x-6 gap-y-1 py-5 border-b border-ink">
                 <time class="text-[0.9375rem] text-ink-soft">{displayDate}</time>

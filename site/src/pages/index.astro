@@ -306,17 +306,17 @@ const pressJsonLd = pressItems.map((p) => ({
 
   <!-- Mission -->
   <section class="section wrap" aria-labelledby="mission-heading">
-    <div class="section-head">
-      <p class="eyebrow text-ink-soft">Conservation</p>
-      <a href="/about/" class="text-link text-[0.9375rem]">Learn more about our mission</a>
-    </div>
+    <p class="eyebrow text-ink-soft">Conservation</p>
     <div class="grid lg:grid-cols-[1.1fr_1fr] gap-8 lg:gap-16 mt-5 items-start">
       <h2 id="mission-heading" class="section-title-sm">
         {home?.missionHeading ?? 'The deliberate act of preserving, protecting, and restoring our natural environment for the benefit of future generations.'}
       </h2>
-      <p class="text-lg sm:text-xl leading-normal text-ink-soft">
-        {home?.missionBody ?? 'Loudoun Nature Conservation Project is a student-led nonprofit working to advance sustainability and ecological health across Loudoun County. We engage our community through education, hands-on restoration, and advocacy, empowering young people to become lifelong stewards of the environment.'}
-      </p>
+      <div>
+        <p class="text-lg sm:text-xl leading-normal text-ink-soft">
+          {home?.missionBody ?? 'Loudoun Nature Conservation Project is a student-led nonprofit working to advance sustainability and ecological health across Loudoun County. We engage our community through education, hands-on restoration, and advocacy, empowering young people to become lifelong stewards of the environment.'}
+        </p>
+        <a href="/about/" class="text-link inline-block mt-7 text-[0.9375rem]">Learn more about our mission</a>
+      </div>
     </div>
   </section>
 

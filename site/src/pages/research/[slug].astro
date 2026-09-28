@@ -14,8 +14,10 @@ const pub = await reader.collections.publications.read(slug);
 
 if (!pub) return Astro.redirect('/research/');
 
+// UTC: the CMS stores a bare YYYY-MM-DD, which parses as UTC midnight, so
+// formatting it in local time printed the day before anywhere west of UTC.
 const displayDate = pub.date
-  ? new Date(pub.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+  ? new Date(pub.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })
   : '';
 const pdfHref = pub.pdfFile ?? pub.pdfLink;
 
