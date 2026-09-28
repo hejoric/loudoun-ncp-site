@@ -135,8 +135,8 @@ until a member sets `branch: branch-slug`.
 
 A branch that is not running this year gets `hidden: true` (the **Hidden**
 checkbox in Keystatic) instead of being deleted. The record stays for when it
-returns, but the site stops listing it, drops its school badge from members'
-cards, and hides any branch president card for it.
+returns, but the site stops listing it and drops its school badge from members'
+cards.
 
 ## Adding an Event
 

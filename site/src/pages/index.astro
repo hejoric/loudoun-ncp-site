@@ -10,7 +10,7 @@ import outdoorThree from '@/assets/photos/outdoor3people.jpg';
 import FlipCard from '@/components/FlipCard.astro';
 import reader from '@/lib/reader';
 import { resolveAffiliations } from '@/lib/affiliations';
-import { getBranches, isShownMember } from '@/lib/branches';
+import { getBranches } from '@/lib/branches';
 import { resolveImage, responsive } from '@/lib/images';
 import { ORG_ID, truncate } from '@/lib/seo';
 import {
@@ -21,9 +21,8 @@ import {
 } from '@/lib/press';
 
 const home = await reader.singletons.home.read();
-const branches = await getBranches();
-const allBranches = branches.active;
-const allTeam = (await reader.collections.teamMembers.all()).filter((m) => isShownMember(m, branches.all));
+const allBranches = await getBranches();
+const allTeam = await reader.collections.teamMembers.all();
 const ryan = allTeam.find((m) => m.slug === 'ryan-nisay') ?? null;
 const ryanPhoto = resolveImage(ryan?.entry.headshot);
 

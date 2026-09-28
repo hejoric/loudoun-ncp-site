@@ -15,7 +15,9 @@ bio: >-
 headshot: /src/assets/team/ryan-nisay/headshot.webp
 email: ryan.nisay@loudounnatureconservation.org
 affiliations:
-  - name: Cornell University
+  - name: Potomac Falls High School
     logo: /src/assets/affiliations/ryan-nisay/affiliations/0/logo.png
+  - name: Cornell University
+    logo: /src/assets/affiliations/ryan-nisay/affiliations/1/logo.png
 featuredOnHome: true
 sortOrder: 1

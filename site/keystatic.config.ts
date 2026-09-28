@@ -130,7 +130,7 @@ export default config({
         hidden: fields.checkbox({
           label: 'Hidden (not running this year)',
           description:
-            'Check this for a branch that is paused rather than gone. The record stays so it can come back, but the site stops listing it, stops badging members with its school, and hides any branch president card for it. Uncheck it when the branch is running again.',
+            'Check this for a branch that is paused rather than gone. The record stays so it can come back, but the site stops listing it and stops badging members with its school. Uncheck it when the branch is running again.',
           defaultValue: false,
         }),
       },

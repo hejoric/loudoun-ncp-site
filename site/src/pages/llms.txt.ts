@@ -45,7 +45,7 @@ export const GET: APIRoute = async () => {
   });
 
   const members = await reader.collections.teamMembers.all();
-  const branches = (await getBranches()).active;
+  const branches = await getBranches();
   // Same source the site links from, so a profile added or removed in Site
   // Settings shows up here too instead of leaving a stale URL behind.
   const socialLinks = await getSocialLinks();

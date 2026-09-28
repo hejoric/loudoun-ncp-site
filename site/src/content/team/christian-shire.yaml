@@ -14,7 +14,9 @@ email: ''
 instagram: ''
 linkedin: ''
 affiliations:
-  - name: Arcadia University
+  - name: Potomac Falls High School
     logo: /src/assets/affiliations/christian-shire/affiliations/0/logo.png
+  - name: Arcadia University
+    logo: /src/assets/affiliations/christian-shire/affiliations/1/logo.png
 featuredOnHome: true
 sortOrder: 3
