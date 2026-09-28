@@ -7,12 +7,12 @@
   "redirects": [
     {
       "source": "/history/",
-      "destination": "/about/#history",
+      "destination": "/about/",
       "permanent": true
     },
     {
       "source": "/our-history/",
-      "destination": "/about/#history",
+      "destination": "/about/",
       "permanent": true
     },
     {

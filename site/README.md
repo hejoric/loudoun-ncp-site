@@ -57,7 +57,7 @@ Start the dev server, then visit `http://localhost:4321/keystatic`.
 | Singleton | Location | What it controls |
 |---|---|---|
 | Home | `src/content/singletons/home/index.yaml` | Hero headline, stats, press links |
-| About | `src/content/singletons/about/index.yaml` | Mission, timeline, what we do, impact |
+| About | `src/content/singletons/about/index.yaml` | Mission, what we do, values, impact |
 | Site Settings | `src/content/singletons/settings/index.yaml` | Org name, contact email, social URLs, volunteer form |
 
 ## Adding a Team Member
@@ -132,6 +132,11 @@ A branch with no logo yet is fine - the badge falls back to the school's
 initials ("HHS"). A branch record is only rendered through the members that
 reference it, so adding one ahead of its president changes nothing on the site
 until a member sets `branch: branch-slug`.
+
+A branch that is not running this year gets `hidden: true` (the **Hidden**
+checkbox in Keystatic) instead of being deleted. The record stays for when it
+returns, but the site stops listing it, drops its school badge from members'
+cards, and hides any branch president card for it.
 
 ## Adding an Event
 

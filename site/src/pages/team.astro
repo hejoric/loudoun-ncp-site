@@ -4,11 +4,13 @@ import FlipCard from '@/components/FlipCard.astro';
 import BranchCard from '@/components/BranchCard.astro';
 import reader from '@/lib/reader';
 import { resolveAffiliations } from '@/lib/affiliations';
+import { getBranches, isShownMember } from '@/lib/branches';
 import { FOUNDER_ID, ORG_ID, SITE_URL, absoluteUrl, truncate } from '@/lib/seo';
 import { resolveImage } from '@/lib/images';
 
-const allMembers = await reader.collections.teamMembers.all();
-const allBranches = await reader.collections.branches.all();
+const branches = await getBranches();
+const allBranches = branches.active;
+const allMembers = (await reader.collections.teamMembers.all()).filter((m) => isShownMember(m, branches.all));
 
 const bySection = {
   executive:      allMembers.filter((m) => m.entry.section === 'executive').sort((a, b) => (a.entry.sortOrder ?? 99) - (b.entry.sortOrder ?? 99)),

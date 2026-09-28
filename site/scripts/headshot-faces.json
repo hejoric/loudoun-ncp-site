@@ -1,11 +1,4 @@
 {
-  "alyssa-nisay": {
-    "file": "alyssa-nisay.jpg",
-    "faceTop": 0.2419,
-    "faceHeight": 0.3135,
-    "faceCenterX": 0.4791,
-    "eyeLine": 0.3295
-  },
   "chloe-loo": {
     "file": "chloe-loo.webp",
     "faceTop": 0.2616,
@@ -62,8 +55,8 @@
     "faceCenterX": 0.4467,
     "eyeLine": 0.1743
   },
-  "korea-branch": {
-    "file": "korea-branch.jpeg",
+  "lucy-guilfoyle": {
+    "file": "lucy-guilfoyle.jpeg",
     "faceTop": 0.3450,
     "faceHeight": 0.1562,
     "faceCenterX": 0.4918,

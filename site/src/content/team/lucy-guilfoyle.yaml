@@ -1,0 +1,24 @@
+name: Lucy Guilfoyle
+role: Social Media Manager
+section: executiveStaff
+bio: >-
+  Lucy Guilfoyle is a member of LNCP's team with a passion for environmental
+  remediation, plastic pollution research, and ecological health. Through her
+  research on microplastics and soil systems, she has developed a strong
+  interest in how scientific understanding can inform efforts to protect and
+  restore local ecosystems. As Social Media Manager, Lucy shares LNCP's
+  cleanups, research, and events with the wider community, bringing students
+  and neighbors together around conservation, environmental education, and
+  hands-on action. She believes that meaningful environmental progress begins
+  with curiosity, shared responsibility, and people willing to turn concern
+  into action.
+headshot: /src/assets/team/lucy-guilfoyle/headshot.webp
+email: ''
+instagram: ''
+linkedin: ''
+affiliations:
+  - name: Academies of Loudoun
+    logo: /src/assets/affiliations/lucy-guilfoyle/affiliations/0/logo.png
+tentative: false
+featuredOnHome: false
+sortOrder: 3

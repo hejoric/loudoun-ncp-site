@@ -9,13 +9,14 @@
  */
 import type { APIRoute } from 'astro';
 import reader from '@/lib/reader';
+import { getBranches } from '@/lib/branches';
 import { getPressItems } from '@/lib/press';
 import { ORG_ADDRESS_SHORT, ORG_EIN, ORG_EMAIL, SITE_URL } from '@/lib/seo';
 import { getSocialLinks } from '@/lib/social';
 
 const PAGES: Array<[string, string, string]> = [
   ['Home', '/', 'Mission, impact stats, awards, and recent press'],
-  ['About', '/about/', 'Mission, programs, impact, and full founding timeline'],
+  ['About', '/about/', 'Mission, values, programs, and impact'],
   ['Research', '/research/', 'Index of student environmental science publications'],
   ['Team', '/team/', 'Executive team, directors, and school branch presidents'],
   ['Events', '/events/', 'Upcoming and past cleanups, restoration events, and workshops'],
@@ -44,7 +45,7 @@ export const GET: APIRoute = async () => {
   });
 
   const members = await reader.collections.teamMembers.all();
-  const branches = await reader.collections.branches.all();
+  const branches = (await getBranches()).active;
   // Same source the site links from, so a profile added or removed in Site
   // Settings shows up here too instead of leaving a stale URL behind.
   const socialLinks = await getSocialLinks();
@@ -53,9 +54,15 @@ export const GET: APIRoute = async () => {
   // the pages don't show (or miss coverage they do).
   const press = await getPressItems();
 
+  // Executive before directors, as on /team/; sortOrder only ranks within a section.
+  const leadershipSections = ['executive', 'directors'];
   const leadership = members
-    .filter((m) => m.entry.section === 'executive' || m.entry.section === 'directors')
-    .sort((a, b) => (a.entry.sortOrder ?? 99) - (b.entry.sortOrder ?? 99));
+    .filter((m) => leadershipSections.includes(m.entry.section))
+    .sort(
+      (a, b) =>
+        leadershipSections.indexOf(a.entry.section) - leadershipSections.indexOf(b.entry.section) ||
+        (a.entry.sortOrder ?? 99) - (b.entry.sortOrder ?? 99),
+    );
 
   const lines: string[] = [];
 

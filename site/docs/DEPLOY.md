@@ -53,7 +53,7 @@ Pages syntax and is ignored by Vercel.
 
 | Concern | Handled by |
 |---|---|
-| `/history/`, `/our-history/` | 308 to `/about/#history` |
+| `/history/`, `/our-history/` | 308 to `/about/` |
 | `/wp-content/*`, `/wp-includes/*`, `/xmlrpc.php` | 308 to `/` |
 | Trailing slashes | `trailingSlash: true`, matching Astro's directory output and every internal link |
 | Caching | `_astro/*` 1y immutable (content-hashed); `assets/*` and `favicon.ico` 1 week; HTML revalidates |
@@ -76,8 +76,8 @@ SITE=https://loudounnatureconservation.org   # or the vercel.app alias
 for p in / /about/ /team/ /volunteer/ /contact/ /events/ /funding/ /research/; do
   echo "$p $(curl -s -o /dev/null -w '%{http_code}' $SITE$p)"; done
 
-# Legacy WordPress URLs - the #history fragment must survive
-curl -sI $SITE/history/     | grep -i ^location   # -> /about/#history
+# Legacy WordPress URLs
+curl -sI $SITE/history/     | grep -i ^location   # -> /about/
 curl -sI $SITE/our-history/ | grep -i ^location
 curl -sI $SITE/wp-content/uploads/x.png | grep -i ^location
 

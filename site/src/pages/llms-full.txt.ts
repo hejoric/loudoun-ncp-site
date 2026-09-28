@@ -2,7 +2,7 @@
  * /llms-full.txt - the expanded companion to /llms.txt.
  *
  * Includes each publication's complete abstract and the organization's mission
- * and history inline, so a model can answer substantive questions (and cite the
+ * and values inline, so a model can answer substantive questions (and cite the
  * research accurately) from a single fetch instead of crawling five PDFs.
  */
 import type { APIRoute } from 'astro';
@@ -63,11 +63,11 @@ export const GET: APIRoute = async () => {
     }
   }
 
-  if (about?.historyTimeline?.length) {
-    lines.push('## History');
+  if (about?.values?.length) {
+    lines.push('## Values');
     lines.push('');
-    for (const entry of about.historyTimeline) {
-      lines.push(`- ${entry.year}: ${entry.event.trim()}`);
+    for (const item of about.values) {
+      lines.push(`- ${item.heading}: ${item.body.trim()}`);
     }
     lines.push('');
   }
