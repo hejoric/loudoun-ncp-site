@@ -1,6 +1,8 @@
 ---
 import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
 import PublicationCard from '@/components/PublicationCard.astro';
+import heroPhoto from '@/assets/photos/river.jpg';
 import reader from '@/lib/reader';
 import { ORG_ID, SITE_URL, truncate } from '@/lib/seo';
 
@@ -53,35 +55,36 @@ const collectionJsonLd = {
   breadcrumb={[['Home', '/'], ['Research', '/research/']]}
   jsonLd={[collectionJsonLd, publicationListJsonLd]}
 >
-  <div class="bg-paper border-b hairline py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-4xl mx-auto text-center">
-      <p class="font-display italic text-clay text-lg mb-4">Science &amp; Data</p>
-      <h1 class="font-display font-medium text-4xl sm:text-5xl text-ink">Research</h1>
-      <p class="mt-5 text-ink-soft max-w-2xl mx-auto">
-        Original environmental science research conducted by LNCP's student research division, investigating water quality and ecosystem health across Loudoun County and Northern Virginia.
-      </p>
-    </div>
-  </div>
+  <PageHero
+    slot="hero"
+    eyebrow="Science & Data"
+    title="Research"
+    lead="Original environmental science research conducted by LNCP's student research division, investigating water quality and ecosystem health across Loudoun County and Northern Virginia."
+    image={heroPhoto}
+    imagePosition="50% 70%"
+  />
 
-  <section class="py-20 bg-paper-2">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      {sorted.length > 0 ? (
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {sorted.map((pub) => (
-            <PublicationCard
-              title={pub.entry.title}
-              authors={pub.entry.authors}
-              date={pub.entry.date ?? ''}
-              abstract={pub.entry.abstract}
-              slug={pub.slug}
-              pdfFile={pub.entry.pdfFile ?? undefined}
-              pdfLink={pub.entry.pdfLink ?? undefined}
-            />
-          ))}
-        </div>
-      ) : (
-        <p class="text-center text-ink-soft py-20">Publications loading soon. Check back shortly.</p>
-      )}
+  <section class="section wrap" aria-labelledby="publications-heading">
+    <div class="section-head">
+      <h2 id="publications-heading" class="section-title">From the field</h2>
+      <p class="text-[0.9375rem] text-ink-soft">{sorted.length} {sorted.length === 1 ? 'publication' : 'publications'}, free to read</p>
     </div>
+    {sorted.length > 0 ? (
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
+        {sorted.map((pub) => (
+          <PublicationCard
+            title={pub.entry.title}
+            authors={pub.entry.authors}
+            date={pub.entry.date ?? ''}
+            abstract={pub.entry.abstract}
+            slug={pub.slug}
+            pdfFile={pub.entry.pdfFile ?? undefined}
+            pdfLink={pub.entry.pdfLink ?? undefined}
+          />
+        ))}
+      </div>
+    ) : (
+      <p class="text-ink-soft py-20">Publications loading soon. Check back shortly.</p>
+    )}
   </section>
 </Base>

@@ -1,0 +1,31 @@
+---
+import { VOLUNTEER_REASONS } from '@/lib/volunteer';
+---
+
+<!-- GCC's recruitment block: the pitch and the one action on the left, a ruled
+     numbered list on the right. -->
+<section class="section wrap rise" id="join" aria-labelledby="join-heading">
+  <div class="section-head">
+    <h2 id="join-heading" class="section-title">Ready to make a difference?</h2>
+    <a href="/contact/" class="text-link text-[0.9375rem]">Contact us</a>
+  </div>
+  <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 mt-10">
+    <div>
+      <p class="text-xl leading-[1.45] max-w-[36ch]">
+        Join hundreds of students already protecting Loudoun County's natural spaces. Volunteer, collaborate, or reach out.
+      </p>
+      <a href="/volunteer/" class="btn btn-action btn-lg mt-8">Volunteer with us</a>
+    </div>
+    <ol class="border-t border-ink" role="list">
+      {VOLUNTEER_REASONS.map(({ title, body }, i) => (
+        <li class="grid grid-cols-[2.75rem_minmax(0,1fr)] sm:grid-cols-[4rem_minmax(0,1fr)] py-5 border-b border-ink">
+          <span class="text-[0.8125rem] leading-[1.9] text-ink-soft tabular-nums">{String(i + 1).padStart(2, '0')}</span>
+          <span>
+            <span class="block text-xl">{title}</span>
+            <span class="block mt-1 text-[0.9375rem] text-ink-soft">{body}</span>
+          </span>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

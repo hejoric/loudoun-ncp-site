@@ -1,68 +1,110 @@
 @import "tailwindcss";
 
 @theme {
-  /* Editorial palette */
-  --color-paper: #F6F4EE;
-  --color-paper-2: #EFEBE1;
-  --color-ink: #17281F;
-  --color-ink-soft: #4B5D50;
-  /* Darkened from #B4633A, which was 3.99:1 on paper - below the 4.5:1 AA floor
-     for normal text. Clay is used almost everywhere at text-xs (section
-     eyebrows, dates, timeline years), so it is normal text, not large. #9C522C
-     clears AA on all three backgrounds it lands on: 5.22 on paper, 4.82 on
-     paper-2, 5.74 on white. */
-  --color-clay: #9C522C;
+  /* Matte palette. The previous forest (#1B4332) leaned emerald (hue 163) and
+     ran about twice the chroma of the ink, so large fields of it read as gloss
+     and buzzed against the coral. Matte forest turns it toward leaf green
+     (hue 151) with ~40% less chroma, and the paper and ink move to warm
+     neutrals so their undertones agree with it.
 
-  /* Brand greens */
-  --color-forest-950: #0d2118;
-  --color-forest-900: #1B4332;
-  --color-forest-800: #2D6A4F;
-  --color-forest-700: #40916C;
-  --color-forest-600: #52b788;
-  --color-forest-500: #74c69d;
-  --color-forest-100: #d8f3dc;
-  --color-forest-50: #f0faf4;
+     Measured contrast (WCAG 2.x): ink on paper 15.1, ink-soft on paper 5.49,
+     on paper-2 4.85, on white 6.05; paper on forest-900 9.76, on forest-950
+     14.56; forest-100 on forest-900 7.56; forest-800 on paper 6.92. */
+  --color-paper: #F5F4EF;
+  --color-paper-2: #E5E7E0;
+  --color-ink: #19201A;
+  /* The ink at 68% over paper, flattened to a solid so it measures the same on
+     every ground it lands on. */
+  --color-ink-soft: #5F645E;
 
-  /* Section accent colors (team tiers) */
-  --color-tier-executive: #3730a3;
-  --color-tier-directors: #134e4a;
-  --color-tier-exec-staff: #7c2d12;
-  --color-tier-branches: #4c0519;
-  --color-tier-branch-staff: #111827;
+  --color-forest-950: #19241B;
+  --color-forest-900: #304234;
+  --color-forest-800: #425948;
+  --color-forest-100: #CADEC6;
+  --color-forest-50: #EEF1EB;
 
-  /* Typography */
-  --font-display: ui-serif, Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Times New Roman', serif;
-  --font-body: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* The one action color: the logo coral (#FF5757) deepened until white text
+     on it clears AA (4.54:1). It is a fill, never text on paper - coral text on
+     paper measures 4.12:1, under the 4.5:1 floor. The hover shade is 5.47:1. */
+  --color-ember: #D63F36;
+  --color-ember-700: #C2352D;
+  --color-coral: #FF5757;
 
-  /* Sizing */
-  --radius-card: 0rem;
+  /* Photo scrims and shadows: near-neutral, so the shading over a photo does
+     not put a green cast on skin the way the brand green used to. */
+  --color-shade: #0F1611;
+
+  /* Typography: the Instrument pair, self-hosted (see Base.astro). */
+  --font-display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --font-body: 'Instrument Sans Variable', 'Helvetica Neue', Arial, system-ui, sans-serif;
+
+  /* Corners: deliberately modest. Cards and photos take --radius-card, buttons
+     and inputs --radius-control, and the content sheet that rises over each
+     page hero --radius-sheet. */
+  --radius-card: 0.625rem;
+  --radius-control: 0.375rem;
+  --radius-sheet: 1rem;
 }
 
-/* Base */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+:root {
+  color-scheme: light;
+  /* Page gutter and section rhythm, shared by every page. */
+  --gutter: clamp(20px, 2.2vw, 32px);
+  --section: clamp(72px, 9vw, 120px);
+  --hairline: rgb(25 32 26 / 0.14);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-html {
-  scroll-behavior: smooth;
+/* Base. In the base layer so any utility class (font-body on a heading, a
+   scroll-mt-* on an anchor) can override it; unlayered rules would beat every
+   utility. */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    background: var(--color-paper);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: var(--font-body);
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--color-ink);
+    background: var(--color-paper);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Instrument Serif ships a single weight, so a bold or medium request would be
+     faked by the browser. Headings are regular-weight serif by design. */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    text-wrap: balance;
+  }
+
+  .font-display {
+    font-synthesis-weight: none;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* In-page anchors land below the fixed desktop navigation. */
+  [id] {
+    scroll-margin-top: 7rem;
+  }
 }
 
-body {
-  font-family: var(--font-body);
-  color: var(--color-ink);
-  background: var(--color-paper);
-  -webkit-font-smoothing: antialiased;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-display);
-}
-
-/* Hairline rules used across the editorial layout */
+/* Hairline rules used across the layout */
 .hairline {
-  border-color: rgba(23, 40, 31, 0.14);
+  border-color: var(--hairline);
 }
 
 /* `divide-*` sets only a border *width* on the children, so the rules between
@@ -71,20 +113,423 @@ h1, h2, h3, h4, h5, h6 {
    plain `.hairline` box does not restyle its descendants' borders. */
 .divide-y.hairline > *,
 .divide-x.hairline > * {
-  border-color: rgba(23, 40, 31, 0.14);
+  border-color: var(--hairline);
 }
 
-/* Scroll-expand media blocks: JS sets --expand from 0 to 1 as the block
-   enters the viewport; without JS (or with reduced motion) it stays at 1. */
-[data-scroll-expand] {
-  width: calc(74% + 26% * var(--expand, 1));
-  margin-inline: auto;
-  will-change: width;
-}
-
-@media (max-width: 640px) {
-  [data-scroll-expand] {
+@layer components {
+  /* Page column: full width up to 90rem, with the shared gutter. */
+  .wrap {
     width: 100%;
+    max-width: 90rem;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  /* ---------- buttons ---------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0.75rem 1.25rem;
+    border: 1px solid currentColor;
+    border-radius: var(--radius-control);
+    font: 500 0.9375rem/1 var(--font-body);
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      transform 0.2s var(--ease-out),
+      background-color 0.2s,
+      border-color 0.2s,
+      color 0.2s;
+  }
+  .btn:active {
+    transform: scale(0.97);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+  }
+  /* The single action color. Every "volunteer" button on the site is this one. */
+  .btn-action {
+    background: var(--color-ember);
+    border-color: var(--color-ember);
+    color: #fff;
+  }
+  .btn-action:hover {
+    background: var(--color-ember-700);
+    border-color: var(--color-ember-700);
+  }
+  .btn-outline {
+    color: var(--color-ink);
+  }
+  .btn-outline:hover {
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: var(--color-paper);
+  }
+  /* Outline button on a photo or a dark band. */
+  .btn-light {
+    color: #fff;
+    border-color: rgb(255 255 255 / 0.85);
+  }
+  .btn-light:hover {
+    background: #fff;
+    border-color: #fff;
+    color: var(--color-ink);
+  }
+  .btn-lg {
+    min-height: 3.25rem;
+    padding: 1rem 1.75rem;
+    font-size: 1.0625rem;
+  }
+  .btn-sm {
+    min-height: 2.5rem;
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  /* Underlined text link, the site's secondary action. */
+  .text-link {
+    display: inline;
+    padding-bottom: 3px;
+    border-bottom: 1px solid currentColor;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .text-link:hover {
+    color: var(--color-forest-800);
+  }
+
+  /* ---------- section scaffolding ---------- */
+  .section {
+    padding-top: var(--section);
+  }
+  .section:first-child {
+    padding-top: clamp(56px, 7vw, 96px);
+  }
+  /* A section title with its "see all" link at the far right, as on GCC. */
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+  }
+  .section-title {
+    font: 400 clamp(2.375rem, 4.4vw, 4rem) / 1.02 var(--font-display);
+    letter-spacing: -0.01em;
+  }
+  .section-title-sm {
+    font: 400 clamp(2rem, 3.2vw, 3rem) / 1.05 var(--font-display);
+    letter-spacing: -0.01em;
+  }
+  .eyebrow {
+    font: italic 400 1.375rem/1.1 var(--font-display);
+  }
+  .lead {
+    max-width: 38ch;
+    font-size: clamp(1.25rem, 1.7vw, 1.5625rem);
+    line-height: 1.35;
+  }
+  .kicker {
+    font: 500 0.8125rem/1.3 var(--font-body);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+  }
+  @media (max-width: 560px) {
+    .section-head {
+      flex-direction: column;
+    }
+  }
+
+  /* Huge serif numerals. */
+  .stat-value {
+    font: 400 clamp(4rem, 8.4vw, 8.25rem) / 0.9 var(--font-display);
+    letter-spacing: -0.02em;
+    color: var(--color-forest-900);
+    font-variant-numeric: lining-nums;
+  }
+  .stat-value-sm {
+    font-size: clamp(3.25rem, 6vw, 6rem);
+  }
+
+  /* ---------- hero bands ---------- */
+  .hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    padding: 200px var(--gutter) 120px;
+    color: #fff;
+    text-align: center;
+  }
+  .hero-media {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background: var(--color-forest-950);
+  }
+  .hero-media > img,
+  .hero-media > video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  /* Two layers: a fade from paper at the top, so the navigation sits on light
+     ground the way GCC's does, and a near-neutral shade toward the bottom that
+     carries the white type. */
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      linear-gradient(to bottom, rgb(245 244 239 / 0.96) 0, rgb(245 244 239 / 0.55) 110px, rgb(245 244 239 / 0) 240px),
+      linear-gradient(to bottom, rgb(15 22 17 / 0.12) 30%, rgb(15 22 17 / 0.45) 62%, rgb(15 22 17 / 0.6) 100%);
+  }
+  .hero-home {
+    min-height: min(100svh, 940px);
+  }
+  .hero-page {
+    min-height: min(72svh, 620px);
+    place-items: end center;
+    padding-bottom: clamp(88px, 9vw, 120px);
+  }
+  .hero-title {
+    font: 400 clamp(2.875rem, 6.4vw, 6.25rem) / 1 var(--font-display);
+    letter-spacing: -0.01em;
+    text-shadow: 0 1px 30px rgb(15 22 17 / 0.3);
+  }
+  .hero-page .hero-title {
+    font-size: clamp(2.75rem, 5.6vw, 5.5rem);
+  }
+  .hero-eyebrow {
+    margin-bottom: 1.25rem;
+    font: italic 400 1.5rem/1 var(--font-display);
+    text-shadow: 0 1px 16px rgb(15 22 17 / 0.5);
+  }
+  .hero-sub {
+    max-width: 44ch;
+    margin: 1.5rem auto 0;
+    font-size: clamp(1.0625rem, 1.4vw, 1.25rem);
+    color: rgb(255 255 255 / 0.94);
+    text-shadow: 0 1px 14px rgb(15 22 17 / 0.45);
+  }
+  /* A page with no photo: the same type on plain paper. */
+  .hero-plain {
+    display: block;
+    padding: 180px 0 24px;
+    color: var(--color-ink);
+    text-align: left;
+  }
+  .hero-plain::before {
+    content: none;
+  }
+  .hero-plain .hero-title {
+    text-shadow: none;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+  }
+  .hero-plain .hero-eyebrow {
+    text-shadow: none;
+  }
+  .hero-plain .hero-sub {
+    max-width: 52ch;
+    margin-inline: 0;
+    color: var(--color-ink-soft);
+    text-shadow: none;
+  }
+  @media (max-width: 1023px) {
+    .hero::before {
+      background:
+        linear-gradient(to bottom, rgb(245 244 239 / 0.97) 0, rgb(245 244 239 / 0.88) 128px, rgb(245 244 239 / 0) 250px),
+        linear-gradient(to bottom, rgb(15 22 17 / 0.12) 30%, rgb(15 22 17 / 0.45) 62%, rgb(15 22 17 / 0.6) 100%);
+    }
+    .hero {
+      padding-top: 210px;
+    }
+    .hero-plain {
+      padding-top: 190px;
+    }
+  }
+
+  /* The content sheet: every page's body rises over its hero on a rounded
+     paper card, and the footer tucks under its bottom edge. */
+  .sheet {
+    position: relative;
+    z-index: 2;
+    background: var(--color-paper);
+    border-radius: var(--radius-sheet);
+    padding-bottom: var(--section);
+  }
+  .hero:not(.hero-plain) + .sheet {
+    margin-top: -2.5rem;
+    box-shadow: 0 30px 60px -30px rgb(15 22 17 / 0.35);
+  }
+
+  /* ---------- photo cards with overlaid copy ---------- */
+  .photo-card {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+    background: var(--color-forest-900);
+    color: #fff;
+  }
+  .photo-card > img {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s var(--ease-out);
+  }
+  .photo-card:hover > img {
+    transform: scale(1.035);
+  }
+  .photo-card-body {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 7.5rem 2rem 2rem;
+    background: linear-gradient(to top, rgb(15 22 17 / 0.88) 12%, rgb(15 22 17 / 0));
+  }
+  @media (max-width: 560px) {
+    .photo-card-body {
+      padding: 6rem 1.5rem 1.5rem;
+    }
+  }
+
+  /* Caption strip over the bottom of a photo. */
+  .photo-caption {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 4.5rem 1.75rem 1.5rem;
+    color: #fff;
+    background: linear-gradient(to top, rgb(15 22 17 / 0.72), rgb(15 22 17 / 0));
+    font: 500 0.9375rem/1.3 var(--font-body);
+  }
+
+  /* Square-ish icon button: rail arrows, video pause. */
+  .icon-btn {
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border: 1px solid currentColor;
+    border-radius: var(--radius-control);
+    background: transparent;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  }
+  .icon-btn:hover {
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: var(--color-paper);
+  }
+  .icon-btn svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  /* Card on paper: hairline box, modest corners. */
+  .panel {
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-card);
+    background: #fff;
+  }
+}
+
+/* Anything dark takes a light focus ring, since the forest ring would vanish
+   against it. */
+.on-dark :focus-visible {
+  outline-color: var(--color-paper);
+}
+
+/* Photo rail: a real horizontal scroller with snap points. */
+.rail {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: min(76vw, 1080px);
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--gutter);
+  padding-inline: var(--gutter);
+  scrollbar-width: none;
+}
+.rail::-webkit-scrollbar {
+  display: none;
+}
+.rail > figure {
+  position: relative;
+  margin: 0;
+  scroll-snap-align: start;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius-card);
+  background: var(--color-paper-2);
+}
+.rail > figure img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+@media (min-width: 1440px) {
+  /* Past 90rem the page column stops growing; keep the rail's first photo
+     aligned with it. */
+  .rail {
+    scroll-padding-inline: calc((100vw - 90rem) / 2 + var(--gutter));
+    padding-inline: calc((100vw - 90rem) / 2 + var(--gutter));
+  }
+}
+@media (max-width: 560px) {
+  .rail {
+    grid-auto-columns: 86vw;
+  }
+  .rail > figure {
+    aspect-ratio: 4 / 5;
+  }
+}
+
+/* Scroll-driven reveals. Browsers without scroll timelines (and visitors who
+   asked for reduced motion) simply see the content, never a blank page. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .rise {
+      animation: rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+    @keyframes rise {
+      from {
+        opacity: 0.2;
+        transform: translateY(28px);
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+    .ink-in {
+      animation: ink-in linear both;
+      animation-timeline: view();
+      animation-range: entry 20% cover 45%;
+    }
+    @keyframes ink-in {
+      from {
+        color: rgb(25 32 26 / 0.22);
+      }
+      to {
+        color: var(--color-ink);
+      }
+    }
   }
 }
 
@@ -135,6 +580,7 @@ h1, h2, h3, h4, h5, h6 {
 .card-flip:has(> [data-flip-toggle]:focus-visible) {
   outline: 3px solid var(--color-forest-800);
   outline-offset: 2px;
+  border-radius: var(--radius-card);
 }
 
 /* Must stay after the face rules above so these overrides win. */
@@ -215,11 +661,11 @@ h1, h2, h3, h4, h5, h6 {
   justify-content: center;
   width: 2.75rem;
   height: 2.75rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-control);
   background: var(--color-paper);
-  border: 1px solid var(--color-hairline, rgba(27, 67, 50, 0.18));
-  color: var(--color-forest-900);
-  box-shadow: 0 2px 10px rgba(13, 33, 24, 0.12);
+  border: 1px solid var(--color-ink);
+  color: var(--color-ink);
+  box-shadow: 0 2px 10px rgb(15 22 17 / 0.12);
   cursor: pointer;
   transition:
     background-color 0.2s ease,
@@ -229,13 +675,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .marquee-nav:hover {
-  background: var(--color-forest-900);
+  background: var(--color-ink);
   color: var(--color-paper);
-}
-
-.marquee-nav:focus-visible {
-  outline: 2px solid var(--color-forest-900);
-  outline-offset: 2px;
 }
 
 .marquee-nav:active {
@@ -276,9 +717,9 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   justify-content: center;
   font-family: var(--font-body);
-  font-weight: 700;
+  font-weight: 600;
   color: #fff;
-  background: var(--color-forest-800);
+  background: var(--color-forest-900);
   border-radius: 9999px;
   user-select: none;
 }
@@ -292,12 +733,16 @@ details > summary::-webkit-details-marker {
   display: none;
 }
 
-/* Focus visible ring.
-   forest-600 (#52b788) was 2.25:1 against paper - under the 3:1 WCAG floor for
-   a non-text UI indicator, which made the keyboard focus ring genuinely hard to
-   locate on the light background it almost always sits on. forest-800 is 5.81:1
-   and still reads as the brand green rather than a browser default. */
+/* Focus visible ring. forest-800 is 6.92:1 against paper, well over the 3:1
+   floor for a non-text indicator, and still reads as the brand green rather
+   than a browser default. Dark surfaces switch it to paper (.on-dark above). */
 :focus-visible {
   outline: 3px solid var(--color-forest-800);
   outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }

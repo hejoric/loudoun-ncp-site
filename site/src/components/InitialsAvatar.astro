@@ -22,9 +22,10 @@ const sizeClasses = {
   xl:  'w-full h-full text-4xl',
 };
 
+// Muted, dark enough for white initials (AA) and in the matte family.
 const colors = [
-  '#1B4332', '#2D6A4F', '#40916C',
-  '#3730a3', '#134e4a', '#7c2d12', '#4c0519',
+  'var(--color-forest-900)', 'var(--color-forest-800)', 'var(--color-forest-950)',
+  '#3F4A5C', '#4F4A3A', '#6B3F36', '#4A3B4F',
 ];
 const colorIndex = name.charCodeAt(0) % colors.length;
 const bg = bgColor ?? colors[colorIndex];

@@ -1,0 +1,48 @@
+---
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+
+interface Props {
+  title: string;
+  eyebrow?: string;
+  /** One line under the title. */
+  lead?: string;
+  /** Full-bleed photo behind the title. Without one the hero is plain paper,
+   *  for pages (a paper's own page, legal records) where a photo would only be
+   *  decoration. */
+  image?: ImageMetadata;
+  /** CSS object-position for the photo crop. */
+  imagePosition?: string;
+}
+
+const { title, eyebrow, lead, image, imagePosition = '50% 50%' } = Astro.props;
+
+// Full-bleed, so the ladder runs to 2048px, capped at what the photo has.
+const widths = image ? [640, 960, 1280, 1600, 2048].filter((w) => w < image.width).concat(image.width) : [];
+---
+
+<!-- Interior page opener, the GCC About pattern: a full-bleed photo band with
+     a serif headline, faded to paper at the top so the navigation sits on light
+     ground. Base.astro sets the page body on the sheet that overlaps its bottom
+     edge. The photo is decorative (the headline says what the page is), and it
+     is the page's largest paint, so it loads at high priority. -->
+<section class:list={['hero', image ? 'hero-page' : 'hero-plain']} aria-labelledby="page-title">
+  {image && (
+    <div class="hero-media" aria-hidden="true">
+      <Image
+        src={image}
+        alt=""
+        widths={widths}
+        sizes="100vw"
+        style={`object-position:${imagePosition};`}
+        priority
+      />
+    </div>
+  )}
+  <div class={image ? 'max-w-5xl mx-auto' : 'wrap'}>
+    {eyebrow && <p class="hero-eyebrow">{eyebrow}</p>}
+    <h1 id="page-title" class="hero-title">{title}</h1>
+    {lead && <p class="hero-sub">{lead}</p>}
+    <slot />
+  </div>
+</section>

@@ -41,8 +41,9 @@ export function resolveImage(path: string | null | undefined): ImageMetadata | n
 
 /**
  * Widths generated for a headshot on a team card. Cards paint between ~170px
- * (half a phone screen) and 256px (desktop team grid), so this ladder covers
- * 1x through 3x displays without shipping the ~1000px crop to anyone.
+ * (half a phone screen) and ~330px (three across a small laptop), so this
+ * ladder covers 1x through 2x-3x displays without shipping the ~1000px crop to
+ * anyone.
  */
 export const CARD_PHOTO_WIDTHS = [192, 256, 384, 512, 640, 768];
 
@@ -50,10 +51,12 @@ export const CARD_PHOTO_WIDTHS = [192, 256, 384, 512, 640, 768];
 export const AVATAR_WIDTHS = [40, 80, 120];
 
 /**
- * `sizes` for the team page card grid: half the viewport less the page gutter
- * and the gap on phones, then the fixed sm:w-56 / lg:w-64 card widths.
+ * `sizes` for the team page card grid (.team-grid in team.astro): two columns
+ * on phones, three from 640px, four from 1024px, five from 1280px, less the
+ * page gutter and the 1rem gaps; the column stops growing at 90rem.
  */
-export const TEAM_CARD_SIZES = '(min-width: 1024px) 256px, (min-width: 640px) 224px, calc(50vw - 1.5rem)';
+export const TEAM_CARD_SIZES =
+  '(min-width: 1440px) 262px, (min-width: 1280px) 19vw, (min-width: 1024px) 23vw, (min-width: 640px) 31vw, 46vw';
 
 /**
  * `<Image>` props for a responsive image painted at `sizes`.

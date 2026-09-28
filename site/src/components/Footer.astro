@@ -6,13 +6,35 @@ import SocialLinks from './SocialLinks.astro';
 import { ORG_ADDRESS_SHORT, ORG_EIN, ORG_EMAIL, ORG_NAME } from '@/lib/seo';
 
 const year = new Date().getFullYear();
+
+const siteMap = [
+  ['/', 'Home'],
+  ['/about/', 'About'],
+  ['/volunteer/', 'Volunteer'],
+  ['/research/', 'Research'],
+  ['/team/', 'Team'],
+  ['/events/', 'Events'],
+  ['/press/', 'Press'],
+  ['/contact/', 'Contact'],
+  ['/funding/', 'Funding'],
+];
+
+const legal = [
+  ['/proof-of-corporation/', 'Proof of Corporation'],
+  ['/research/Loudoun-Nature-Conservation-Project.docx-1.pdf', 'Bylaws'],
+  ['/nonprofit-verification/', 'Nonprofit Verification'],
+];
+
+const linkClass = 'text-paper/85 hover:text-paper border-b border-transparent hover:border-coral transition-colors';
 ---
 
-<footer class="bg-paper-2 border-t hairline text-ink">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+<!-- Tucks under the rounded bottom of the page sheet (see Base.astro), which is
+     what the negative top margin and the matching extra padding are for. -->
+<footer class="on-dark relative -mt-9 pt-[calc(2.25rem+4.5rem)] bg-forest-950 text-paper overflow-hidden">
+  <div class="wrap">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr] gap-10">
       <!-- Brand -->
-      <div class="space-y-4">
+      <div class="space-y-5">
         <div class="flex items-center gap-3">
           <Image
             src={logo}
@@ -21,68 +43,41 @@ const year = new Date().getFullYear();
             class="w-12 h-12 object-contain"
           />
           <div>
-            <p class="font-display font-semibold text-ink text-base leading-tight">Loudoun Nature<br />Conservation Project</p>
-            <p class="text-xs text-clay mt-0.5">501(c)(3) Not-For-Profit &middot; EIN {ORG_EIN}</p>
+            <p class="font-medium text-paper text-[0.9375rem] leading-tight">Loudoun Nature<br />Conservation Project</p>
+            <p class="text-xs text-paper/70 mt-1">501(c)(3) Not-For-Profit &middot; EIN {ORG_EIN}</p>
           </div>
         </div>
-        <p class="text-sm text-ink-soft leading-relaxed">
+        <p class="text-[0.9375rem] text-paper/80 leading-relaxed max-w-[38ch]">
           Made by Students, for Students. Young hearts, green minds, hands-on action. Empowering youth, restoring nature, and fostering community through environmental stewardship in Loudoun County, Virginia.
         </p>
-        <SocialLinks />
-        <address class="not-italic text-xs text-ink-soft leading-relaxed space-y-1">
-          <p>{ORG_ADDRESS_SHORT}</p>
-          <p>
-            <a href={`mailto:${ORG_EMAIL}`} class="hover:text-ink transition-colors break-words">
-              {ORG_EMAIL}
-            </a>
-          </p>
-        </address>
+        <SocialLinks tone="dark" />
       </div>
 
-      <!-- Site map -->
       <div>
-        <h2 class="font-body font-semibold text-ink text-xs uppercase tracking-widest mb-4">Site Map</h2>
-        <ul class="space-y-2 text-sm">
-          {[
-            ['/', 'Home'],
-            ['/about/', 'About'],
-            ['/volunteer/', 'Volunteer'],
-            ['/research/', 'Research'],
-            ['/team/', 'Team'],
-            ['/events/', 'Events'],
-            ['/press/', 'Press'],
-            ['/contact/', 'Contact'],
-            ['/funding/', 'Funding'],
-          ].map(([href, label]) => (
-            <li>
-              <a href={href} class="text-ink-soft hover:text-ink transition-colors">{label}</a>
-            </li>
+        <h2 class="kicker text-paper/70 mb-4">Site Map</h2>
+        <ul class="grid grid-cols-2 lg:grid-cols-1 gap-x-6 gap-y-2 text-[0.9375rem]">
+          {siteMap.map(([href, label]) => (
+            <li><a href={href} class={linkClass}>{label}</a></li>
           ))}
         </ul>
       </div>
 
-      <!-- Legal -->
       <div>
-        <h2 class="font-body font-semibold text-ink text-xs uppercase tracking-widest mb-4">Legal</h2>
-        <ul class="space-y-2 text-sm">
-          <li>
-            <a href="/proof-of-corporation/" class="text-ink-soft hover:text-ink transition-colors">
-              Proof of Corporation
-            </a>
-          </li>
-          <li>
-            <a
-              href="/research/Loudoun-Nature-Conservation-Project.docx-1.pdf"
-              class="text-ink-soft hover:text-ink transition-colors"
-            >
-              Bylaws
-            </a>
-          </li>
-          <li>
-            <a href="/nonprofit-verification/" class="text-ink-soft hover:text-ink transition-colors">
-              Nonprofit Verification
-            </a>
-          </li>
+        <h2 class="kicker text-paper/70 mb-4">Contact</h2>
+        <address class="not-italic text-[0.9375rem] space-y-2">
+          <p>
+            <a href={`mailto:${ORG_EMAIL}`} class:list={[linkClass, 'break-words']}>{ORG_EMAIL}</a>
+          </p>
+          <p class="text-paper/85">{ORG_ADDRESS_SHORT}</p>
+        </address>
+      </div>
+
+      <div>
+        <h2 class="kicker text-paper/70 mb-4">Legal</h2>
+        <ul class="space-y-2 text-[0.9375rem]">
+          {legal.map(([href, label]) => (
+            <li><a href={href} class={linkClass}>{label}</a></li>
+          ))}
         </ul>
       </div>
     </div>
@@ -95,18 +90,26 @@ const year = new Date().getFullYear();
       The street line is deliberately not here - it is the founder's home, and
       lives one click away on the noindex /nonprofit-verification/ page.
     -->
-    <div class="mt-10 pt-6 border-t hairline space-y-4">
-      <p class="text-xs text-ink-soft leading-relaxed max-w-4xl">
+    <div class="mt-14 pt-6 border-t border-paper/15 space-y-3 text-[0.8125rem] text-paper/70 leading-relaxed">
+      <p class="max-w-4xl">
         {ORG_NAME} is a nonprofit, tax-exempt charitable organization (Charity ID / EIN{' '}
-        <span class="text-ink font-medium">{ORG_EIN}</span>) under Section 501(c)(3) of the U.S.
+        <span class="text-paper font-medium">{ORG_EIN}</span>) under Section 501(c)(3) of the U.S.
         Internal Revenue Code, incorporated in the Commonwealth of Virginia on April 26, 2024.
         Donations are tax-deductible as allowed by law. Registered office: {ORG_ADDRESS_SHORT}.
         See our{' '}
-        <a href="/nonprofit-verification/" class="underline underline-offset-2 hover:text-ink transition-colors">
+        <a href="/nonprofit-verification/" class="underline underline-offset-2 hover:text-paper transition-colors">
           full street address and registration details
         </a>.
       </p>
-      <p class="text-xs text-ink-soft">&copy; {year} {ORG_NAME}. All rights reserved.</p>
+      <p>&copy; {year} {ORG_NAME}. All rights reserved.</p>
     </div>
+  </div>
+
+  <!-- GCC's cropped giant wordmark: decorative, clipped by the footer's edge. -->
+  <div
+    class="mt-10 px-(--gutter) font-body font-medium text-paper leading-[0.8] tracking-[-0.055em] whitespace-nowrap select-none text-[clamp(7.5rem,33vw,35rem)] -mb-[0.26em]"
+    aria-hidden="true"
+  >
+    LNCP
   </div>
 </footer>

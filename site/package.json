@@ -23,6 +23,8 @@
   "dependencies": {
     "@astrojs/react": "^6.0.6",
     "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/instrument-sans": "^5.3.0",
+    "@fontsource/instrument-serif": "^5.3.0",
     "@keystatic/astro": "^6.0.0",
     "@keystatic/core": "^0.6.9",
     "@tailwindcss/vite": "^4.3.3",

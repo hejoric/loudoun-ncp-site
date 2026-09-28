@@ -54,10 +54,10 @@ const shown = affiliations.slice(0, 3).map((a) => ({ ...a, image: resolveImage(a
         </div>
       ) : (
         <div
-          class="w-10 h-10 rounded-full ring-2 ring-white flex items-center justify-center bg-[#1B4332] shadow"
+          class="w-10 h-10 rounded-full ring-2 ring-white flex items-center justify-center bg-forest-900 shadow"
           title={a.name}
         >
-          <span class="text-white font-display font-bold text-xs">{initials(a.name)}</span>
+          <span class="text-white font-semibold text-xs">{initials(a.name)}</span>
         </div>
       )
     )}

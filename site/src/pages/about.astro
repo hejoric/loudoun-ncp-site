@@ -1,6 +1,12 @@
 ---
 import Base from '@/layouts/Base.astro';
+import { Image } from 'astro:assets';
+import PageHero from '@/components/PageHero.astro';
+import JoinSection from '@/components/JoinSection.astro';
+import heroPhoto from '@/assets/photos/large-group-cleanup.jpg';
+import missionPhoto from '@/assets/photos/8-people-cleanup-done.jpg';
 import reader from '@/lib/reader';
+import { responsive } from '@/lib/images';
 import { ORG_ID, SITE_URL } from '@/lib/seo';
 import { getPressItems, formatPressDate } from '@/lib/press';
 
@@ -31,6 +37,15 @@ const whatWeDo = about?.whatWeDo?.length
 // drift apart. /press/ is the full index; this is the in-page summary.
 const pressLinks = await getPressItems();
 
+const impactStats = about?.impactStats?.length
+  ? about.impactStats
+  : [
+      { value: '3,122', label: 'Acres Cleaned' },
+      { value: '270', label: 'Members' },
+      { value: '726,022', label: 'Impressions' },
+      { value: '17', label: 'Partner Parks & Schools' },
+    ];
+
 const aboutPageJsonLd = {
   '@type': 'AboutPage',
   '@id': `${SITE_URL}/about/#aboutpage`,
@@ -46,133 +61,108 @@ const aboutPageJsonLd = {
   breadcrumb={[['Home', '/'], ['About', '/about/']]}
   jsonLd={aboutPageJsonLd}
 >
-  <!-- Page header -->
-  <div class="bg-paper border-b hairline py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-4xl mx-auto text-center">
-      <p class="font-display italic text-clay text-lg mb-4">Who We Are</p>
-      <h1 class="font-display font-medium text-4xl sm:text-5xl text-ink">About LNCP</h1>
-    </div>
-  </div>
+  <PageHero slot="hero" eyebrow="Who We Are" title="About LNCP" image={heroPhoto} imagePosition="50% 42%" />
 
   <!-- Mission -->
-  <section class="py-20 bg-paper" aria-labelledby="mission-heading">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-[0.9fr_1.3fr] gap-10 md:gap-20 items-start">
-      <div>
-        <p class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">Our Mission</p>
-        <h2 id="mission-heading" class="font-display font-medium text-2xl sm:text-3xl leading-snug text-ink text-balance">
-          Made by students, for students.
-        </h2>
-      </div>
-      <p class="text-base sm:text-lg text-ink-soft leading-relaxed">
+  <section class="section wrap" aria-labelledby="mission-heading">
+    <div class="section-head">
+      <h2 id="mission-heading" class="section-title">Made by students, for students.</h2>
+      <a href="/team/" class="text-link text-[0.9375rem]">Meet the team</a>
+    </div>
+    <div class="grid lg:grid-cols-[1.1fr_1fr] gap-10 lg:gap-16 mt-10 items-start">
+      <p class="text-xl sm:text-[1.375rem] leading-[1.5]">
         {about?.mission ?? 'Loudoun Nature Conservation Project is a student-led nonprofit working to advance sustainability and ecological health across Loudoun County. We engage our community through education, hands-on restoration, and advocacy, empowering young people to become lifelong stewards of the environment. Through local cleanups, habitat restoration, and outreach events, we work to restore ecosystems and build a lasting culture of environmental responsibility. Made by students, for students, we\'re proving that the next generation of conservation leaders is already at work.'}
       </p>
+      <figure class="m-0">
+        <Image
+          src={missionPhoto}
+          alt="LNCP volunteers with collected trash bags at the end of a cleanup"
+          {...responsive(missionPhoto, [480, 640, 800, 1024, 1280], '(min-width: 1440px) 640px, (min-width: 1024px) 45vw, calc(100vw - 2.5rem)')}
+          class="w-full aspect-[4/3] object-cover rounded-card"
+        />
+        <figcaption class="text-[0.8125rem] text-ink-soft mt-3">Bags collected, piece by piece</figcaption>
+      </figure>
     </div>
+
+    <!-- Impact -->
+    <dl class="grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12 mt-(--section)" aria-label="Our impact">
+      {impactStats.map(({ value, label }) => (
+        <div>
+          <dt class="sr-only">{label}</dt>
+          <dd class="stat-value stat-value-sm">{value}</dd>
+          <dd class="mt-4 text-[1.0625rem]">{label}</dd>
+        </div>
+      ))}
+    </dl>
   </section>
 
-  <!-- What We Do -->
-  <section class="py-20 bg-paper-2 border-y hairline" aria-labelledby="what-we-do-heading">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-      <p class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">What We Do</p>
-      <h2 id="what-we-do-heading" class="font-display font-medium text-2xl sm:text-3xl text-ink mb-12">
-        How we serve Loudoun County
-      </h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 border-t border-l hairline">
+  <!-- What We Do: numbered programs on the brand green -->
+  <section class="section wrap rise" id="what-we-do" aria-labelledby="what-we-do-heading">
+    <div class="on-dark rounded-sheet bg-forest-900 text-paper p-[clamp(28px,5vw,72px)] max-sm:px-5">
+      <p class="eyebrow text-forest-100 mb-3.5">How we serve Loudoun County</p>
+      <h2 id="what-we-do-heading" class="section-title">What we do</h2>
+      <ol class="grid md:grid-cols-2 gap-x-16 gap-y-10 mt-12" role="list">
         {whatWeDo.map((item, i) => (
-          <div class="bg-paper border-r border-b hairline p-8">
-            <p class="font-display italic text-clay text-sm mb-3">{String(i + 1).padStart(2, '0')}</p>
-            <h3 class="font-display font-medium text-ink text-xl mb-3">{item.heading}</h3>
-            <p class="text-ink-soft text-sm leading-relaxed">{item.body}</p>
-          </div>
+          <li class="border-t border-paper/20 pt-6">
+            <span class="text-[0.8125rem] tracking-[0.04em] text-forest-100 tabular-nums">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="mt-3 text-[clamp(1.75rem,2.4vw,2.25rem)] leading-[1.1]">{item.heading}</h3>
+            <p class="mt-3 max-w-[48ch] text-paper/85">{item.body}</p>
+          </li>
         ))}
-      </div>
+      </ol>
     </div>
   </section>
 
-  <!-- Impact -->
-  <section class="py-20 bg-paper" aria-labelledby="impact-heading">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-      <p class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">Our Impact</p>
-      <dl class="grid grid-cols-2 sm:grid-cols-4 border-t border-l hairline">
-        {(about?.impactStats?.length ? about.impactStats : [
-          { value: '3,122', label: 'Acres Cleaned' },
-          { value: '270', label: 'Members' },
-          { value: '726,022', label: 'Impressions' },
-          { value: '17', label: 'Partner Parks & Schools' },
-        ]).map(({ value, label }) => (
-          <div class="border-r border-b hairline p-6 sm:p-8">
-            <dt class="sr-only">{label}</dt>
-            <dd class="font-display text-3xl sm:text-4xl text-forest-900">{value}</dd>
-            <dd class="text-xs uppercase tracking-wider text-ink-soft mt-2">{label}</dd>
+  <!-- Values: GCC's ruled list, the value on the left and what it means on the right -->
+  {about?.values?.length ? (
+    <section class="section wrap rise" id="values" aria-labelledby="values-heading">
+      <p class="eyebrow text-ink-soft mb-3">Our Values</p>
+      <h2 id="values-heading" class="section-title">What guides our work</h2>
+      <dl class="mt-10 border-t border-ink">
+        {about.values.map((item) => (
+          <div class="grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] gap-x-16 gap-y-2 py-7 border-b border-ink">
+            <dt class="font-display text-[clamp(1.75rem,2.6vw,2.5rem)] leading-[1.05]">{item.heading}</dt>
+            <dd class="text-ink-soft text-lg leading-relaxed max-w-[56ch]">{item.body}</dd>
           </div>
         ))}
       </dl>
-    </div>
-  </section>
-
-  <!-- Values -->
-  {about?.values?.length ? (
-    <section class="py-20 bg-paper-2 border-y hairline" aria-labelledby="values-heading">
-      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <p class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">Our Values</p>
-        <h2 id="values-heading" class="font-display font-medium text-2xl sm:text-3xl text-ink mb-12">
-          What guides our work
-        </h2>
-        <dl class="divide-y hairline border-y hairline">
-          {about.values.map((item) => (
-            <div class="py-6 sm:grid sm:grid-cols-[12rem_1fr] sm:gap-8">
-              <dt class="font-display font-medium text-ink text-lg">{item.heading}</dt>
-              <dd class="mt-2 sm:mt-0 text-ink-soft text-sm leading-relaxed">{item.body}</dd>
-            </div>
-          ))}
-        </dl>
-      </div>
     </section>
   ) : null}
 
   <!-- Press -->
-  <section class="py-20 bg-paper" aria-labelledby="press-heading">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-      <p class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">Press Coverage</p>
-      <h2 id="press-heading" class="font-display font-medium text-2xl sm:text-3xl text-ink mb-10">
-        In the news
-      </h2>
-      {pressLinks.length > 0 ? (
-        <ul class="divide-y hairline border-y hairline" role="list">
-          {pressLinks.map((link) => (
-            <li>
-              <a
-                href={link.url}
-                class="group flex items-baseline justify-between gap-6 py-5 hover:bg-paper-2 transition-colors px-2 -mx-2"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <span>
-                  <span class="block font-display text-lg text-ink group-hover:text-forest-900 transition-colors">
-                    {link.publication}
-                    {formatPressDate(link.date) && (
-                      <span class="font-body text-xs uppercase tracking-wider text-clay ml-2 align-middle">
-                        <time datetime={link.date}>{formatPressDate(link.date)}</time>
-                      </span>
-                    )}
-                  </span>
-                  <span class="block text-sm text-ink-soft mt-1">{link.headline}</span>
-                </span>
-                <span class="text-ink-soft shrink-0" aria-hidden="true">&rarr;</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p class="text-ink-soft text-sm">Contact us for press inquiries.</p>
-      )}
-      <p class="mt-8">
-        <a
-          href="/press/"
-          class="text-sm text-ink border-b border-ink pb-0.5 hover:text-ink-soft hover:border-ink-soft transition-colors"
-        >
-          See the full press page
-        </a>
-      </p>
+  <section class="section wrap rise" aria-labelledby="press-heading">
+    <div class="section-head">
+      <h2 id="press-heading" class="section-title">In the news</h2>
+      <a href="/press/" class="text-link text-[0.9375rem]">See the full press page</a>
     </div>
+    {pressLinks.length > 0 ? (
+      <ul class="mt-10 border-t border-ink" role="list">
+        {pressLinks.map((link) => (
+          <li class="border-b border-ink">
+            <a
+              href={link.url}
+              class="group grid sm:grid-cols-[14rem_minmax(0,1fr)_auto] items-baseline gap-x-8 gap-y-1 py-6"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span class="text-[0.9375rem] font-medium">
+                {link.publication}
+                {formatPressDate(link.date) && (
+                  <span class="block text-[0.8125rem] font-normal text-ink-soft mt-0.5">
+                    <time datetime={link.date}>{formatPressDate(link.date)}</time>
+                  </span>
+                )}
+              </span>
+              <span class="font-display text-[1.5rem] sm:text-[1.75rem] leading-[1.15] group-hover:text-forest-800 transition-colors">{link.headline}</span>
+              <span class="hidden sm:block text-ink-soft group-hover:translate-x-1 transition-transform" aria-hidden="true">&rarr;</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p class="mt-8 text-ink-soft">Contact us for press inquiries.</p>
+    )}
   </section>
+
+  <JoinSection />
 </Base>

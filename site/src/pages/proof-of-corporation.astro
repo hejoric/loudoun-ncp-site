@@ -1,5 +1,6 @@
 ---
 import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
 import { ORG_EIN, ORG_EMAIL, ORG_NAME } from '@/lib/seo';
 
 const docs = [
@@ -31,30 +32,28 @@ const docs = [
   description="Loudoun Nature Conservation Project 501(c)(3) incorporation documents - Virginia Certificate of Incorporation and Bylaws."
   breadcrumb={[['Home', '/'], ['Proof of Corporation', '/proof-of-corporation/']]}
 >
-  <div class="bg-paper border-b hairline py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-4xl mx-auto text-center">
-      <p class="font-display italic text-clay text-lg mb-4">Legal</p>
-      <h1 class="font-display font-medium text-4xl sm:text-5xl text-ink">Proof of Corporation</h1>
-      <p class="mt-5 text-ink-soft max-w-2xl mx-auto">
-        Loudoun Nature Conservation Project is a legally incorporated 501(c)(3) nonprofit organization in the Commonwealth of Virginia, effective April 26, 2024.
-      </p>
-      <p class="mt-4 text-sm text-ink-soft">
-        Charity ID / EIN <span class="text-ink font-medium">{ORG_EIN}</span>
-      </p>
-    </div>
-  </div>
+  <PageHero
+    slot="hero"
+    eyebrow="Legal"
+    title="Proof of Corporation"
+    lead="Loudoun Nature Conservation Project is a legally incorporated 501(c)(3) nonprofit organization in the Commonwealth of Virginia, effective April 26, 2024."
+  >
+    <p class="mt-4 text-[0.9375rem] text-ink-soft">
+      Charity ID / EIN <span class="text-ink font-medium">{ORG_EIN}</span>
+    </p>
+  </PageHero>
 
-  <section class="py-20 bg-paper-2">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+  <section class="section wrap">
+    <div class="max-w-4xl space-y-4">
       {docs.map((doc) => (
-        <div class="bg-paper border hairline p-6 sm:p-7 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="panel p-6 sm:p-7 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h2 class="font-display font-medium text-ink text-lg">{doc.title}</h2>
-            <p class="text-ink-soft text-sm mt-1">{doc.description}</p>
+            <h2 class="text-[1.625rem] leading-tight">{doc.title}</h2>
+            <p class="text-ink-soft text-[0.9375rem] mt-1">{doc.description}</p>
           </div>
           <a
             href={doc.file}
-            class="inline-flex items-center gap-2 px-4 py-2.5 bg-forest-900 text-paper text-sm font-semibold hover:bg-forest-800 transition-colors shrink-0"
+            class="btn btn-outline shrink-0"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -66,7 +65,7 @@ const docs = [
         </div>
       ))}
 
-      <p class="text-xs text-ink-soft mt-8 text-center leading-relaxed">
+      <p class="text-[0.8125rem] text-ink-soft pt-6 leading-relaxed">
         {ORG_NAME} is a nonprofit, tax-exempt charitable organization under Section 501(c)(3) of
         the U.S. Internal Revenue Code, Charity ID / EIN {ORG_EIN}. Full registration details,
         including the organization's physical street address, are on the{' '}

@@ -1,5 +1,6 @@
 ---
 import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
 import reader from '@/lib/reader';
 import { ORG_ID, SITE_URL, absoluteUrl, truncate } from '@/lib/seo';
 
@@ -72,69 +73,53 @@ const articleJsonLd = {
   breadcrumb={[['Home', '/'], ['Research', '/research/'], [truncate(pub.title, 60), `/research/${slug}/`]]}
   jsonLd={[articleJsonLd, ...personJsonLd]}
 >
-  <!-- Header -->
-  <div class="bg-paper border-b hairline py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-3xl mx-auto">
-      <a href="/research/" class="inline-flex items-center gap-2 text-ink-soft text-sm mb-8 hover:text-ink transition-colors">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-        Back to Research
-      </a>
-      {displayDate && <p class="font-display italic text-clay text-base mb-4">{displayDate}</p>}
-      <h1 class="font-display font-medium text-3xl sm:text-4xl leading-tight text-ink text-balance">{pub.title}</h1>
-      <p class="mt-5 text-ink-soft text-sm">{pub.authors.join(', ')}</p>
-    </div>
-  </div>
+  <PageHero slot="hero" eyebrow={displayDate || 'Research'} title={pub.title}>
+    <p class="mt-6 text-ink-soft text-lg">{pub.authors.join(', ')}</p>
+  </PageHero>
 
-  <!-- Content -->
-  <article class="py-16 bg-paper" aria-label={pub.title}>
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-      <!-- Abstract -->
+  <article class="section wrap" aria-label={pub.title}>
+    <div class="grid lg:grid-cols-[minmax(0,1fr)_22rem] gap-12 lg:gap-20 items-start">
       <section aria-labelledby="abstract-heading">
-        <h2 id="abstract-heading" class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">Abstract</h2>
-        <p class="text-ink-soft text-base sm:text-lg leading-relaxed">{pub.abstract}</p>
+        <h2 id="abstract-heading" class="kicker mb-5">Abstract</h2>
+        <p class="text-xl sm:text-[1.375rem] leading-[1.55] max-w-[62ch]">{pub.abstract}</p>
       </section>
 
-      <!-- Authors -->
-      <section aria-labelledby="authors-heading">
-        <h2 id="authors-heading" class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">Authors</h2>
-        <ul class="space-y-1.5" role="list">
-          {pub.authors.map((author) => (
-            <li class="text-ink text-sm">{author}</li>
-          ))}
-        </ul>
-        <p class="text-xs text-ink-soft mt-4">Research Division, Loudoun Nature Conservation Project</p>
-      </section>
-
-      <!-- PDF Download -->
-      {pdfHref && (
-        <div class="bg-paper-2 border hairline p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
-          <div>
-            <p class="font-display font-medium text-ink text-lg">Full Paper (PDF)</p>
-            <p class="text-ink-soft text-xs mt-1">Self-published, Loudoun Nature Conservation Project</p>
+      <aside class="space-y-10 lg:sticky lg:top-28">
+        <!-- PDF Download -->
+        {pdfHref && (
+          <div class="on-dark rounded-card bg-forest-900 text-paper p-7">
+            <p class="font-display text-[1.75rem] leading-tight">Full Paper (PDF)</p>
+            <p class="text-paper/80 text-[0.9375rem] mt-1.5">Self-published, Loudoun Nature Conservation Project</p>
+            <a
+              href={pdfHref}
+              class="btn btn-light mt-6"
+              target={pub.pdfLink ? '_blank' : undefined}
+              rel={pub.pdfLink ? 'noopener noreferrer' : undefined}
+              download={pub.pdfFile ? true : undefined}
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Download PDF
+            </a>
           </div>
-          <a
-            href={pdfHref}
-            class="inline-flex items-center gap-2 px-5 py-3 bg-forest-900 text-paper text-sm font-semibold hover:bg-forest-800 transition-colors shrink-0"
-            target={pub.pdfLink ? '_blank' : undefined}
-            rel={pub.pdfLink ? 'noopener noreferrer' : undefined}
-            download={pub.pdfFile ? true : undefined}
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-            Download PDF
-          </a>
-        </div>
-      )}
+        )}
 
-      <!-- Back link -->
-      <div class="pt-6 border-t hairline">
-        <a href="/research/" class="text-sm text-ink border-b border-ink pb-0.5 hover:text-ink-soft hover:border-ink-soft transition-colors">
-          All Publications
+        <!-- Authors -->
+        <section aria-labelledby="authors-heading">
+          <h2 id="authors-heading" class="kicker mb-4">Authors</h2>
+          <ul class="border-t border-ink" role="list">
+            {pub.authors.map((author) => (
+              <li class="py-3 border-b border-ink">{author}</li>
+            ))}
+          </ul>
+          <p class="text-[0.9375rem] text-ink-soft mt-4">Research Division, Loudoun Nature Conservation Project</p>
+        </section>
+
+        <a href="/research/" class="text-link inline-block text-[0.9375rem]">
+          <span aria-hidden="true">&larr;</span> All Publications
         </a>
-      </div>
+      </aside>
     </div>
   </article>
 </Base>

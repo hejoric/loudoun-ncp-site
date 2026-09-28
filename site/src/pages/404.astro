@@ -1,5 +1,6 @@
 ---
 import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
 ---
 
 <Base
@@ -7,27 +8,16 @@ import Base from '@/layouts/Base.astro';
   description="This page doesn't exist or has moved. Browse our conservation work, student research, and volunteer opportunities in Loudoun County, Virginia."
   noindex
 >
-  <div class="min-h-[70vh] flex items-center justify-center bg-paper px-4">
-    <div class="text-center max-w-md">
-      <p class="font-display italic text-clay text-7xl mb-6" aria-hidden="true">404</p>
-      <h1 class="font-display font-medium text-3xl text-ink mb-4">Page Not Found</h1>
-      <p class="text-ink-soft text-sm mb-10">
-        This path seems to have gone back to nature. The page you're looking for doesn't exist or may have moved.
-      </p>
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-5">
-        <a
-          href="/"
-          class="px-6 py-3 bg-forest-900 text-paper font-semibold text-sm hover:bg-forest-800 transition-colors"
-        >
-          Go Home
-        </a>
-        <a
-          href="/contact/"
-          class="text-sm text-ink border-b border-ink pb-0.5 hover:text-ink-soft hover:border-ink-soft transition-colors"
-        >
-          Contact Us
-        </a>
-      </div>
+  <PageHero
+    slot="hero"
+    eyebrow="404"
+    title="Page Not Found"
+    lead="This path seems to have gone back to nature. The page you're looking for doesn't exist or may have moved."
+  >
+    <div class="mt-10 flex flex-col sm:flex-row sm:items-center gap-6">
+      <a href="/" class="btn btn-action btn-lg self-start">Go Home</a>
+      <a href="/contact/" class="text-link self-start text-[0.9375rem]">Contact Us</a>
     </div>
-  </div>
+  </PageHero>
+  <div class="pb-(--section)"></div>
 </Base>
