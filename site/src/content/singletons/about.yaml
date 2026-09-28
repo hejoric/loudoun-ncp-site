@@ -1,6 +1,6 @@
 metaDescription: >-
-  Learn about Loudoun Nature Conservation Project - our mission, programs,
-  impact, and history as a student-led 501(c)(3) nonprofit in Loudoun County,
+  Learn about Loudoun Nature Conservation Project - our mission, values,
+  programs, and impact as a student-led 501(c)(3) nonprofit in Loudoun County,
   Virginia.
 mission: >-
   Loudoun Nature Conservation Project is a student-led nonprofit working to
@@ -9,19 +9,32 @@ mission: >-
   empowering young people to become lifelong stewards of the environment.
   Through local cleanups, habitat restoration, and outreach events, we work to
   restore ecosystems and build a lasting culture of environmental
-  responsibility. Made by students, for students, we're proving that the next
-  generation of conservation leaders is already at work.
+  responsibility. Our volunteers clear trash and invasive plants from the
+  parks, trails, and streams we share, our researchers study the health of
+  local waterways, and our school and college branches give students a place
+  to lead right where they live. Made by students, for students, we're proving
+  that the next generation of conservation leaders is already at work.
 whatWeDo:
   - heading: Community Cleanups
     body: >-
       We organize regular cleanups across Loudoun County parks, trails, and
       waterways. From neighborhood streams to county-wide events, our volunteers
       work hands-on to restore natural spaces.
+  - heading: Habitat Restoration
+    body: >-
+      Beyond picking up litter, we remove invasive plants and help restore
+      meadows and other native habitat, working alongside the parks and
+      conservation groups that care for them year-round.
   - heading: Student Research
     body: >-
       Our research division conducts original environmental science studies -
       investigating water quality, dissolved oxygen, nutrient runoff, and
       ecosystem health - and publishes findings for public access.
+  - heading: School & College Branches
+    body: >-
+      Student-run branches at high schools and colleges bring LNCP to their own
+      campuses. Each branch president recruits members, organizes local
+      cleanups, and represents their community within the wider organization.
   - heading: Education & Outreach
     body: >-
       We empower the next generation of conservation leaders through school
@@ -32,6 +45,29 @@ whatWeDo:
       By partnering with local parks, schools, and organizations, we amplify our
       impact and help shape environmental stewardship culture across Northern
       Virginia.
+values:
+  - heading: Students lead
+    body: >-
+      Every role at LNCP, from branch president to director, is held by a
+      student volunteer. We trust young people to plan, organize, and lead real
+      conservation work, not just show up for it.
+  - heading: Action over talk
+    body: >-
+      Conservation happens outside. We measure our work in cleared trails,
+      cleaner streams, and restored ground, and we keep showing up to do it.
+  - heading: Science in the open
+    body: >-
+      Our research is grounded in field measurement, and every study we publish
+      is freely available so neighbors, schools, and decision-makers can read
+      and use it.
+  - heading: Open to everyone
+    body: >-
+      Our cleanups are free and open to volunteers of every age. Anyone who
+      cares about Loudoun's natural spaces is welcome to pitch in.
+  - heading: Stronger together
+    body: >-
+      We work alongside local parks, schools, and community organizations,
+      because protecting a shared environment is a shared responsibility.
 impactStats:
   - value: '3,122'
     label: Acres Cleaned
@@ -41,34 +77,3 @@ impactStats:
     label: Social Impressions
   - value: '17'
     label: Partner Parks & Schools
-historyTimeline:
-  - year: April 2024
-    event: >-
-      Loudoun Nature Conservation Project incorporated in Virginia as a
-      501(c)(3) nonprofit. Founded by Ryan Nisay with co-founders Christian
-      Shire and Carter Lepuil.
-  - year: Summer 2024
-    event: >-
-      LNCP holds its first community cleanups across Loudoun County, partnering
-      with local parks and schools.
-  - year: Fall 2024
-    event: >-
-      First school branches launched at Potomac Falls High School and other
-      Loudoun schools. Research division established with first water quality
-      study.
-  - year: December 2024
-    event: >-
-      First research publication: "Water Health: Testing and Determining Health
-      of Local Bodies of Water" (Shire & Nisay).
-  - year: '2025'
-    event: >-
-      Expanded to seven school and college branches including Independence,
-      Dominion, Rock Ridge, Stone Bridge, NOVA, and GMU. Multiple research
-      papers published on dissolved oxygen, agricultural runoff, and nitrogen
-      dynamics.
-  - year: '2026'
-    event: >-
-      LNCP surpasses 270 members, 3,122 acres cleaned, and 726,000+ social
-      media impressions. Recognized in the United States Congressional Record by
-      Representative Suhas Subramanyam of Virginia's 10th District. New branches
-      announced for the upcoming school year.

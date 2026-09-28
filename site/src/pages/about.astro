@@ -6,17 +6,6 @@ import { getPressItems, formatPressDate } from '@/lib/press';
 
 const about = await reader.singletons.about.read();
 
-const timeline = about?.historyTimeline?.length
-  ? about.historyTimeline
-  : [
-      { year: 'April 2024', event: 'Loudoun Nature Conservation Project incorporated in Virginia as a 501(c)(3) nonprofit. Founded by Ryan Nisay with co-founders Christian Shire and Carter Lepuil.' },
-      { year: 'Summer 2024', event: 'LNCP holds its first community cleanups across Loudoun County, partnering with local parks and schools.' },
-      { year: 'Fall 2024', event: 'First school branches launched at Potomac Falls High School and other Loudoun schools. Research division established with first water quality study.' },
-      { year: 'Winter 2024', event: 'First research publication: "Water Health: Testing and Determining Health of Local Bodies of Water" (Shire & Nisay, Dec 2024).' },
-      { year: '2025', event: 'Expanded to seven school and college branches including Independence, Dominion, Rock Ridge, Stone Bridge, NOVA, and GMU. Multiple research papers published on dissolved oxygen and agricultural runoff.' },
-      { year: '2026', event: 'LNCP surpasses 270 members, 3,122 acres cleaned, and 726,000+ social media impressions. Recognized in the United States Congressional Record by Representative Suhas Subramanyam of Virginia\'s 10th District. New branches announced for the upcoming school year.' },
-    ];
-
 const whatWeDo = about?.whatWeDo?.length
   ? about.whatWeDo
   : [
@@ -53,7 +42,7 @@ const aboutPageJsonLd = {
 <Base
   title="About"
   description={about?.metaDescription ??
-    'Our mission, programs, impact, and history as a student-led 501(c)(3) environmental nonprofit in Loudoun County, Virginia.'}
+    'Our mission, values, programs, and impact as a student-led 501(c)(3) environmental nonprofit in Loudoun County, Virginia.'}
   breadcrumb={[['Home', '/'], ['About', '/about/']]}
   jsonLd={aboutPageJsonLd}
 >
@@ -85,7 +74,7 @@ const aboutPageJsonLd = {
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
       <p class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">What We Do</p>
       <h2 id="what-we-do-heading" class="font-display font-medium text-2xl sm:text-3xl text-ink mb-12">
-        Four ways we serve Loudoun County
+        How we serve Loudoun County
       </h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 border-t border-l hairline">
         {whatWeDo.map((item, i) => (
@@ -120,27 +109,25 @@ const aboutPageJsonLd = {
     </div>
   </section>
 
-  <!-- History Timeline -->
-  <section id="history" class="py-20 bg-paper-2 border-y hairline" aria-labelledby="history-heading">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-      <p class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">Our History</p>
-      <h2 id="history-heading" class="font-display font-medium text-2xl sm:text-3xl text-ink mb-12">
-        From one park to a county-wide movement
-      </h2>
-      <ol class="relative border-l hairline space-y-10 pl-8">
-        {timeline.map((entry) => (
-          <li class="relative">
-            <span
-              class="absolute -left-[2.28rem] top-1.5 w-2.5 h-2.5 rounded-full bg-forest-900"
-              aria-hidden="true"
-            ></span>
-            <time class="font-display italic text-clay text-base">{entry.year}</time>
-            <p class="mt-2 text-ink-soft text-sm leading-relaxed">{entry.event}</p>
-          </li>
-        ))}
-      </ol>
-    </div>
-  </section>
+  <!-- Values -->
+  {about?.values?.length ? (
+    <section class="py-20 bg-paper-2 border-y hairline" aria-labelledby="values-heading">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <p class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">Our Values</p>
+        <h2 id="values-heading" class="font-display font-medium text-2xl sm:text-3xl text-ink mb-12">
+          What guides our work
+        </h2>
+        <dl class="divide-y hairline border-y hairline">
+          {about.values.map((item) => (
+            <div class="py-6 sm:grid sm:grid-cols-[12rem_1fr] sm:gap-8">
+              <dt class="font-display font-medium text-ink text-lg">{item.heading}</dt>
+              <dd class="mt-2 sm:mt-0 text-ink-soft text-sm leading-relaxed">{item.body}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </section>
+  ) : null}
 
   <!-- Press -->
   <section class="py-20 bg-paper" aria-labelledby="press-heading">

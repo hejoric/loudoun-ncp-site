@@ -127,6 +127,12 @@ export default config({
           label: 'Badge accent color (hex, optional)',
           validation: { isRequired: false, length: { min: 0 } },
         }),
+        hidden: fields.checkbox({
+          label: 'Hidden (not running this year)',
+          description:
+            'Check this for a branch that is paused rather than gone. The record stays so it can come back, but the site stops listing it and stops badging members with its school. Uncheck it when the branch is running again.',
+          defaultValue: false,
+        }),
       },
     }),
 
@@ -302,19 +308,19 @@ export default config({
           }),
           { label: 'What We Do Sections', itemLabel: (props) => props.fields.heading.value || 'Section' }
         ),
+        values: fields.array(
+          fields.object({
+            heading: fields.text({ label: 'Value (e.g. Students lead)' }),
+            body: fields.text({ label: 'Body Text', multiline: true }),
+          }),
+          { label: 'Our Values', itemLabel: (props) => props.fields.heading.value || 'Value' }
+        ),
         impactStats: fields.array(
           fields.object({
             value: fields.text({ label: 'Value (e.g. 3,122)' }),
             label: fields.text({ label: 'Label (e.g. Acres Cleaned)' }),
           }),
           { label: 'Impact Stats', itemLabel: (props) => props.fields.label.value || 'Stat' }
-        ),
-        historyTimeline: fields.array(
-          fields.object({
-            year: fields.text({ label: 'Year / Date' }),
-            event: fields.text({ label: 'Event Description', multiline: true }),
-          }),
-          { label: 'History Timeline', itemLabel: (props) => props.fields.year.value || 'Event' }
         ),
       },
     }),

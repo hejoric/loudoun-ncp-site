@@ -66,9 +66,9 @@ manual steps - there's no bot doing this for you.
 | School branches | Branches | `src/content/branches/*.yaml` |
 | Research papers | Research Publications | `src/content/publications/*.yaml` |
 | Events | Events | `src/content/events/*.yaml` |
-| Home page text, stats, press | Home Page | `src/content/singletons/home/index.yaml` |
-| About page | About Page | `src/content/singletons/about/index.yaml` |
-| Contact info, social links | Site Settings | `src/content/singletons/settings/index.yaml` |
+| Home page text, stats, press | Home Page | `src/content/singletons/home.yaml` |
+| About page | About Page | `src/content/singletons/about.yaml` |
+| Contact info, social links | Site Settings | `src/content/singletons/settings.yaml` |
 
 Images go in `src/assets/` (school logos in `src/assets/branches/`,
 college logos in `src/assets/affiliations/`). Keystatic places uploaded
