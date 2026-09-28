@@ -56,9 +56,9 @@ Start the dev server, then visit `http://localhost:4321/keystatic`.
 
 | Singleton | Location | What it controls |
 |---|---|---|
-| Home | `src/content/singletons/home/index.yaml` | Hero headline, stats, press links |
-| About | `src/content/singletons/about/index.yaml` | Mission, what we do, values, impact |
-| Site Settings | `src/content/singletons/settings/index.yaml` | Org name, contact email, social URLs, volunteer form |
+| Home | `src/content/singletons/home.yaml` | Hero headline, stats, press links |
+| About | `src/content/singletons/about.yaml` | Mission, what we do, values, impact |
+| Site Settings | `src/content/singletons/settings.yaml` | Org name, contact email, social URLs, volunteer form |
 
 ## Adding a Team Member
 
@@ -136,7 +136,8 @@ until a member sets `branch: branch-slug`.
 A branch that is not running this year gets `hidden: true` (the **Hidden**
 checkbox in Keystatic) instead of being deleted. The record stays for when it
 returns, but the site stops listing it and drops its school badge from members'
-cards.
+cards. To keep that school on one member's card anyway (as the founders do for
+Potomac Falls), list it under their `affiliations`.
 
 ## Adding an Event
 
