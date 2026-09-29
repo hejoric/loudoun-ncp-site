@@ -7,6 +7,8 @@
  */
 import type { APIRoute } from 'astro';
 import reader from '@/lib/reader';
+import { getWhatWeDo } from '@/lib/about';
+import { getPublications } from '@/lib/publications';
 import { ORG_ADDRESS_SHORT, ORG_EIN, ORG_EMAIL, SITE_URL } from '@/lib/seo';
 
 function formatDate(date: string | null) {
@@ -21,11 +23,8 @@ function formatDate(date: string | null) {
 
 export const GET: APIRoute = async () => {
   const about = await reader.singletons.about.read();
-  const pubs = (await reader.collections.publications.all()).sort((a, b) => {
-    if (!a.entry.date) return 1;
-    if (!b.entry.date) return -1;
-    return new Date(b.entry.date).getTime() - new Date(a.entry.date).getTime();
-  });
+  const pubs = await getPublications();
+  const whatWeDo = await getWhatWeDo();
 
   const lines: string[] = [];
 
@@ -52,15 +51,13 @@ export const GET: APIRoute = async () => {
     lines.push('');
   }
 
-  if (about?.whatWeDo?.length) {
-    lines.push('## What we do');
+  lines.push('## What we do');
+  lines.push('');
+  for (const item of whatWeDo) {
+    lines.push(`### ${item.heading}`);
     lines.push('');
-    for (const item of about.whatWeDo) {
-      lines.push(`### ${item.heading}`);
-      lines.push('');
-      lines.push(item.body.trim());
-      lines.push('');
-    }
+    lines.push(item.body.trim());
+    lines.push('');
   }
 
   if (about?.values?.length) {

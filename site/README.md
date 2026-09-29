@@ -177,8 +177,8 @@ pdfLink: null   # or external DOI URL
 | School logos | `src/assets/branches/` | Square transparent PNG, at least 200x200px |
 | College logos | `src/assets/affiliations/` | Square, trimmed of margins, at least 200x200px |
 | Page photos | `src/assets/photos/` | JPEG, at least 1600px wide |
-| Hero video | `public/assets/hero.mp4` | Landscape-only loop (no people or city scenes), 1280px wide, H.264, no audio |
-| Hero video (AV1) | `public/assets/hero-av1.mp4` | Same clip in AV1, served first to browsers that decode it |
+| Hero video | `public/assets/hero-2026.mp4` | Landscape-only loop (no people or city scenes), 1280px wide, H.264, no audio |
+| Hero video (AV1) | `public/assets/hero-2026-av1.mp4` | Same clip in AV1, served first to browsers that decode it |
 | Hero poster | `src/assets/photos/hero-poster.jpg` | JPEG still of the video's first frame, same dimensions |
 | Research PDFs | `public/research/` | PDF, any size |
 
@@ -192,9 +192,9 @@ the Open Graph image, and the video.
 ### Recompressing the hero video
 
 ```bash
-ffmpeg -i input.mp4 -vf scale=1280:-2 -c:v libx264 -crf 26 -an -movflags +faststart public/assets/hero.mp4
-ffmpeg -i public/assets/hero.mp4 -map 0:v:0 -dn -map_metadata -1 -c:v libsvtav1 -crf 42 -preset 4 -g 240 -pix_fmt yuv420p -an -movflags +faststart public/assets/hero-av1.mp4
-ffmpeg -i public/assets/hero.mp4 -vframes 1 -q:v 6 -update 1 src/assets/photos/hero-poster.jpg
+ffmpeg -i input.mp4 -vf scale=1280:-2 -c:v libx264 -crf 26 -an -movflags +faststart public/assets/hero-2026.mp4
+ffmpeg -i public/assets/hero-2026.mp4 -map 0:v:0 -dn -map_metadata -1 -c:v libsvtav1 -crf 42 -preset 4 -g 240 -pix_fmt yuv420p -an -movflags +faststart public/assets/hero-2026-av1.mp4
+ffmpeg -i public/assets/hero-2026.mp4 -vframes 1 -q:v 6 -update 1 src/assets/photos/hero-poster.jpg
 ```
 
 Re-encode both files whenever the clip changes: the page offers the AV1 file

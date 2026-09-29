@@ -183,13 +183,7 @@ const rosterJsonLd = {
         <header class="section-head">
           <h2 id="exec-staff-heading" class="section-title">Executive Staff</h2>
         </header>
-        {/* One line on desktop however many staff there are: never fewer
-            columns than the standard grid (so small rows keep the same card
-            size), and one column per member once they outnumber it. */}
-        <div
-          class="team-grid team-grid-row"
-          style={`--cols-lg:${Math.max(bySection.executiveStaff.length, 4)};--cols-xl:${Math.max(bySection.executiveStaff.length, 5)};`}
-        >
+        <div class="team-grid">
           {bySection.executiveStaff.map((m) => (
             <div>
               <FlipCard
@@ -317,18 +311,6 @@ const rosterJsonLd = {
   @media (min-width: 1280px) {
     .team-grid {
       grid-template-columns: repeat(5, minmax(0, 1fr));
-    }
-  }
-  /* A group kept to a single row from lg up; the column counts come from the
-     markup (see the Executive Staff section). */
-  @media (min-width: 1024px) {
-    .team-grid-row {
-      grid-template-columns: repeat(var(--cols-lg), minmax(0, 1fr));
-    }
-  }
-  @media (min-width: 1280px) {
-    .team-grid-row {
-      grid-template-columns: repeat(var(--cols-xl), minmax(0, 1fr));
     }
   }
 </style>

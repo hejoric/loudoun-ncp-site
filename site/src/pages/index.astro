@@ -13,10 +13,13 @@ import fairPhoto from '@/assets/photos/fair.jpg';
 import FlipCard from '@/components/FlipCard.astro';
 import JoinSection from '@/components/JoinSection.astro';
 import reader from '@/lib/reader';
+import { getWhatWeDo } from '@/lib/about';
 import { resolveAffiliations } from '@/lib/affiliations';
 import { getBranches } from '@/lib/branches';
+import { getPublications } from '@/lib/publications';
 import { resolveImage, responsive } from '@/lib/images';
 import { ORG_ID, truncate } from '@/lib/seo';
+import { VOLUNTEER_REASONS } from '@/lib/volunteer';
 import {
   getPressItems,
   buildPressStrip,
@@ -25,7 +28,6 @@ import {
 } from '@/lib/press';
 
 const home = await reader.singletons.home.read();
-const about = await reader.singletons.about.read();
 const allBranches = await getBranches();
 const allTeam = await reader.collections.teamMembers.all();
 const ryan = allTeam.find((m) => m.slug === 'ryan-nisay') ?? null;
@@ -173,26 +175,21 @@ const railPhotos = [
 
 // "What we do" pillars come from the About page's list, so the two pages
 // describe the same programs in the same words.
-const whatWeDo = about?.whatWeDo ?? [];
+const whatWeDo = await getWhatWeDo();
 
-// From the field: the newest study leads, the next two follow. Undated papers
-// sort last, as on /research/.
-const publications = (await reader.collections.publications.all()).sort((a, b) => {
-  if (!a.entry.date) return 1;
-  if (!b.entry.date) return -1;
-  return new Date(b.entry.date).getTime() - new Date(a.entry.date).getTime();
-});
+// From the field: the newest study leads, the next two follow, in the same
+// order as /research/.
+const publications = await getPublications();
 const [leadPaper, ...otherPapers] = publications;
 const formatPaperDate = (date: string | null | undefined) =>
   date
     ? new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })
     : '';
 
-// The university strip, GCC's school-affiliation wall: every branch whose
-// school is a university, straight from the branch records, so a new
-// university branch joins the strip when it is added in Keystatic.
+// The university strip, GCC's school-affiliation wall: every branch marked as
+// a university chapter in Keystatic, straight from the branch records.
 const universities = allBranches
-  .filter((b) => /\buniversity\b/i.test(b.entry.school))
+  .filter((b) => b.entry.university)
   .sort((a, b) => a.entry.school.localeCompare(b.entry.school))
   .map((b) => ({ slug: b.slug, school: b.entry.school, logo: resolveImage(b.entry.schoolLogo) }));
 
@@ -265,8 +262,8 @@ const pressJsonLd = pressItems.map((p) => ({
         poster={heroPoster.src}
         data-hero-video
       >
-        <source data-src="/assets/hero-av1.mp4" type='video/mp4; codecs="av01.0.05M.08"' />
-        <source data-src="/assets/hero.mp4" type="video/mp4" />
+        <source data-src="/assets/hero-2026-av1.mp4" type='video/mp4; codecs="av01.0.05M.08"' />
+        <source data-src="/assets/hero-2026.mp4" type="video/mp4" />
       </video>
     </div>
 
@@ -363,17 +360,15 @@ const pressJsonLd = pressItems.map((p) => ({
       <h2 id="work-heading" class="section-title">What we do</h2>
       <a href="/about/#what-we-do" class="text-link text-[0.9375rem]">Our work</a>
     </div>
-    {whatWeDo.length > 0 && (
-      <ol class="grid md:grid-cols-2 gap-x-16 gap-y-10 md:gap-y-14 mt-12 md:mt-16" role="list">
-        {whatWeDo.map((item, i) => (
-          <li>
-            <span class="text-[0.8125rem] tracking-[0.04em] text-ink-soft tabular-nums">{String(i + 1).padStart(2, '0')}</span>
-            <h3 class="mt-4 text-[clamp(1.75rem,2.4vw,2.25rem)] leading-[1.1]">{item.heading}</h3>
-            <p class="mt-3 max-w-[46ch] text-ink-soft">{item.body}</p>
-          </li>
-        ))}
-      </ol>
-    )}
+    <ol class="grid md:grid-cols-2 gap-x-16 gap-y-10 md:gap-y-14 mt-12 md:mt-16" role="list">
+      {whatWeDo.map((item, i) => (
+        <li>
+          <span class="text-[0.8125rem] tracking-[0.04em] text-ink-soft tabular-nums">{String(i + 1).padStart(2, '0')}</span>
+          <h3 class="mt-4 text-[clamp(1.75rem,2.4vw,2.25rem)] leading-[1.1]">{item.heading}</h3>
+          <p class="mt-3 max-w-[46ch] text-ink-soft">{item.body}</p>
+        </li>
+      ))}
+    </ol>
 
     <dl class="grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12 mt-(--section)" aria-label="Impact statistics">
       {stats.map(({ value, label }) => (
@@ -454,7 +449,7 @@ const pressJsonLd = pressItems.map((p) => ({
           image: cleanupSign,
           position: '50% 50%',
           title: 'Volunteer',
-          body: 'Every role is led by students - for students. Build leadership skills, earn service hours, and make connections.',
+          body: VOLUNTEER_REASONS[1].body,
           href: '/volunteer/',
           cta: 'Sign up to volunteer',
         },
@@ -799,7 +794,7 @@ const pressJsonLd = pressItems.map((p) => ({
   )}
 
   <!-- University chapters: GCC's school-affiliation wall, from the branches
-       whose school is a university. -->
+       marked as university chapters. -->
   {universities.length > 0 && (
     <section class="section wrap rise" id="universities" aria-labelledby="universities-heading">
       <div class="section-head">

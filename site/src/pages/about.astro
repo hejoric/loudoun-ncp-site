@@ -6,32 +6,14 @@ import JoinSection from '@/components/JoinSection.astro';
 import heroPhoto from '@/assets/photos/large-group-cleanup.jpg';
 import missionPhoto from '@/assets/photos/8-people-cleanup-done.jpg';
 import reader from '@/lib/reader';
+import { getWhatWeDo } from '@/lib/about';
 import { responsive } from '@/lib/images';
 import { ORG_ID, SITE_URL } from '@/lib/seo';
 import { getPressItems, formatPressDate } from '@/lib/press';
 
 const about = await reader.singletons.about.read();
 
-const whatWeDo = about?.whatWeDo?.length
-  ? about.whatWeDo
-  : [
-      {
-        heading: 'Community Cleanups',
-        body: 'We organize regular cleanups across Loudoun County parks, trails, and waterways. From neighborhood streams to county-wide events, our volunteers work hands-on to restore natural spaces.',
-      },
-      {
-        heading: 'Student Research',
-        body: 'Our research division conducts original environmental science studies - investigating water quality, dissolved oxygen, nutrient runoff, and ecosystem health - and publishes findings for public access.',
-      },
-      {
-        heading: 'Education & Outreach',
-        body: 'We empower the next generation of conservation leaders through school chapters, workshops, and community engagement events that connect students to the natural world around them.',
-      },
-      {
-        heading: 'Policy & Advocacy',
-        body: 'By partnering with local parks, schools, and organizations, we amplify our impact and help shape environmental stewardship culture across Northern Virginia.',
-      },
-    ];
+const whatWeDo = await getWhatWeDo();
 
 // Same normalized source as the homepage strip and /press/, so the three can't
 // drift apart. /press/ is the full index; this is the in-page summary.

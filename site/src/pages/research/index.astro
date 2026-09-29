@@ -3,15 +3,10 @@ import Base from '@/layouts/Base.astro';
 import PageHero from '@/components/PageHero.astro';
 import PublicationCard from '@/components/PublicationCard.astro';
 import heroPhoto from '@/assets/photos/river.jpg';
-import reader from '@/lib/reader';
+import { getPublications } from '@/lib/publications';
 import { ORG_ID, SITE_URL, truncate } from '@/lib/seo';
 
-const pubs = await reader.collections.publications.all();
-const sorted = pubs.sort((a, b) => {
-  if (!a.entry.date) return 1;
-  if (!b.entry.date) return -1;
-  return new Date(b.entry.date).getTime() - new Date(a.entry.date).getTime();
-});
+const sorted = await getPublications();
 
 // Expose the publication list as a real collection so crawlers (and LLMs) can
 // enumerate every paper from this one URL instead of relying on link discovery.
