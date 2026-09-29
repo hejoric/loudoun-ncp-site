@@ -122,6 +122,7 @@ editor - so it is simpler to put it there to begin with.
 name: Heritage                 # short branch name, shown on the card
 school: Heritage High School   # full school name, shown on the badge
 schoolLogo: null               # /src/assets/branches/heritage/schoolLogo.png once uploaded
+university: false              # true for a university chapter (home page strip)
 ```
 
 2. Place the school logo at `src/assets/branches/branch-slug/schoolLogo.png`
@@ -129,9 +130,14 @@ schoolLogo: null               # /src/assets/branches/heritage/schoolLogo.png on
    That is the path Keystatic uses when the logo is uploaded in the editor.
 
 A branch with no logo yet is fine - the badge falls back to the school's
-initials ("HHS"). A branch record is only rendered through the members that
-reference it, so adding one ahead of its president changes nothing on the site
-until a member sets `branch: branch-slug`.
+initials ("HHS"). On the team page and member cards a branch appears only
+through the members that reference it, so it stays off them until a member sets
+`branch: branch-slug`. It does show up straight away in the branch list in
+`/llms.txt`.
+
+A university branch gets `university: true` (the **University chapter**
+checkbox in Keystatic). That puts it in the home page's University chapters
+strip with its school logo, whether or not any member references it yet.
 
 A branch that is not running this year gets `hidden: true` (the **Hidden**
 checkbox in Keystatic) instead of being deleted. The record stays for when it
