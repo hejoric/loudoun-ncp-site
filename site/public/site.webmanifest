@@ -5,8 +5,8 @@
     { "src": "/assets/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "/assets/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png" }
   ],
-  "theme_color": "#1B4332",
-  "background_color": "#F6F4EE",
+  "theme_color": "#F5F4EF",
+  "background_color": "#F5F4EF",
   "display": "standalone",
   "start_url": "/"
 }

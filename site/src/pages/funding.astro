@@ -1,5 +1,7 @@
 ---
 import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import heroPhoto from '@/assets/photos/hero-poster.jpg';
 import { Image } from 'astro:assets';
 import mainstreetBankLogo from '@/assets/photos/mainstreet-bank-logo.png';
 import { responsive } from '@/lib/images';
@@ -35,57 +37,52 @@ const grantJsonLd = {
   breadcrumb={[['Home', '/'], ['Funding', '/funding/']]}
   jsonLd={grantJsonLd}
 >
-  <div class="bg-paper border-b hairline py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-4xl mx-auto text-center">
-      <p class="font-display italic text-clay text-lg mb-4">Support Our Work</p>
-      <h1 class="font-display font-medium text-4xl sm:text-5xl text-ink">Funding</h1>
-    </div>
-  </div>
+  <PageHero slot="hero" eyebrow="Support Our Work" title="Funding" image={heroPhoto} imagePosition="50% 60%" />
 
-  <section class="py-20 bg-paper-2">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+  <section class="section wrap">
+    <div class="max-w-4xl space-y-14">
       <div>
-        <p class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">How We're Funded</p>
-        <p class="text-ink-soft leading-relaxed">
+        <p class="eyebrow text-ink-soft mb-4">How We're Funded</p>
+        <p class="text-xl leading-[1.5]">
           Loudoun Nature Conservation Project operates as a volunteer-driven 501(c)(3) nonprofit. Our operations are currently funded through community donations, grants, and partnerships with local parks and schools. As a student-led organization, we keep overhead minimal to maximize our direct environmental impact.
         </p>
       </div>
 
       <div>
-        <p class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">Our Grants</p>
-        <div class="bg-paper border hairline p-8 sm:p-10">
+        <p class="eyebrow text-ink-soft mb-4">Our Grants</p>
+        <div class="panel p-8 sm:p-10">
           <Image
             src={mainstreetBankLogo}
             alt="MainStreet Bank"
             {...responsive(mainstreetBankLogo, [208, 416, 624], '208px')}
             class="w-52 h-auto mb-6"
           />
-          <h2 class="font-display font-medium text-2xl text-ink mb-4">MainStreet Bank Grant</h2>
-          <p class="text-ink-soft text-sm leading-relaxed">
+          <h2 class="text-[2.25rem] leading-tight mb-4">MainStreet Bank Grant</h2>
+          <p class="text-ink-soft leading-relaxed">
             We are deeply grateful to MainStreet Bank for awarding Loudoun Nature Conservation Project a $3,000 grant in 2024 - the very first monetary support our organization ever received. That vote of confidence in a group of students put supplies in our hands and cleanups on the calendar, and it continues to shape everything we do. Thank you, MainStreet Bank.
           </p>
         </div>
       </div>
 
-      <div class="bg-paper border hairline p-8 sm:p-10">
-        <h2 class="font-display font-medium text-2xl text-ink mb-4">Support LNCP</h2>
-        <p class="text-ink-soft text-sm leading-relaxed mb-4">
+      <div class="panel p-8 sm:p-10">
+        <h2 class="text-[2.25rem] leading-tight mb-4">Support LNCP</h2>
+        <p class="text-ink-soft leading-relaxed mb-4">
           Your support helps fund cleanup supplies, research equipment, outreach materials, and branch operations across Loudoun County. Every contribution - large or small - directly supports our mission.
         </p>
-        <p class="text-ink-soft text-sm leading-relaxed mb-8">
+        <p class="text-ink-soft leading-relaxed mb-8">
           Donations are tax-deductible under Section 501(c)(3). For donation inquiries or grant partnerships, please contact us.
         </p>
         <a
           href="mailto:directors@loudounnatureconservation.org?subject=Donation%20%2F%20Funding%20Inquiry"
-          class="inline-block px-6 py-3 bg-forest-900 text-paper text-sm font-semibold hover:bg-forest-800 transition-colors"
+          class="btn btn-action"
         >
           Contact About Funding
         </a>
       </div>
 
       <div>
-        <p class="text-xs font-semibold uppercase tracking-widest text-clay mb-5">Partner With Us</p>
-        <p class="text-ink-soft text-sm leading-relaxed">
+        <p class="eyebrow text-ink-soft mb-4">Partner With Us</p>
+        <p class="text-ink-soft leading-relaxed">
           We partner with local parks, businesses, schools, and environmental organizations to expand our reach and impact. If you're interested in becoming an LNCP partner, we'd love to hear from you.
         </p>
       </div>

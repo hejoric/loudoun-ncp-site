@@ -54,7 +54,7 @@ const {
   linkedin,
   website,
   affiliations = [],
-  accentColor = '#1B4332',
+  accentColor = 'var(--color-forest-900)',
   avatarSize = 'w-10 h-10',
   hoverFlip = true,
   focusable = true,
@@ -112,9 +112,9 @@ const linkTabIndex = focusable ? undefined : -1;
     <!-- Front: hidden from assistive tech, because the toggle above already
          says everything it shows (the portrait adds nothing a screen reader
          user needs, and the school badges are spelled out on the back). -->
-    <div class="card-flip-front flex flex-col bg-paper border hairline" aria-hidden="true">
+    <div class="card-flip-front flex flex-col bg-white border hairline" aria-hidden="true">
       <!-- Headshot -->
-      <div class="flex-1 relative overflow-hidden bg-gray-100">
+      <div class="flex-1 relative overflow-hidden bg-paper-2">
         {photo ? (
           <Image
             src={photo}
@@ -148,8 +148,8 @@ const linkTabIndex = focusable ? undefined : -1;
         class="p-3 text-center flex flex-col justify-center min-h-[4.75rem]"
         style={`background:${accentColor};`}
       >
-        <p class="font-display font-bold text-white text-sm leading-tight">{name}</p>
-        <p class="text-white/80 text-xs mt-0.5">{role}</p>
+        <p class="font-medium text-white text-[0.9375rem] leading-tight">{name}</p>
+        <p class="text-white/85 text-xs mt-0.5">{role}</p>
       </div>
     </div>
 
@@ -157,11 +157,11 @@ const linkTabIndex = focusable ? undefined : -1;
          links are not invisible tab stops and a screen reader reaches the bio
          by expanding the toggle, the same step a sighted visitor takes. -->
     <div
-      class="card-flip-back flex flex-col p-4 bg-paper border hairline"
+      class="card-flip-back flex flex-col p-4 bg-white border hairline"
       data-flip-back
     >
       <!-- Header band + small avatar -->
-      <div class="flex items-center gap-2 pb-3 border-b border-gray-100" style={`border-color:${accentColor}33;`}>
+      <div class="flex items-center gap-2 pb-3 border-b" style={`border-color:color-mix(in srgb, ${accentColor} 20%, transparent);`}>
         <div class={`${avatarSize} rounded-full overflow-hidden shrink-0`} style={`background:${accentColor};`}>
           {photo ? (
             <Image
@@ -177,8 +177,8 @@ const linkTabIndex = focusable ? undefined : -1;
           )}
         </div>
         <div>
-          <p class="font-display font-bold text-[#1c2b22] text-xs leading-tight">{name}</p>
-          <p class="text-gray-600 text-xs">{role}</p>
+          <p class="font-medium text-ink text-[0.8125rem] leading-tight">{name}</p>
+          <p class="text-ink-soft text-xs">{role}</p>
         </div>
       </div>
 
@@ -189,17 +189,17 @@ const linkTabIndex = focusable ? undefined : -1;
            attribute involved - so dropping the duplicate copy's links out of
            the sequence is not enough on its own. Without this, tabbing through
            the home strip lands on seven bios inside the aria-hidden copy. -->
-      <p class="text-xs text-gray-600 leading-relaxed flex-1 mt-3 overflow-y-auto" tabindex={linkTabIndex}>{bio || 'Bio coming soon.'}</p>
+      <p class="text-[0.8125rem] text-ink-soft leading-relaxed flex-1 mt-3 overflow-y-auto" tabindex={linkTabIndex}>{bio || 'Bio coming soon.'}</p>
 
       <!-- Social icons. Each link pads its 16px icon out to a 24px target (the
            WCAG 2.2 minimum) and takes the padding back with a negative margin,
            so the icons sit exactly where they did. -->
       {(email || instagram || linkedin || website) && (
-        <div class="flex items-center gap-3 mt-3 pt-3 border-t border-gray-100">
+        <div class="flex items-center gap-3 mt-3 pt-3 border-t hairline">
           {email && (
             <a
               href={`mailto:${email}`}
-              class="p-1 -m-1 text-gray-600 hover:text-[#1B4332] transition-colors"
+              class="p-1 -m-1 text-ink-soft hover:text-ink transition-colors"
               aria-label={`Email ${name}`}
               tabindex={linkTabIndex}
             >
@@ -211,7 +211,7 @@ const linkTabIndex = focusable ? undefined : -1;
           {instagram && (
             <a
               href={`https://instagram.com/${instagram}`}
-              class="p-1 -m-1 text-gray-600 hover:text-[#1B4332] transition-colors"
+              class="p-1 -m-1 text-ink-soft hover:text-ink transition-colors"
               aria-label={`${name} on Instagram`}
               target="_blank"
               rel="noopener noreferrer"
@@ -225,7 +225,7 @@ const linkTabIndex = focusable ? undefined : -1;
           {linkedin && (
             <a
               href={linkedin}
-              class="p-1 -m-1 text-gray-600 hover:text-[#1B4332] transition-colors"
+              class="p-1 -m-1 text-ink-soft hover:text-ink transition-colors"
               aria-label={`${name} on LinkedIn`}
               target="_blank"
               rel="noopener noreferrer"
@@ -239,7 +239,7 @@ const linkTabIndex = focusable ? undefined : -1;
           {website && (
             <a
               href={website}
-              class="p-1 -m-1 text-gray-600 hover:text-[#1B4332] transition-colors"
+              class="p-1 -m-1 text-ink-soft hover:text-ink transition-colors"
               aria-label={`${name}'s personal website`}
               target="_blank"
               rel="noopener noreferrer"

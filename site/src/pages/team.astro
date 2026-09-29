@@ -1,5 +1,7 @@
 ---
 import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import heroPhoto from '@/assets/photos/cleanup-sign.jpg';
 import FlipCard from '@/components/FlipCard.astro';
 import BranchCard from '@/components/BranchCard.astro';
 import reader from '@/lib/reader';
@@ -25,8 +27,6 @@ function getBranchFor(member: (typeof allMembers)[0]) {
 }
 
 const schoolsFor = (member: (typeof allMembers)[0]) => resolveAffiliations(member, allBranches);
-
-const ACCENT = '#1B4332';
 
 // Awards reported on the homepage. Both were given to the founder personally,
 // so they hang off his Person node rather than the organization.
@@ -100,27 +100,25 @@ const rosterJsonLd = {
   breadcrumb={[['Home', '/'], ['Team', '/team/']]}
   jsonLd={[rosterJsonLd, ...personJsonLd]}
 >
-  <!-- Page header -->
-  <div class="bg-paper border-b hairline py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-4xl mx-auto text-center">
-      <p class="font-display italic text-clay text-lg mb-4">Who We Are</p>
-      <h1 class="font-display font-medium text-4xl sm:text-5xl text-ink">Our Team</h1>
-      <p class="mt-5 text-ink-soft max-w-2xl mx-auto">
-        Hover or tap any card to learn more about a team member. All members are student volunteers dedicated to conservation.
-      </p>
-    </div>
-  </div>
+  <PageHero
+    slot="hero"
+    eyebrow="Who We Are"
+    title="Our Team"
+    lead="Hover or tap any card to learn more about a team member. All members are student volunteers dedicated to conservation."
+    image={heroPhoto}
+    imagePosition="50% 45%"
+  />
 
   {/* ---- EXECUTIVE ---- */}
   {bySection.executive.length > 0 && (
-    <section aria-labelledby="exec-heading" class="py-16 bg-paper">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header class="mb-10 text-center">
-          <h2 id="exec-heading" class="font-display font-medium text-2xl sm:text-3xl text-ink">Executive</h2>
+    <section aria-labelledby="exec-heading" class="section wrap">
+      <div>
+        <header class="section-head">
+          <h2 id="exec-heading" class="section-title">Executive</h2>
         </header>
-        <div class="flex flex-wrap justify-center gap-4 sm:gap-6">
+        <div class="team-grid">
           {bySection.executive.map((m) => (
-            <div class="w-[calc(50%-0.5rem)] sm:w-56 lg:w-64">
+            <div>
               {/* The executive row is the first thing under the page header, and
                   its headshots are the page's largest paint. */}
               <FlipCard
@@ -136,7 +134,6 @@ const rosterJsonLd = {
                 linkedin={m.entry.linkedin ?? undefined}
                 website={m.entry.website ?? undefined}
                 affiliations={schoolsFor(m)}
-                accentColor={ACCENT}
                 cardId={m.slug}
                 tentative={m.entry.tentative ?? false}
               />
@@ -149,14 +146,14 @@ const rosterJsonLd = {
 
   {/* ---- DIRECTORS ---- */}
   {bySection.directors.length > 0 && (
-    <section aria-labelledby="directors-heading" class="py-16 bg-paper-2 border-y hairline">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header class="mb-10 text-center">
-          <h2 id="directors-heading" class="font-display font-medium text-2xl sm:text-3xl text-ink">Directors</h2>
+    <section aria-labelledby="directors-heading" class="section wrap">
+      <div>
+        <header class="section-head">
+          <h2 id="directors-heading" class="section-title">Directors</h2>
         </header>
-        <div class="flex flex-wrap justify-center gap-4 sm:gap-6">
+        <div class="team-grid">
           {bySection.directors.map((m) => (
-            <div class="w-[calc(50%-0.5rem)] sm:w-56 lg:w-64">
+            <div>
               <FlipCard
                 name={m.entry.name}
                 role={m.entry.role}
@@ -169,7 +166,6 @@ const rosterJsonLd = {
                 linkedin={m.entry.linkedin ?? undefined}
                 website={m.entry.website ?? undefined}
                 affiliations={schoolsFor(m)}
-                accentColor={ACCENT}
                 cardId={m.slug}
                 tentative={m.entry.tentative ?? false}
               />
@@ -182,14 +178,14 @@ const rosterJsonLd = {
 
   {/* ---- EXECUTIVE STAFF ---- */}
   {bySection.executiveStaff.length > 0 && (
-    <section aria-labelledby="exec-staff-heading" class="py-16 bg-paper border-b hairline">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header class="mb-10 text-center">
-          <h2 id="exec-staff-heading" class="font-display font-medium text-2xl sm:text-3xl text-ink">Executive Staff</h2>
+    <section aria-labelledby="exec-staff-heading" class="section wrap">
+      <div>
+        <header class="section-head">
+          <h2 id="exec-staff-heading" class="section-title">Executive Staff</h2>
         </header>
-        <div class="flex flex-wrap justify-center gap-4 sm:gap-6">
+        <div class="team-grid">
           {bySection.executiveStaff.map((m) => (
-            <div class="w-[calc(50%-0.5rem)] sm:w-56 lg:w-64">
+            <div>
               <FlipCard
                 name={m.entry.name}
                 role={m.entry.role}
@@ -202,7 +198,6 @@ const rosterJsonLd = {
                 linkedin={m.entry.linkedin ?? undefined}
                 website={m.entry.website ?? undefined}
                 affiliations={schoolsFor(m)}
-                accentColor={ACCENT}
                 cardId={m.slug}
                 tentative={m.entry.tentative ?? false}
               />
@@ -215,19 +210,19 @@ const rosterJsonLd = {
 
   {/* ---- BRANCH PRESIDENTS ---- */}
   {bySection.branchPresidents.length > 0 && (
-    <section id="branches" aria-labelledby="branch-presidents-heading" class="py-16 bg-paper-2 border-b hairline">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header class="mb-4 text-center">
-          <h2 id="branch-presidents-heading" class="font-display font-medium text-2xl sm:text-3xl text-ink">Branch Presidents</h2>
+    <section id="branches" aria-labelledby="branch-presidents-heading" class="section wrap">
+      <div>
+        <header class="section-head">
+          <h2 id="branch-presidents-heading" class="section-title">Branch Presidents</h2>
         </header>
-        <p class="text-ink-soft text-sm mb-10 text-center max-w-2xl mx-auto">
+        <p class="lead text-ink-soft mt-5 max-w-[52ch]">
           Each branch president leads LNCP operations at their school or college - organizing cleanups, recruiting members, and representing their community.
         </p>
-        <div class="flex flex-wrap justify-center gap-4 sm:gap-6">
+        <div class="team-grid">
           {bySection.branchPresidents.map((m) => {
             const branch = getBranchFor(m);
             return (
-              <div class="w-[calc(50%-0.5rem)] sm:w-56 lg:w-64">
+              <div>
                 <BranchCard
                   presidentName={m.entry.name}
                   presidentRole={m.entry.role}
@@ -252,17 +247,17 @@ const rosterJsonLd = {
 
   {/* ---- BRANCH STAFF ---- */}
   {bySection.branchStaff.length > 0 && (
-    <section aria-labelledby="branch-staff-heading" class="py-16 bg-paper">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header class="mb-4 text-center">
-          <h2 id="branch-staff-heading" class="font-display font-medium text-2xl sm:text-3xl text-ink">Branch Staff</h2>
+    <section aria-labelledby="branch-staff-heading" class="section wrap">
+      <div>
+        <header class="section-head">
+          <h2 id="branch-staff-heading" class="section-title">Branch Staff</h2>
         </header>
-        <p class="text-ink-soft text-sm mb-10 text-center max-w-2xl mx-auto">
+        <p class="lead text-ink-soft mt-5 max-w-[52ch]">
           Branch staff serve as vice presidents, operations leads, outreach leads, and general members within their school chapters.
         </p>
-        <div class="flex flex-wrap justify-center gap-4 sm:gap-6">
+        <div class="team-grid">
           {bySection.branchStaff.map((m) => (
-            <div class="w-[calc(50%-0.5rem)] sm:w-56 lg:w-64">
+            <div>
               <FlipCard
                 name={m.entry.name}
                 role={m.entry.role}
@@ -275,7 +270,6 @@ const rosterJsonLd = {
                 linkedin={m.entry.linkedin ?? undefined}
                 website={m.entry.website ?? undefined}
                 affiliations={schoolsFor(m)}
-                accentColor={ACCENT}
                 cardId={m.slug}
                 tentative={m.entry.tentative ?? false}
               />
@@ -288,9 +282,35 @@ const rosterJsonLd = {
 
   {/* Empty state */}
   {Object.values(bySection).every((s) => s.length === 0) && (
-    <div class="py-32 text-center text-ink-soft">
-      <p class="font-display text-xl">Team roster coming soon.</p>
-      <p class="text-sm mt-2">Check back shortly or <a href="/contact/" class="text-forest-800 hover:underline">contact us</a>.</p>
+    <div class="section wrap text-ink-soft">
+      <p class="font-display text-3xl text-ink">Team roster coming soon.</p>
+      <p class="mt-2">Check back shortly or <a href="/contact/" class="text-link">contact us</a>.</p>
     </div>
   )}
 </Base>
+
+<style>
+  /* Fluid roster: two cards across a phone up to five on a wide screen. The
+     widths feed TEAM_CARD_SIZES in src/lib/images.ts - change them together. */
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 2.5rem;
+  }
+  @media (min-width: 640px) {
+    .team-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .team-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1280px) {
+    .team-grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+</style>

@@ -4,18 +4,21 @@ import { getSocialLinks } from '@/lib/social';
 interface Props {
   /** 'icon' renders icons only; 'labeled' renders icon + platform name. */
   variant?: 'icon' | 'labeled';
+  /** 'dark' for the footer's forest ground. */
+  tone?: 'light' | 'dark';
   class?: string;
 }
 
-const { variant = 'icon', class: className = '' } = Astro.props;
+const { variant = 'icon', tone = 'light', class: className = '' } = Astro.props;
 
 const links = await getSocialLinks();
 
 const iconSize = variant === 'icon' ? 'w-5 h-5' : 'w-4 h-4';
+const toneClass = tone === 'dark' ? 'text-paper/80 hover:text-paper' : 'text-ink-soft hover:text-ink';
 const linkClass =
   variant === 'icon'
-    ? 'text-ink-soft hover:text-ink transition-colors'
-    : 'text-ink-soft hover:text-ink transition-colors flex items-center gap-2 text-sm font-medium';
+    ? `${toneClass} transition-colors`
+    : `${toneClass} transition-colors flex items-center gap-2 text-[0.9375rem] font-medium`;
 // Labeled links stack so the list stays readable in a narrow card and scales
 // as profiles are added; icon-only links sit on one row.
 const listClass =

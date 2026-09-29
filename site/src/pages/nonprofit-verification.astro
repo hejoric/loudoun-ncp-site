@@ -14,6 +14,7 @@
  * from llms.txt. Reachable by anyone who follows the footer link; not crawled.
  */
 import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
 import {
   ORG_ADDRESS,
   ORG_ADDRESS_FULL,
@@ -52,22 +53,20 @@ const details: Array<{ label: string; value: string; href?: string }> = [
   titleSuffix="LNCP"
   noindex
 >
-  <section class="py-16 sm:py-24 bg-paper-2">
-    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-      <p class="font-display italic text-clay text-lg mb-3">Legal</p>
-      <h1 class="font-display font-medium text-3xl sm:text-4xl text-ink">
-        Nonprofit Verification Details
-      </h1>
-      <p class="mt-4 text-ink-soft leading-relaxed">
-        {ORG_NAME} is a student-led 501(c)(3) nonprofit corporation registered in the Commonwealth
-        of Virginia. The details below are the organization's registration of record, published
-        here on its official domain for nonprofit program verification.
-      </p>
+  <PageHero
+    slot="hero"
+    eyebrow="Legal"
+    title="Nonprofit Verification Details"
+    lead={`${ORG_NAME} is a student-led 501(c)(3) nonprofit corporation registered in the Commonwealth of Virginia. The details below are the organization's registration of record, published here on its official domain for nonprofit program verification.`}
+  />
 
-      <dl class="mt-10 bg-paper border hairline divide-y hairline">
+  <section class="section wrap">
+    <div class="max-w-3xl">
+
+      <dl class="panel divide-y hairline">
         {details.map((detail) => (
           <div class="p-6 sm:px-7 sm:grid sm:grid-cols-3 sm:gap-6">
-            <dt class="text-sm font-semibold text-ink">{detail.label}</dt>
+            <dt class="text-[0.9375rem] font-medium text-ink">{detail.label}</dt>
             <dd class="mt-1 sm:mt-0 sm:col-span-2 text-ink-soft whitespace-pre-line">
               {detail.href ? (
                 <a href={detail.href} class="underline underline-offset-2 hover:text-ink transition-colors">
@@ -81,9 +80,9 @@ const details: Array<{ label: string; value: string; href?: string }> = [
         ))}
       </dl>
 
-      <div class="mt-8 bg-paper border hairline p-6 sm:p-7">
-        <h2 class="font-display font-medium text-ink text-lg">Supporting documentation</h2>
-        <p class="mt-2 text-sm text-ink-soft leading-relaxed">
+      <div class="mt-4 panel p-6 sm:p-7">
+        <h2 class="text-[1.625rem] leading-tight">Supporting documentation</h2>
+        <p class="mt-2 text-[0.9375rem] text-ink-soft leading-relaxed">
           The Virginia State Corporation Commission Certificate of Incorporation, the articles of
           incorporation, and the organization's bylaws are published in full on the{' '}
           <a href="/proof-of-corporation/" class="underline underline-offset-2 hover:text-ink transition-colors">
@@ -96,7 +95,7 @@ const details: Array<{ label: string; value: string; href?: string }> = [
         </p>
       </div>
 
-      <p class="mt-8 text-xs text-ink-soft leading-relaxed">
+      <p class="mt-8 text-[0.8125rem] text-ink-soft leading-relaxed">
         Mailing address for correspondence: {ORG_ADDRESS_FULL}. This address is the organization's
         registered office and is also a private residence, so this page is excluded from search
         engine indexing. Donations to {ORG_NAME} are tax-deductible as allowed by law.

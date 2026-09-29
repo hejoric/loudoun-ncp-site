@@ -110,6 +110,12 @@ second school (e.g. the college a senior was accepted to) under **Additional
 Affiliations** on their Team Members entry. See "Schools on a card" in the
 README for the field details.
 
+A branch with **University chapter** checked under **Branches** (today George
+Mason University and the University of Virginia) also appears in the home
+page's **University chapters** strip, with its school logo. Check the box on a
+new university branch to add it to the strip; a hidden branch stays out of it
+either way.
+
 ### Holding a spot before you have a name
 
 A new branch can go on the site before its president is confirmed. Add the

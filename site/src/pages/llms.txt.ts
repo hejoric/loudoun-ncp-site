@@ -11,6 +11,7 @@ import type { APIRoute } from 'astro';
 import reader from '@/lib/reader';
 import { getBranches } from '@/lib/branches';
 import { getPressItems } from '@/lib/press';
+import { getPublications } from '@/lib/publications';
 import { ORG_ADDRESS_SHORT, ORG_EIN, ORG_EMAIL, SITE_URL } from '@/lib/seo';
 import { getSocialLinks } from '@/lib/social';
 
@@ -38,11 +39,7 @@ function formatDate(date: string | null) {
 }
 
 export const GET: APIRoute = async () => {
-  const pubs = (await reader.collections.publications.all()).sort((a, b) => {
-    if (!a.entry.date) return 1;
-    if (!b.entry.date) return -1;
-    return new Date(b.entry.date).getTime() - new Date(a.entry.date).getTime();
-  });
+  const pubs = await getPublications();
 
   const members = await reader.collections.teamMembers.all();
   const branches = await getBranches();

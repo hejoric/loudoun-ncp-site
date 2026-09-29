@@ -44,7 +44,8 @@ const {
   tentative = false,
 } = Astro.props;
 
-const MAROON = '#1B4332';
+// The name band and initials fallback: the brand green, from the theme.
+const BAND = 'var(--color-forest-900)';
 
 const photo = resolveImage(presidentHeadshot);
 
@@ -88,9 +89,9 @@ const headshotAlt = tentative
   </button>
   <div class="card-flip-inner">
     <!-- Front: headshot fills card, school logo badge, branch + name below -->
-    <div class="card-flip-front flex flex-col bg-paper border hairline" aria-hidden="true">
+    <div class="card-flip-front flex flex-col bg-white border hairline" aria-hidden="true">
       <!-- Photo area -->
-      <div class="flex-1 relative overflow-hidden bg-gray-200">
+      <div class="flex-1 relative overflow-hidden bg-paper-2">
         {photo ? (
           <Image
             src={photo}
@@ -100,8 +101,8 @@ const headshotAlt = tentative
             style={photoStyle}
           />
         ) : (
-          <div class="absolute inset-0 flex items-center justify-center bg-[#1B4332]/10">
-            <InitialsAvatar name={presidentName} size="xl" bgColor={MAROON} />
+          <div class="absolute inset-0 flex items-center justify-center bg-forest-900/10">
+            <InitialsAvatar name={presidentName} size="xl" bgColor={BAND} />
           </div>
         )}
 
@@ -118,16 +119,16 @@ const headshotAlt = tentative
           4.375rem (70px) reserves for it with a little slack. Content is
           centered so a one-line name reads as a roomier band rather than
           leaving a gap underneath. */}
-      <div class="px-3 py-2 text-center flex flex-col justify-center min-h-[4.375rem]" style="background:#1B4332;">
-        <p class="text-white/70 text-xs uppercase tracking-wide">{branchName}</p>
-        <p class="font-display font-bold text-white text-sm leading-tight">{presidentName}</p>
+      <div class="px-3 py-2 text-center flex flex-col justify-center min-h-[4.375rem]" style={`background:${BAND};`}>
+        <p class="text-white/80 text-xs uppercase tracking-wide">{branchName}</p>
+        <p class="font-medium text-white text-[0.9375rem] leading-tight">{presidentName}</p>
       </div>
     </div>
 
     <!-- Back -->
-    <div class="card-flip-back flex flex-col p-4 bg-paper border hairline" data-flip-back>
-      <div class="flex items-center gap-2 pb-3 border-b" style="border-color:#1B433233;">
-        <div class="w-10 h-10 rounded-full overflow-hidden shrink-0 ring-2 ring-[#1B4332]/20">
+    <div class="card-flip-back flex flex-col p-4 bg-white border hairline" data-flip-back>
+      <div class="flex items-center gap-2 pb-3 border-b border-forest-900/20">
+        <div class="w-10 h-10 rounded-full overflow-hidden shrink-0 ring-2 ring-forest-900/20">
           {photo ? (
             <Image
               src={photo}
@@ -138,25 +139,25 @@ const headshotAlt = tentative
               aria-hidden="true"
             />
           ) : (
-            <InitialsAvatar name={presidentName} size="sm" bgColor={MAROON} />
+            <InitialsAvatar name={presidentName} size="sm" bgColor={BAND} />
           )}
         </div>
         <div>
-          <p class="font-display font-bold text-[#1c2b22] text-xs leading-tight">{presidentName}</p>
-          <p class="text-gray-600 text-xs">{presidentRole} - {branchName}</p>
+          <p class="font-medium text-ink text-[0.8125rem] leading-tight">{presidentName}</p>
+          <p class="text-ink-soft text-xs">{presidentRole} - {branchName}</p>
         </div>
       </div>
 
-      <p class="text-xs text-gray-600 leading-relaxed flex-1 mt-3 overflow-y-auto">
+      <p class="text-[0.8125rem] text-ink-soft leading-relaxed flex-1 mt-3 overflow-y-auto">
         {presidentBio || 'Bio coming soon.'}
       </p>
 
       {(presidentEmail || presidentInstagram || presidentLinkedin) && (
-        <div class="flex items-center gap-3 mt-3 pt-3 border-t border-gray-100">
+        <div class="flex items-center gap-3 mt-3 pt-3 border-t hairline">
           {presidentEmail && (
             <a
               href={`mailto:${presidentEmail}`}
-              class="p-1 -m-1 text-gray-600 hover:text-[#1B4332] transition-colors"
+              class="p-1 -m-1 text-ink-soft hover:text-ink transition-colors"
               aria-label={`Email ${presidentName}`}
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -167,7 +168,7 @@ const headshotAlt = tentative
           {presidentInstagram && (
             <a
               href={`https://instagram.com/${presidentInstagram}`}
-              class="p-1 -m-1 text-gray-600 hover:text-[#1B4332] transition-colors"
+              class="p-1 -m-1 text-ink-soft hover:text-ink transition-colors"
               aria-label={`${presidentName} on Instagram`}
               target="_blank"
               rel="noopener noreferrer"
@@ -180,7 +181,7 @@ const headshotAlt = tentative
           {presidentLinkedin && (
             <a
               href={presidentLinkedin}
-              class="p-1 -m-1 text-gray-600 hover:text-[#1B4332] transition-colors"
+              class="p-1 -m-1 text-ink-soft hover:text-ink transition-colors"
               aria-label={`${presidentName} on LinkedIn`}
               target="_blank"
               rel="noopener noreferrer"

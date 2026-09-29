@@ -10,7 +10,7 @@ Static site for [loudounnatureconservation.org](https://loudounnatureconservatio
 | Styles | Tailwind CSS v4 |
 | CMS | Keystatic (git-based, YAML files) |
 | Hosting | Vercel (static) |
-| Fonts | System font stacks (serif display, sans body) - no web fonts are loaded |
+| Fonts | Instrument Serif (display) and Instrument Sans (body), self-hosted from the `@fontsource` packages |
 
 ## Local Development
 
@@ -122,6 +122,7 @@ editor - so it is simpler to put it there to begin with.
 name: Heritage                 # short branch name, shown on the card
 school: Heritage High School   # full school name, shown on the badge
 schoolLogo: null               # /src/assets/branches/heritage/schoolLogo.png once uploaded
+university: false              # true for a university chapter (home page strip)
 ```
 
 2. Place the school logo at `src/assets/branches/branch-slug/schoolLogo.png`
@@ -129,9 +130,14 @@ schoolLogo: null               # /src/assets/branches/heritage/schoolLogo.png on
    That is the path Keystatic uses when the logo is uploaded in the editor.
 
 A branch with no logo yet is fine - the badge falls back to the school's
-initials ("HHS"). A branch record is only rendered through the members that
-reference it, so adding one ahead of its president changes nothing on the site
-until a member sets `branch: branch-slug`.
+initials ("HHS"). On the team page and member cards a branch appears only
+through the members that reference it, so it stays off them until a member sets
+`branch: branch-slug`. It does show up straight away in the branch list in
+`/llms.txt`.
+
+A university branch gets `university: true` (the **University chapter**
+checkbox in Keystatic). That puts it in the home page's University chapters
+strip with its school logo, whether or not any member references it yet.
 
 A branch that is not running this year gets `hidden: true` (the **Hidden**
 checkbox in Keystatic) instead of being deleted. The record stays for when it
@@ -177,9 +183,9 @@ pdfLink: null   # or external DOI URL
 | School logos | `src/assets/branches/` | Square transparent PNG, at least 200x200px |
 | College logos | `src/assets/affiliations/` | Square, trimmed of margins, at least 200x200px |
 | Page photos | `src/assets/photos/` | JPEG, at least 1600px wide |
-| Hero video | `public/assets/hero.mp4` | 1280px wide, H.264, CRF 26, no audio |
-| Hero video (AV1) | `public/assets/hero-av1.mp4` | Same clip in AV1, served first to browsers that decode it |
-| Hero poster | `src/assets/photos/hero-poster.jpg` | JPEG still from video, same dimensions |
+| Hero video | `public/assets/hero-2026.mp4` | Landscape-only loop (no people or city scenes), 1280px wide, H.264, no audio |
+| Hero video (AV1) | `public/assets/hero-2026-av1.mp4` | Same clip in AV1, served first to browsers that decode it |
+| Hero poster | `src/assets/photos/hero-poster.jpg` | JPEG still of the video's first frame, same dimensions |
 | Research PDFs | `public/research/` | PDF, any size |
 
 Images under `src/assets/` go through `astro:assets` at build time: each one is
@@ -192,9 +198,9 @@ the Open Graph image, and the video.
 ### Recompressing the hero video
 
 ```bash
-ffmpeg -i input.mp4 -vf scale=1280:-2 -c:v libx264 -crf 26 -an -movflags +faststart public/assets/hero.mp4
-ffmpeg -i public/assets/hero.mp4 -map 0:v:0 -dn -map_metadata -1 -c:v libsvtav1 -crf 42 -preset 4 -g 240 -pix_fmt yuv420p -an -movflags +faststart public/assets/hero-av1.mp4
-ffmpeg -i public/assets/hero.mp4 -vframes 1 -ss 00:00:02 -update 1 src/assets/photos/hero-poster.jpg
+ffmpeg -i input.mp4 -vf scale=1280:-2 -c:v libx264 -crf 26 -an -movflags +faststart public/assets/hero-2026.mp4
+ffmpeg -i public/assets/hero-2026.mp4 -map 0:v:0 -dn -map_metadata -1 -c:v libsvtav1 -crf 42 -preset 4 -g 240 -pix_fmt yuv420p -an -movflags +faststart public/assets/hero-2026-av1.mp4
+ffmpeg -i public/assets/hero-2026.mp4 -vframes 1 -q:v 6 -update 1 src/assets/photos/hero-poster.jpg
 ```
 
 Re-encode both files whenever the clip changes: the page offers the AV1 file

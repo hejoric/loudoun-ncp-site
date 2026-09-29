@@ -1,6 +1,8 @@
 ---
 import Base from '@/layouts/Base.astro';
 import SocialLinks from '@/components/SocialLinks.astro';
+import PageHero from '@/components/PageHero.astro';
+import heroPhoto from '@/assets/press/aug-20-cleanup.jpg';
 import { ORG_ADDRESS_SHORT, ORG_EIN, ORG_EMAIL, ORG_ID, ORG_NAME, SITE_URL } from '@/lib/seo';
 
 const contactPageJsonLd = {
@@ -25,25 +27,20 @@ const contactPageJsonLd = {
   breadcrumb={[['Home', '/'], ['Contact', '/contact/']]}
   jsonLd={contactPageJsonLd}
 >
-  <div class="bg-paper border-b hairline py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-4xl mx-auto text-center">
-      <p class="font-display italic text-clay text-lg mb-4">Get In Touch</p>
-      <h1 class="font-display font-medium text-4xl sm:text-5xl text-ink">Contact Us</h1>
-    </div>
-  </div>
+  <PageHero slot="hero" eyebrow="Get In Touch" title="Contact Us" image={heroPhoto} imagePosition="50% 40%" />
 
-  <section class="py-20 bg-paper-2">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+  <section class="section wrap" aria-label="Ways to reach us">
+    <div class="max-w-5xl">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <!-- General contact -->
-        <div class="bg-paper border hairline p-8 space-y-3">
-          <h2 class="font-display font-medium text-ink text-xl">General Inquiries</h2>
-          <p class="text-ink-soft text-sm leading-relaxed">
+        <div class="panel p-8 space-y-3">
+          <h2 class="text-[1.875rem] leading-tight">General Inquiries</h2>
+          <p class="text-ink-soft text-[0.9375rem] leading-relaxed">
             For general questions, partnership opportunities, or to learn more about LNCP's programs.
           </p>
           <a
             href="mailto:directors@loudounnatureconservation.org"
-            class="inline-flex items-start gap-2 text-[#2D6A4F] font-medium text-sm hover:text-[#1B4332] transition-colors"
+            class="inline-flex items-start gap-2 text-forest-800 font-medium text-[0.9375rem] hover:text-ink transition-colors"
           >
             <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
@@ -53,14 +50,14 @@ const contactPageJsonLd = {
         </div>
 
         <!-- Volunteer -->
-        <div class="bg-paper border hairline p-8 space-y-3">
-          <h2 class="font-display font-medium text-ink text-xl">Volunteer & Join</h2>
-          <p class="text-ink-soft text-sm leading-relaxed">
+        <div class="panel p-8 space-y-3">
+          <h2 class="text-[1.875rem] leading-tight">Volunteer & Join</h2>
+          <p class="text-ink-soft text-[0.9375rem] leading-relaxed">
             Ready to get involved? Sign up to volunteer or connect with your nearest school branch.
           </p>
           <a
             href="/volunteer/"
-            class="inline-flex items-center gap-2 text-[#2D6A4F] font-medium text-sm hover:text-[#1B4332] transition-colors"
+            class="inline-flex items-center gap-2 text-forest-800 font-medium text-[0.9375rem] hover:text-ink transition-colors"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -70,14 +67,14 @@ const contactPageJsonLd = {
         </div>
 
         <!-- Press -->
-        <div class="bg-paper border hairline p-8 space-y-3">
-          <h2 class="font-display font-medium text-ink text-xl">Press & Media</h2>
-          <p class="text-ink-soft text-sm leading-relaxed">
+        <div class="panel p-8 space-y-3">
+          <h2 class="text-[1.875rem] leading-tight">Press & Media</h2>
+          <p class="text-ink-soft text-[0.9375rem] leading-relaxed">
             For media inquiries, interviews, or press coverage requests about LNCP's work.
           </p>
           <a
             href="mailto:directors@loudounnatureconservation.org?subject=Press%20Inquiry"
-            class="inline-flex items-center gap-2 text-[#2D6A4F] font-medium text-sm hover:text-[#1B4332] transition-colors"
+            class="inline-flex items-center gap-2 text-forest-800 font-medium text-[0.9375rem] hover:text-ink transition-colors"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
@@ -87,9 +84,9 @@ const contactPageJsonLd = {
         </div>
 
         <!-- Social -->
-        <div class="bg-paper border hairline p-8 space-y-3">
-          <h2 class="font-display font-medium text-ink text-xl">Follow Us</h2>
-          <p class="text-ink-soft text-sm leading-relaxed">
+        <div class="panel p-8 space-y-3">
+          <h2 class="text-[1.875rem] leading-tight">Follow Us</h2>
+          <p class="text-ink-soft text-[0.9375rem] leading-relaxed">
             Stay updated on cleanups, events, and research announcements.
           </p>
           <SocialLinks variant="labeled" class="pt-1" />
@@ -103,29 +100,29 @@ const contactPageJsonLd = {
         line is not shown: it is a private residence, and lives on the noindex
         /nonprofit-verification/ page linked below.
       -->
-      <div class="mt-8 bg-paper border hairline p-8">
-        <h2 class="font-display font-medium text-ink text-xl">Organization Details</h2>
-        <dl class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+      <div class="mt-4 panel p-8">
+        <h2 class="text-[1.875rem] leading-tight">Organization Details</h2>
+        <dl class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-[0.9375rem]">
           <div>
-            <dt class="font-semibold text-ink">Legal Name</dt>
+            <dt class="font-medium text-ink">Legal Name</dt>
             <dd class="text-ink-soft mt-0.5">{ORG_NAME}</dd>
           </div>
           <div>
-            <dt class="font-semibold text-ink">Charity ID / EIN</dt>
+            <dt class="font-medium text-ink">Charity ID / EIN</dt>
             <dd class="text-ink-soft mt-0.5">{ORG_EIN}</dd>
           </div>
           <div>
-            <dt class="font-semibold text-ink">Tax Status</dt>
+            <dt class="font-medium text-ink">Tax Status</dt>
             <dd class="text-ink-soft mt-0.5">501(c)(3) nonprofit, incorporated in Virginia</dd>
           </div>
           <div>
-            <dt class="font-semibold text-ink">Registered Office</dt>
+            <dt class="font-medium text-ink">Registered Office</dt>
             <dd class="text-ink-soft mt-0.5">
               <address class="not-italic">{ORG_ADDRESS_SHORT}</address>
             </dd>
           </div>
         </dl>
-        <p class="mt-5 text-xs text-ink-soft leading-relaxed">
+        <p class="mt-5 text-[0.8125rem] text-ink-soft leading-relaxed">
           For the full physical street address and registration record, see the{' '}
           <a href="/nonprofit-verification/" class="underline underline-offset-2 hover:text-ink transition-colors">
             nonprofit verification

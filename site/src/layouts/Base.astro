@@ -3,6 +3,13 @@ import Nav from '@/components/Nav.astro';
 import Footer from '@/components/Footer.astro';
 import Analytics from '@/components/Analytics.astro';
 import { getSocialLinks } from '@/lib/social';
+// Self-hosted type: the Instrument pair, woff2 with font-display: swap. Only
+// the regular serif is preloaded - it sets every hero and section title, so a
+// late swap there is the one visitors would see.
+import '@fontsource/instrument-serif/400.css';
+import '@fontsource/instrument-serif/400-italic.css';
+import '@fontsource-variable/instrument-sans/wght.css';
+import serifFont from '@fontsource/instrument-serif/files/instrument-serif-latin-400-normal.woff2?url';
 import '@/styles/global.css';
 import {
   SITE_URL,
@@ -121,6 +128,7 @@ const graph = buildGraph([
     <link rel="canonical" href={canonical} />
     <meta name="robots" content={robots} />
 
+    <link rel="preload" as="font" type="font/woff2" href={serifFont} crossorigin />
     {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
 
     <!-- Open Graph -->
@@ -154,7 +162,7 @@ const graph = buildGraph([
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
-    <meta name="theme-color" content="#1B4332" />
+    <meta name="theme-color" content="#F5F4EF" />
 
     <!--
       One linked @graph per page: NGO + WebSite + WebPage, plus any page-specific
@@ -169,13 +177,20 @@ const graph = buildGraph([
          navigation. Invisible until focused. -->
     <a
       href="#main"
-      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:px-4 focus:py-2.5 focus:bg-forest-900 focus:text-paper focus:text-sm focus:font-semibold"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:px-4 focus:py-2.5 focus:rounded-control focus:bg-ink focus:text-paper focus:text-sm focus:font-semibold"
     >
       Skip to content
     </a>
     <Nav />
+    <!-- Every page opens with a hero band (slot="hero") and sets its body on
+         the paper sheet that rises over it; the footer tucks under the sheet's
+         bottom edge. Keeping the sheet here rather than in each page means no
+         page can end without it and leave the footer overlapping content. -->
     <main id="main" class="flex-1">
-      <slot />
+      <slot name="hero" />
+      <div class="sheet">
+        <slot />
+      </div>
     </main>
     <Footer />
   </body>

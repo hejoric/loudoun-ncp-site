@@ -133,6 +133,10 @@ export default config({
             'Check this for a branch that is paused rather than gone. The record stays so it can come back, but the site stops listing it and stops badging members with its school. Uncheck it when the branch is running again.',
           defaultValue: false,
         }),
+        university: fields.checkbox({
+          label: 'University chapter (shown in the home page University chapters strip)',
+          defaultValue: false,
+        }),
       },
     }),
 
