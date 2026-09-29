@@ -1,7 +1,7 @@
 /**
- * Why volunteer with LNCP: shown on /volunteer/ and in the "Join LNCP" section
- * that closes the home and About pages, from this one list so the two cannot
- * drift apart.
+ * Why volunteer with LNCP: shown on /volunteer/ and in the join section
+ * (JoinSection.astro) that closes the home and About pages, from this one list
+ * so they cannot drift apart.
  */
 export const VOLUNTEER_REASONS = [
   {
