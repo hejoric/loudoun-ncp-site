@@ -23,7 +23,7 @@ import { getBranches } from '@/lib/branches';
 import { getPublications } from '@/lib/publications';
 import { PHOTO_QUALITY, resolveImage, responsive } from '@/lib/images';
 import { ORG_ID, truncate } from '@/lib/seo';
-import { VOLUNTEER_REASONS } from '@/lib/volunteer';
+import { VOLUNTEER_CARD_BODY } from '@/lib/volunteer';
 import {
   getPressItems,
   buildPressStrip,
@@ -457,7 +457,7 @@ const pressJsonLd = pressItems.map((p) => ({
           image: cleanupSign,
           position: '50% 50%',
           title: 'Volunteer',
-          body: VOLUNTEER_REASONS[1].body,
+          body: VOLUNTEER_CARD_BODY,
           href: '/volunteer/',
           cta: 'Sign up to volunteer',
         },
