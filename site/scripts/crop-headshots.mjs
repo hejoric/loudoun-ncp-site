@@ -109,7 +109,7 @@ for (const [slug, face] of Object.entries(faces)) {
   const { size } = await sharp(source)
     .extract(rect)
     .resize({ width: outputWidth, height: Math.round(outputWidth / ASPECT), fit: 'fill' })
-    .webp({ quality: 82 })
+    .webp({ quality: 90 })
     .toFile(destination);
 
   report.push({

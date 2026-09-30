@@ -5,6 +5,7 @@ import PageHero from '@/components/PageHero.astro';
 import JoinSection from '@/components/JoinSection.astro';
 import heroPhoto from '@/assets/photos/large-group-cleanup.jpg';
 import missionPhoto from '@/assets/photos/8-people-cleanup-done.jpg';
+import boardroomPhoto from '@/assets/photos/directors-at-work.jpg';
 import reader from '@/lib/reader';
 import { getWhatWeDo } from '@/lib/about';
 import { responsive } from '@/lib/images';
@@ -23,9 +24,9 @@ const impactStats = about?.impactStats?.length
   ? about.impactStats
   : [
       { value: '3,122', label: 'Acres Cleaned' },
-      { value: '270', label: 'Members' },
-      { value: '726,022', label: 'Impressions' },
-      { value: '17', label: 'Partner Parks & Schools' },
+      { value: '310', label: 'Members' },
+      { value: '900,000+', label: 'Impressions' },
+      { value: '10', label: 'Branches' },
     ];
 
 const aboutPageJsonLd = {
@@ -67,7 +68,7 @@ const aboutPageJsonLd = {
     </div>
 
     <!-- Impact -->
-    <dl class="grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12 mt-(--section)" aria-label="Our impact">
+    <dl class="grid grid-cols-2 sm:flex sm:flex-wrap gap-x-[clamp(1.5rem,6vw,6rem)] gap-y-12 mt-(--section)" aria-label="Our impact">
       {impactStats.map(({ value, label }) => (
         <div>
           <dt class="sr-only">{label}</dt>
@@ -83,7 +84,7 @@ const aboutPageJsonLd = {
     <div class="on-dark rounded-sheet bg-forest-900 text-paper p-[clamp(28px,5vw,72px)] max-sm:px-5">
       <p class="eyebrow text-forest-100 mb-3.5">How we serve Loudoun County</p>
       <h2 id="what-we-do-heading" class="section-title">What we do</h2>
-      <ol class="grid md:grid-cols-2 gap-x-16 gap-y-10 mt-12" role="list">
+      <ol class="grid lg:grid-cols-3 gap-x-12 gap-y-10 mt-12" role="list">
         {whatWeDo.map((item, i) => (
           <li class="border-t border-paper/20 pt-6">
             <span class="text-[0.8125rem] tracking-[0.04em] text-forest-100 tabular-nums">{String(i + 1).padStart(2, '0')}</span>
@@ -110,6 +111,27 @@ const aboutPageJsonLd = {
       </dl>
     </section>
   ) : null}
+
+  <!-- Speaking up: two directors at a Board of Supervisors meeting -->
+  <section class="section wrap rise" aria-labelledby="speaking-heading">
+    <div class="grid lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] gap-10 lg:gap-16 items-center">
+      <figure class="m-0 max-w-md">
+        <Image
+          src={boardroomPhoto}
+          alt="Two LNCP directors, Enzo and Nawaf, standing with two county officials in front of a boardroom dais with flags and a large screen"
+          {...responsive(boardroomPhoto, [480, 640, 800, 1024, 1280], '(min-width: 1024px) 416px, (min-width: 488px) 448px, calc(100vw - 2.5rem)')}
+          class="w-full aspect-[3/4] object-cover object-top rounded-card"
+        />
+      </figure>
+      <div>
+        <p class="eyebrow text-ink-soft mb-3">Speaking up</p>
+        <h2 id="speaking-heading" class="section-title">Carrying our mission to the county</h2>
+        <p class="mt-6 text-xl leading-[1.5] text-ink-soft max-w-[40ch]">
+          Directors Nawaf Shehzad and Enzo Garcia-Eguiluz spoke at a Loudoun County Board of Supervisors meeting to raise awareness of LNCP's mission, and thanked the board for listening and supporting our cause.
+        </p>
+      </div>
+    </div>
+  </section>
 
   <!-- Press -->
   <section class="section wrap rise" aria-labelledby="press-heading">

@@ -12,7 +12,7 @@ import reader from '@/lib/reader';
 import { getBranches } from '@/lib/branches';
 import { getPressItems } from '@/lib/press';
 import { getPublications } from '@/lib/publications';
-import { ORG_ADDRESS_SHORT, ORG_EIN, ORG_EMAIL, SITE_URL } from '@/lib/seo';
+import { FOUNDER_NAME, ORG_ADDRESS_SHORT, ORG_EIN, ORG_EMAIL, SITE_URL } from '@/lib/seo';
 import { getSocialLinks } from '@/lib/social';
 
 const PAGES: Array<[string, string, string]> = [
@@ -162,7 +162,7 @@ export const GET: APIRoute = async () => {
   // Locality only. The street line is the founder's home; it is confined to the
   // noindex /nonprofit-verification/ page and deliberately absent from here.
   lines.push(`- Registered office: ${ORG_ADDRESS_SHORT}`);
-  lines.push('- Founder: Ryan Nisay (co-founders Christian Shire and Carter Lepuil)');
+  lines.push(`- Founder: ${FOUNDER_NAME} (co-founders Christian Shire and Carter Lepuil)`);
   lines.push('- Location: Loudoun County, Virginia, USA');
   lines.push(
     '- Funding: community donations, grants, and partnerships with local parks and schools',

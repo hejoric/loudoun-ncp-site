@@ -13,8 +13,11 @@ bio: >-
   University of Virginia.
 headshot: /src/assets/team/enzo-garcia-eguiluz/headshot.webp
 email: enzo.ge@loudounnatureconservation.org
+linkedin: https://www.linkedin.com/in/enzo-garcia-eguiluz-8441072a4/
 affiliations:
   - name: Northern Virginia Community College
     logo: /src/assets/affiliations/enzo-garcia-eguiluz/affiliations/0/logo.jpg
+  - name: Potomac Falls High School
+    logo: /src/assets/affiliations/enzo-garcia-eguiluz/affiliations/1/logo.png
 featuredOnHome: false
 sortOrder: 1

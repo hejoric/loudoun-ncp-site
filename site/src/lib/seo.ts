@@ -60,7 +60,7 @@ export const WEBSITE_ID = `${SITE_URL}/#website`;
  * name should be. The full node on /team/ merges with this stub by `@id`.
  */
 export const FOUNDER_ID = `${SITE_URL}/team/#ryan-nisay`;
-export const FOUNDER_NAME = 'Ryan Nisay';
+export const FOUNDER_NAME = 'Ryan S. Nisay';
 
 /** Resolve a site-relative path to an absolute URL. */
 export function absoluteUrl(path: string): string {
