@@ -200,9 +200,8 @@ export default config({
         heroSubtext: fields.text({ label: 'Hero Sub-text', multiline: true }),
         founderQuote: fields.text({ label: 'Founder Quote (shown at bottom of hero video)', multiline: true, validation: { isRequired: false } }),
         statsAcresCleaned: fields.integer({ label: 'Acres Cleaned', defaultValue: 3122 }),
-        statsMembers: fields.integer({ label: 'Members', defaultValue: 270 }),
-        statsImpressions: fields.integer({ label: 'Social Impressions', defaultValue: 726022 }),
-        statsPartners: fields.integer({ label: 'Partner Parks & Schools', defaultValue: 17 }),
+        statsMembers: fields.integer({ label: 'Members', defaultValue: 310 }),
+        statsImpressions: fields.integer({ label: 'Social Impressions (shown with a +)', defaultValue: 900000 }),
         missionHeading: fields.text({ label: 'Mission Section Heading' }),
         missionBody: fields.text({ label: 'Mission Section Body', multiline: true }),
         spotlightVideoId: fields.text({

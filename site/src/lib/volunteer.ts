@@ -1,7 +1,6 @@
 /**
- * Why volunteer with LNCP: shown on /volunteer/ and in the join section
- * (JoinSection.astro) that closes the home and About pages, from this one list
- * so they cannot drift apart.
+ * Why volunteer with LNCP: shown on /volunteer/, and one reason is reused on a
+ * home page card, from this one list so they cannot drift apart.
  */
 export const VOLUNTEER_REASONS = [
   {
@@ -14,6 +13,6 @@ export const VOLUNTEER_REASONS = [
   },
   {
     title: 'Community',
-    body: 'Join a network of 270+ members across our school and college branches.',
+    body: 'Join a network of 310+ members across our school and college branches.',
   },
 ];

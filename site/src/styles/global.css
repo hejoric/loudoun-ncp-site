@@ -257,6 +257,14 @@
   .stat-value-sm {
     font-size: clamp(3.25rem, 6vw, 6rem);
   }
+  /* Two stats per row on a phone: the widest ("900,000+") has to fit half the
+     page column, so the numerals scale with the screen instead of holding 4rem. */
+  @media (max-width: 639px) {
+    .stat-value,
+    .stat-value-sm {
+      font-size: clamp(2.5rem, 11vw, 4rem);
+    }
+  }
 
   /* ---------- hero bands ---------- */
   .hero {
@@ -265,7 +273,7 @@
     overflow: hidden;
     display: grid;
     place-items: center;
-    padding: 200px var(--gutter) 120px;
+    padding: 200px var(--gutter) 96px;
     color: #fff;
     text-align: center;
   }
@@ -298,8 +306,12 @@
       linear-gradient(to bottom, rgb(245 244 239 / 0.96) 0, rgb(245 244 239 / 0.55) 90px, rgb(245 244 239 / 0) 190px),
       var(--hero-shade);
   }
+  /* The intro fills the first screen top to bottom, as GCC's does, so the
+     content sheet begins where the screen ends. svh (the small viewport) keeps
+     it steady while a phone's address bar shows and hides; vh is the fallback. */
   .hero-home {
-    min-height: min(100svh, 940px);
+    min-height: 100vh;
+    min-height: 100svh;
   }
   .hero-page {
     min-height: min(72svh, 620px);

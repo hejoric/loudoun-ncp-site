@@ -17,7 +17,7 @@ import { getWhatWeDo } from '@/lib/about';
 import { resolveAffiliations } from '@/lib/affiliations';
 import { getBranches } from '@/lib/branches';
 import { getPublications } from '@/lib/publications';
-import { resolveImage, responsive } from '@/lib/images';
+import { PHOTO_QUALITY, resolveImage, responsive } from '@/lib/images';
 import { ORG_ID, truncate } from '@/lib/seo';
 import { VOLUNTEER_REASONS } from '@/lib/volunteer';
 import {
@@ -199,9 +199,9 @@ const heroHeadlineParts = heroHeadline.split(';').map((p) => p.trim()).filter(Bo
 
 const stats = [
   { value: home?.statsAcresCleaned?.toLocaleString() ?? '3,122', label: 'Acres Cleaned' },
-  { value: home?.statsMembers?.toLocaleString() ?? '270', label: 'Members' },
-  { value: home?.statsImpressions?.toLocaleString() ?? '726,022', label: 'Impressions' },
-  { value: home?.statsPartners?.toLocaleString() ?? '17', label: 'Partner Parks & Schools' },
+  { value: home?.statsMembers?.toLocaleString() ?? '310', label: 'Members' },
+  { value: `${home?.statsImpressions?.toLocaleString() ?? '900,000'}+`, label: 'Impressions' },
+  { value: allBranches.length.toLocaleString(), label: 'Branches' },
 ];
 
 // No Organization node here: Base emits the canonical one (with a stable @id)
@@ -360,7 +360,7 @@ const pressJsonLd = pressItems.map((p) => ({
       <h2 id="work-heading" class="section-title">What we do</h2>
       <a href="/about/#what-we-do" class="text-link text-[0.9375rem]">Our work</a>
     </div>
-    <ol class="grid md:grid-cols-2 gap-x-16 gap-y-10 md:gap-y-14 mt-12 md:mt-16" role="list">
+    <ol class="grid lg:grid-cols-3 gap-x-12 gap-y-10 mt-12 md:mt-16" role="list">
       {whatWeDo.map((item, i) => (
         <li>
           <span class="text-[0.8125rem] tracking-[0.04em] text-ink-soft tabular-nums">{String(i + 1).padStart(2, '0')}</span>
@@ -370,7 +370,7 @@ const pressJsonLd = pressItems.map((p) => ({
       ))}
     </ol>
 
-    <dl class="grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12 mt-(--section)" aria-label="Impact statistics">
+    <dl class="grid grid-cols-2 sm:flex sm:flex-wrap gap-x-[clamp(1.5rem,6vw,6rem)] gap-y-12 mt-(--section)" aria-label="Impact statistics">
       {stats.map(({ value, label }) => (
         <div>
           <dt class="sr-only">{label}</dt>
@@ -622,6 +622,7 @@ const pressJsonLd = pressItems.map((p) => ({
               src={featuredPress.image}
               alt={featuredPress.imageAlt ?? ''}
               widths={[420, 620, 840, 1100, 1400]}
+              quality={PHOTO_QUALITY}
               sizes="(min-width: 1440px) 700px, (min-width: 1024px) 48vw, calc(100vw - 2.5rem)"
               class="w-full aspect-[4/3] sm:aspect-[16/10] object-cover transition-transform duration-500 group-hover:scale-[1.03]"
               loading="lazy"

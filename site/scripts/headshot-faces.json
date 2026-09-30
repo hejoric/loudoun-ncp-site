@@ -1,4 +1,11 @@
 {
+  "alyssa-nisay": {
+    "file": "alyssa-nisay.jpg",
+    "faceTop": 0.2419,
+    "faceHeight": 0.3135,
+    "faceCenterX": 0.4791,
+    "eyeLine": 0.3295
+  },
   "chloe-loo": {
     "file": "chloe-loo.webp",
     "faceTop": 0.2616,
@@ -7,11 +14,11 @@
     "eyeLine": 0.3295
   },
   "christian-shire": {
-    "file": "christian-shire.jpg",
-    "faceTop": 0.1361,
-    "faceHeight": 0.0946,
-    "faceCenterX": 0.2884,
-    "eyeLine": 0.1680
+    "file": "christian-shire.jpeg",
+    "faceTop": 0.2764,
+    "faceHeight": 0.2443,
+    "faceCenterX": 0.4880,
+    "eyeLine": 0.3434
   },
   "enzo-garcia-eguiluz": {
     "file": "enzo-garcia-eguiluz.webp",

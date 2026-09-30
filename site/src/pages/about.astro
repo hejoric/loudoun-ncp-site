@@ -23,9 +23,9 @@ const impactStats = about?.impactStats?.length
   ? about.impactStats
   : [
       { value: '3,122', label: 'Acres Cleaned' },
-      { value: '270', label: 'Members' },
-      { value: '726,022', label: 'Impressions' },
-      { value: '17', label: 'Partner Parks & Schools' },
+      { value: '310', label: 'Members' },
+      { value: '900,000+', label: 'Impressions' },
+      { value: '10', label: 'Branches' },
     ];
 
 const aboutPageJsonLd = {
@@ -67,7 +67,7 @@ const aboutPageJsonLd = {
     </div>
 
     <!-- Impact -->
-    <dl class="grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12 mt-(--section)" aria-label="Our impact">
+    <dl class="grid grid-cols-2 sm:flex sm:flex-wrap gap-x-[clamp(1.5rem,6vw,6rem)] gap-y-12 mt-(--section)" aria-label="Our impact">
       {impactStats.map(({ value, label }) => (
         <div>
           <dt class="sr-only">{label}</dt>
@@ -83,7 +83,7 @@ const aboutPageJsonLd = {
     <div class="on-dark rounded-sheet bg-forest-900 text-paper p-[clamp(28px,5vw,72px)] max-sm:px-5">
       <p class="eyebrow text-forest-100 mb-3.5">How we serve Loudoun County</p>
       <h2 id="what-we-do-heading" class="section-title">What we do</h2>
-      <ol class="grid md:grid-cols-2 gap-x-16 gap-y-10 mt-12" role="list">
+      <ol class="grid lg:grid-cols-3 gap-x-12 gap-y-10 mt-12" role="list">
         {whatWeDo.map((item, i) => (
           <li class="border-t border-paper/20 pt-6">
             <span class="text-[0.8125rem] tracking-[0.04em] text-forest-100 tabular-nums">{String(i + 1).padStart(2, '0')}</span>

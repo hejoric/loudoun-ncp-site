@@ -59,6 +59,13 @@ export const TEAM_CARD_SIZES =
   '(min-width: 1440px) 262px, (min-width: 1280px) 19vw, (min-width: 1024px) 23vw, (min-width: 640px) 31vw, 46vw';
 
 /**
+ * Encoder quality for photos. astro:assets defaults to 80, which shows as
+ * softness and banding on faces and foliage at 2x; 88 is visibly cleaner for a
+ * modest size increase, and the width ladders keep small screens on small files.
+ */
+export const PHOTO_QUALITY = 88;
+
+/**
  * `<Image>` props for a responsive image painted at `sizes`.
  *
  * The fallback `src` is capped at the widest width the srcset offers, so it is
@@ -67,5 +74,5 @@ export const TEAM_CARD_SIZES =
  */
 export function responsive(image: ImageMetadata, widths: number[], sizes: string) {
   if (image.format === 'svg') return {};
-  return { widths, sizes, width: Math.min(Math.max(...widths), image.width) };
+  return { widths, sizes, quality: PHOTO_QUALITY, width: Math.min(Math.max(...widths), image.width) };
 }
