@@ -201,7 +201,7 @@ const stats = [
   { value: home?.statsAcresCleaned?.toLocaleString() ?? '3,122', label: 'Acres Cleaned' },
   { value: home?.statsMembers?.toLocaleString() ?? '310', label: 'Members' },
   { value: `${home?.statsImpressions?.toLocaleString() ?? '900,000'}+`, label: 'Impressions' },
-  { value: allBranches.length.toLocaleString(), label: 'Branches' },
+  { value: home?.statsBranches?.toLocaleString() ?? '10', label: 'Branches' },
 ];
 
 // No Organization node here: Base emits the canonical one (with a stable @id)

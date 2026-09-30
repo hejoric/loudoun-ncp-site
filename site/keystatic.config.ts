@@ -202,6 +202,7 @@ export default config({
         statsAcresCleaned: fields.integer({ label: 'Acres Cleaned', defaultValue: 3122 }),
         statsMembers: fields.integer({ label: 'Members', defaultValue: 310 }),
         statsImpressions: fields.integer({ label: 'Social Impressions (shown with a +)', defaultValue: 900000 }),
+        statsBranches: fields.integer({ label: 'Branches', defaultValue: 10 }),
         missionHeading: fields.text({ label: 'Mission Section Heading' }),
         missionBody: fields.text({ label: 'Mission Section Body', multiline: true }),
         spotlightVideoId: fields.text({
