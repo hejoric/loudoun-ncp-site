@@ -5,6 +5,7 @@ import PageHero from '@/components/PageHero.astro';
 import JoinSection from '@/components/JoinSection.astro';
 import heroPhoto from '@/assets/photos/large-group-cleanup.jpg';
 import missionPhoto from '@/assets/photos/8-people-cleanup-done.jpg';
+import boardroomPhoto from '@/assets/photos/directors-at-work.jpg';
 import reader from '@/lib/reader';
 import { getWhatWeDo } from '@/lib/about';
 import { responsive } from '@/lib/images';
@@ -110,6 +111,27 @@ const aboutPageJsonLd = {
       </dl>
     </section>
   ) : null}
+
+  <!-- Speaking up: two directors at a Board of Supervisors meeting -->
+  <section class="section wrap rise" aria-labelledby="speaking-heading">
+    <div class="grid lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] gap-10 lg:gap-16 items-center">
+      <figure class="m-0">
+        <Image
+          src={boardroomPhoto}
+          alt="Two LNCP directors, Nawaf and Enzo, standing with two county officials in front of a boardroom dais with a flag and a large screen"
+          {...responsive(boardroomPhoto, [480, 640, 800, 1024, 1280], '(min-width: 1024px) 416px, calc(100vw - 2.5rem)')}
+          class="w-full aspect-[3/4] object-cover object-top rounded-card"
+        />
+      </figure>
+      <div>
+        <p class="eyebrow text-ink-soft mb-3">Speaking up</p>
+        <h2 id="speaking-heading" class="section-title">Carrying our mission to the county</h2>
+        <p class="mt-6 text-xl leading-[1.5] text-ink-soft max-w-[40ch]">
+          Directors Nawaf Shehzad and Enzo Garcia-Eguiluz spoke at a Loudoun County Board of Supervisors meeting to raise awareness of LNCP's mission, and thanked the board for listening and supporting our cause.
+        </p>
+      </div>
+    </div>
+  </section>
 
   <!-- Press -->
   <section class="section wrap rise" aria-labelledby="press-heading">
