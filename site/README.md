@@ -142,8 +142,9 @@ strip with its school logo, whether or not any member references it yet.
 A branch that is not running this year gets `hidden: true` (the **Hidden**
 checkbox in Keystatic) instead of being deleted. The record stays for when it
 returns, but the site stops listing it and drops its school badge from members'
-cards. To keep that school on one member's card anyway (as the founders do for
-Potomac Falls), list it under their `affiliations`.
+cards. To keep that school on one member's card anyway, list it under their
+`affiliations` (Ryan, Christian, and Enzo list Potomac Falls this way, so its
+badge stays on their cards if that branch is hidden again).
 
 ## Adding an Event
 
