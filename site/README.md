@@ -251,6 +251,7 @@ site/
     layouts/        # Base.astro (HTML shell with meta/SEO)
     lib/            # reader.ts (Keystatic build-time data access), social.ts (social profile links)
     pages/          # One .astro file per route
+    scripts/        # motion.ts (client-side motion, loaded on every page by Base.astro)
     styles/         # global.css (Tailwind + custom theme tokens)
   public/
     assets/         # Favicons, OG image, hero video, PDFs

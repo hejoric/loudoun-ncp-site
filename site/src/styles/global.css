@@ -256,9 +256,11 @@
   }
   /* A counting figure (scripts/motion.ts) is stacked over its final value in
      one grid cell. The final value sets the width, so the digits changing never
-     moves anything; it turns transparent meanwhile but stays the text a screen
-     reader reads, since the live figure is aria-hidden. The live figure takes
-     no width of its own, so a wider intermediate number cannot grow the cell. */
+     moves anything; it is hidden meanwhile but stays the text a screen reader
+     reads, since the live figure is aria-hidden. It is hidden by opacity, not a
+     transparent color, because forced colors repaint color and would draw both
+     numbers. The live figure takes no width of its own, so a wider intermediate
+     number cannot grow the cell. */
   .stat-value[data-count] {
     display: grid;
     justify-items: start;
