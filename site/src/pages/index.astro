@@ -16,6 +16,7 @@ import riverStill from '@/assets/photos/river.jpg';
 import fairPhoto from '@/assets/photos/fair.jpg';
 import FlipCard from '@/components/FlipCard.astro';
 import JoinSection from '@/components/JoinSection.astro';
+import StatList from '@/components/StatList.astro';
 import reader from '@/lib/reader';
 import { getWhatWeDo } from '@/lib/about';
 import { resolveAffiliations } from '@/lib/affiliations';
@@ -24,6 +25,7 @@ import { getPublications } from '@/lib/publications';
 import { PHOTO_QUALITY, resolveImage, responsive } from '@/lib/images';
 import { ORG_ID, truncate } from '@/lib/seo';
 import { VOLUNTEER_CARD_BODY } from '@/lib/volunteer';
+import { statFromNumber } from '@/lib/stats';
 import {
   getPressItems,
   buildPressStrip,
@@ -206,10 +208,10 @@ const heroHeadline = home?.heroHeadline ?? 'Youth unite for Earth; inspire chang
 const heroHeadlineParts = heroHeadline.split(';').map((p) => p.trim()).filter(Boolean);
 
 const stats = [
-  { value: home?.statsAcresCleaned?.toLocaleString() ?? '3,122', label: 'Acres Cleaned' },
-  { value: home?.statsMembers?.toLocaleString() ?? '310', label: 'Members' },
-  { value: `${home?.statsImpressions?.toLocaleString() ?? '900,000'}+`, label: 'Impressions' },
-  { value: home?.statsBranches?.toLocaleString() ?? '10', label: 'Branches' },
+  statFromNumber(home?.statsAcresCleaned ?? 3122, 'Acres Cleaned'),
+  statFromNumber(home?.statsMembers ?? 310, 'Members'),
+  statFromNumber(home?.statsImpressions ?? 900000, 'Impressions', '+'),
+  statFromNumber(home?.statsBranches ?? 10, 'Branches'),
 ];
 
 // No Organization node here: Base emits the canonical one (with a stable @id)
@@ -275,7 +277,10 @@ const pressJsonLd = pressItems.map((p) => ({
       </video>
     </div>
 
-    <div class="max-w-6xl mx-auto">
+    <!-- Paler as the sheet slides over the pinned hero (see motion.ts). -->
+    <div class="hero-dim" aria-hidden="true"></div>
+
+    <div class="hero-content max-w-6xl mx-auto">
       <p class="hero-eyebrow">Loudoun County, Virginia</p>
       <h1 id="hero-title" class="hero-title">
         {heroHeadlineParts.map((part, i) => (
@@ -285,7 +290,7 @@ const pressJsonLd = pressItems.map((p) => ({
       <p class="hero-sub max-w-[52ch]">
         {home?.heroSubtext ?? 'Made by Students, for Students. Young hearts, green minds, hands-on action - empowering youth, restoring nature, and fostering community through non-profit (501c3) environmental stewardship in Loudoun County, Virginia.'}
       </p>
-      <div class="mt-9 flex flex-col items-center gap-4">
+      <div class="hero-cta mt-9 flex flex-col items-center gap-4">
         <a href="/volunteer/" class="btn btn-action btn-lg">Volunteer with us</a>
         <p class="text-sm font-medium text-white/95 [text-shadow:0_1px_12px_rgb(15_22_17/0.5)]">
           We're coming back, Loudoun. New school branches announced for the upcoming year.{' '}
@@ -368,7 +373,7 @@ const pressJsonLd = pressItems.map((p) => ({
       <h2 id="work-heading" class="section-title">What we do</h2>
       <a href="/about/#what-we-do" class="text-link text-[0.9375rem]">Our work</a>
     </div>
-    <ol class="grid lg:grid-cols-3 gap-x-12 gap-y-10 mt-12 md:mt-16" role="list">
+    <ol class="grid lg:grid-cols-3 gap-x-12 gap-y-10 mt-12 md:mt-16" role="list" data-stagger>
       {whatWeDo.map((item, i) => (
         <li>
           <span class="text-[0.8125rem] tracking-[0.04em] text-ink-soft tabular-nums">{String(i + 1).padStart(2, '0')}</span>
@@ -378,15 +383,7 @@ const pressJsonLd = pressItems.map((p) => ({
       ))}
     </ol>
 
-    <dl class="grid grid-cols-2 sm:flex sm:flex-wrap gap-x-[clamp(1.5rem,6vw,6rem)] gap-y-12 mt-(--section)" aria-label="Impact statistics">
-      {stats.map(({ value, label }) => (
-        <div>
-          <dt class="sr-only">{label}</dt>
-          <dd class="stat-value">{value}</dd>
-          <dd class="mt-4 text-[1.0625rem]">{label}</dd>
-        </div>
-      ))}
-    </dl>
+    <StatList stats={stats} label="Impact statistics" />
   </section>
 
   <!-- From the field: the research band -->
@@ -834,6 +831,14 @@ const pressJsonLd = pressItems.map((p) => ({
   <!-- Phones: the one action follows the reader once the hero's own button has
        scrolled away, and steps aside again from the join section down so it
        never covers the real button or the footer. -->
+  <!-- Marks where the hero's bottom edge sits (the sheet's top, plus the
+       2.5rem it overlaps the hero by). The pinned hero never leaves the
+       viewport, so "the hero is gone" is read from this instead of from the
+       hero: it is true once the sheet has slid fully over the hero, and also
+       once an unpinned hero has scrolled away. Absolutely placed so it is not
+       the sheet's first child (which .section:first-child depends on). -->
+  <div class="absolute inset-x-0 top-10 h-0 pointer-events-none" data-hero-edge aria-hidden="true"></div>
+
   <a href="/volunteer/" class="btn btn-action btn-lg fixed left-1/2 bottom-4 z-40 -translate-x-1/2 translate-y-[140%] transition-transform duration-300 shadow-[0_12px_30px_rgb(15_22_17/0.35)] lg:hidden data-on:translate-y-0" data-dock inert>
     Volunteer with us
   </a>
@@ -844,6 +849,19 @@ const pressJsonLd = pressItems.map((p) => ({
   // comment). Visitors who asked for reduced motion, and visitors with
   // Save-Data on, never get sources attached: they see the poster still, and
   // neither pays for the download.
+  // Whether the hero is out of sight: scrolled away, or (once pinned) fully
+  // covered by the sheet. Drives the phone dock and the hero video.
+  const heroEdge = document.querySelector<HTMLElement>('[data-hero-edge]');
+  let heroGone = false;
+  const heroGoneListeners: Array<() => void> = [];
+  if (heroEdge) {
+    new IntersectionObserver((entries) => {
+      const entry = entries[entries.length - 1];
+      heroGone = !entry.isIntersecting && entry.boundingClientRect.top < 0;
+      heroGoneListeners.forEach((listener) => listener());
+    }).observe(heroEdge);
+  }
+
   const heroVideo = document.querySelector<HTMLVideoElement>('[data-hero-video]');
   const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
   if (heroVideo && !saveData && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -856,11 +874,28 @@ const pressJsonLd = pressItems.map((p) => ({
     if (document.readyState === 'complete') attach();
     else window.addEventListener('load', attach, { once: true });
 
+    // The video also pauses by itself while the hero is out of sight, and
+    // resumes when it is back. Those pauses are not the visitor's: they leave
+    // the button's icon and label alone, and never override a pause the visitor
+    // chose (a video they paused stays paused).
+    let autoPaused = false;
+    const syncAuto = () => {
+      if (heroGone && !heroVideo.paused) {
+        autoPaused = true;
+        heroVideo.pause();
+      } else if (!heroGone && autoPaused) {
+        autoPaused = false;
+        heroVideo.play().catch(() => {});
+      }
+    };
+    heroGoneListeners.push(syncAuto);
+
     const toggle = document.querySelector<HTMLButtonElement>('[data-hero-video-toggle]');
     if (toggle) {
       const pauseIcon = toggle.querySelector<SVGElement>('[data-icon="pause"]')!;
       const playIcon = toggle.querySelector<SVGElement>('[data-icon="play"]')!;
       const sync = () => {
+        if (autoPaused) return;
         const paused = heroVideo.paused;
         toggle.setAttribute('aria-label', paused ? 'Play background video' : 'Pause background video');
         pauseIcon.classList.toggle('hidden', paused);
@@ -869,6 +904,8 @@ const pressJsonLd = pressItems.map((p) => ({
       heroVideo.addEventListener('play', () => {
         toggle.hidden = false;
         sync();
+        // Autoplay can begin after the hero is already out of sight.
+        syncAuto();
       });
       heroVideo.addEventListener('pause', sync);
       toggle.addEventListener('click', () => {
@@ -921,21 +958,17 @@ const pressJsonLd = pressItems.map((p) => ({
   // section down. While hidden it is inert, so it is never an invisible tab
   // stop or a stray link for a screen reader.
   const dock = document.querySelector<HTMLElement>('[data-dock]');
-  const hero = document.querySelector<HTMLElement>('.hero-home');
   const join = document.getElementById('join');
-  if (dock && hero && join) {
-    let heroGone = false;
+  if (dock && heroEdge && join) {
     let pastJoin = false;
     const sync = () => {
       const on = heroGone && !pastJoin;
       dock.toggleAttribute('data-on', on);
       dock.inert = !on;
     };
-    new IntersectionObserver(([entry]) => {
-      heroGone = !entry.isIntersecting;
-      sync();
-    }).observe(hero);
-    new IntersectionObserver(([entry]) => {
+    heroGoneListeners.push(sync);
+    new IntersectionObserver((entries) => {
+      const entry = entries[entries.length - 1];
       pastJoin = entry.isIntersecting || entry.boundingClientRect.top < 0;
       sync();
     }).observe(join);

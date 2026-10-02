@@ -3,6 +3,7 @@ import Base from '@/layouts/Base.astro';
 import { Image } from 'astro:assets';
 import PageHero from '@/components/PageHero.astro';
 import JoinSection from '@/components/JoinSection.astro';
+import StatList from '@/components/StatList.astro';
 import heroPhoto from '@/assets/photos/large-group-cleanup.jpg';
 import missionPhoto from '@/assets/photos/8-people-cleanup-done.jpg';
 import boardroomPhoto from '@/assets/photos/directors-at-work.jpg';
@@ -10,6 +11,7 @@ import reader from '@/lib/reader';
 import { getWhatWeDo } from '@/lib/about';
 import { responsive } from '@/lib/images';
 import { ORG_ID, SITE_URL } from '@/lib/seo';
+import { statFromText } from '@/lib/stats';
 import { getPressItems, formatPressDate } from '@/lib/press';
 
 const about = await reader.singletons.about.read();
@@ -28,6 +30,8 @@ const impactStats = about?.impactStats?.length
       { value: '900,000+', label: 'Impressions' },
       { value: '10', label: 'Branches' },
     ];
+
+const stats = impactStats.map(({ value, label }) => statFromText(value, label));
 
 const aboutPageJsonLd = {
   '@type': 'AboutPage',
@@ -68,15 +72,7 @@ const aboutPageJsonLd = {
     </div>
 
     <!-- Impact -->
-    <dl class="grid grid-cols-2 sm:flex sm:flex-wrap gap-x-[clamp(1.5rem,6vw,6rem)] gap-y-12 mt-(--section)" aria-label="Our impact">
-      {impactStats.map(({ value, label }) => (
-        <div>
-          <dt class="sr-only">{label}</dt>
-          <dd class="stat-value stat-value-sm">{value}</dd>
-          <dd class="mt-4 text-[1.0625rem]">{label}</dd>
-        </div>
-      ))}
-    </dl>
+    <StatList stats={stats} label="Our impact" small />
   </section>
 
   <!-- What We Do: numbered programs on the brand green -->
