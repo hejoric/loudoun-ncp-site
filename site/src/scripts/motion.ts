@@ -137,6 +137,8 @@ function initCountUp() {
  * short laptop screen) first scrolls like any other until its bottom reaches
  * the viewport's, so all its text has been on screen before the sheet covers
  * any of it; only then does it stay put, and GCC's curves start from there.
+ * "The viewport" is the small one the hero's min-height is sized from, so the
+ * pin holds still while a phone's toolbars slide in and out.
  */
 function initHeroPin() {
   const hero = document.querySelector<HTMLElement>('.hero-home');
@@ -156,7 +158,7 @@ function initHeroPin() {
   };
 
   const measure = () => {
-    vh = window.innerHeight;
+    vh = parseFloat(getComputedStyle(hero).minHeight);
     overflow = Math.max(0, hero.offsetHeight - vh);
     hero.style.setProperty('--hero-top', `${-overflow}px`);
     update();

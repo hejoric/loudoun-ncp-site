@@ -336,8 +336,8 @@
   /* GCC's pinned hero: it stays put while the sheet slides up over it, and
      the scroll position (--hero-f, --hero-g, set by scripts/motion.ts) fades
      and lifts the text, tints the frame toward paper, and zooms the video. It
-     is pinned by its bottom edge (--hero-top, the viewport height less the
-     hero's, also from motion.ts), so a hero taller than the screen scrolls
+     is pinned by its bottom edge (--hero-top, the small viewport height less
+     the hero's, also from motion.ts), so a hero taller than the screen scrolls
      until its bottom is in view before the sheet covers any of it. */
   .hero-home.is-pinned {
     position: sticky;
