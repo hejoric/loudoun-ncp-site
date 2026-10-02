@@ -828,9 +828,6 @@ const pressJsonLd = pressItems.map((p) => ({
 
   <JoinSection />
 
-  <!-- Phones: the one action follows the reader once the hero's own button has
-       scrolled away, and steps aside again from the join section down so it
-       never covers the real button or the footer. -->
   <!-- Marks where the hero's bottom edge sits (the sheet's top, plus the
        2.5rem it overlaps the hero by). The pinned hero never leaves the
        viewport, so "the hero is gone" is read from this instead of from the
@@ -839,29 +836,29 @@ const pressJsonLd = pressItems.map((p) => ({
        the sheet's first child (which .section:first-child depends on). -->
   <div class="absolute inset-x-0 top-10 h-0 pointer-events-none" data-hero-edge aria-hidden="true"></div>
 
+  <!-- Phones: the one action follows the reader once the hero's own button has
+       scrolled away, and steps aside again from the join section down so it
+       never covers the real button or the footer. -->
   <a href="/volunteer/" class="btn btn-action btn-lg fixed left-1/2 bottom-4 z-40 -translate-x-1/2 translate-y-[140%] transition-transform duration-300 shadow-[0_12px_30px_rgb(15_22_17/0.35)] lg:hidden data-on:translate-y-0" data-dock inert>
     Volunteer with us
   </a>
 </Base>
 
 <script>
+  // Whether the hero is out of sight: scrolled away, or (once pinned) fully
+  // covered by the sheet. Drives the phone dock and the hero video, which each
+  // check it again whenever the page scrolls or resizes.
+  const heroEdge = document.querySelector<HTMLElement>('[data-hero-edge]');
+  const heroGone = () => !!heroEdge && heroEdge.getBoundingClientRect().top < 0;
+  const onViewChange = (listener: () => void) => {
+    window.addEventListener('scroll', listener, { passive: true });
+    window.addEventListener('resize', listener);
+  };
+
   // Hero video: attach the sources after the load event (see the markup
   // comment). Visitors who asked for reduced motion, and visitors with
   // Save-Data on, never get sources attached: they see the poster still, and
   // neither pays for the download.
-  // Whether the hero is out of sight: scrolled away, or (once pinned) fully
-  // covered by the sheet. Drives the phone dock and the hero video.
-  const heroEdge = document.querySelector<HTMLElement>('[data-hero-edge]');
-  let heroGone = false;
-  const heroGoneListeners: Array<() => void> = [];
-  if (heroEdge) {
-    new IntersectionObserver((entries) => {
-      const entry = entries[entries.length - 1];
-      heroGone = !entry.isIntersecting && entry.boundingClientRect.top < 0;
-      heroGoneListeners.forEach((listener) => listener());
-    }).observe(heroEdge);
-  }
-
   const heroVideo = document.querySelector<HTMLVideoElement>('[data-hero-video]');
   const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
   if (heroVideo && !saveData && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -880,15 +877,16 @@ const pressJsonLd = pressItems.map((p) => ({
     // chose (a video they paused stays paused).
     let autoPaused = false;
     const syncAuto = () => {
-      if (heroGone && !heroVideo.paused) {
+      const gone = heroGone();
+      if (gone && !heroVideo.paused) {
         autoPaused = true;
         heroVideo.pause();
-      } else if (!heroGone && autoPaused) {
+      } else if (!gone && autoPaused) {
         autoPaused = false;
         heroVideo.play().catch(() => {});
       }
     };
-    heroGoneListeners.push(syncAuto);
+    onViewChange(syncAuto);
 
     const toggle = document.querySelector<HTMLButtonElement>('[data-hero-video-toggle]');
     if (toggle) {
@@ -959,19 +957,14 @@ const pressJsonLd = pressItems.map((p) => ({
   // stop or a stray link for a screen reader.
   const dock = document.querySelector<HTMLElement>('[data-dock]');
   const join = document.getElementById('join');
-  if (dock && heroEdge && join) {
-    let pastJoin = false;
+  if (dock && join) {
     const sync = () => {
-      const on = heroGone && !pastJoin;
+      const on = heroGone() && join.getBoundingClientRect().top >= window.innerHeight;
       dock.toggleAttribute('data-on', on);
       dock.inert = !on;
     };
-    heroGoneListeners.push(sync);
-    new IntersectionObserver((entries) => {
-      const entry = entries[entries.length - 1];
-      pastJoin = entry.isIntersecting || entry.boundingClientRect.top < 0;
-      sync();
-    }).observe(join);
+    onViewChange(sync);
+    sync();
   }
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

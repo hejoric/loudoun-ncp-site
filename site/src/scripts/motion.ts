@@ -133,50 +133,40 @@ function initCountUp() {
  * over it, and as it goes the hero text fades and lifts, the video zooms, and
  * the frame pales toward paper.
  *
- * It only pins when its content fits the viewport. On a short screen the hero
- * is taller than the viewport and scrolls like any other, so no text is ever
- * covered before it can be read.
+ * It is pinned by its bottom edge. A hero taller than the viewport (a phone, a
+ * short laptop screen) first scrolls like any other until its bottom reaches
+ * the viewport's, so all its text has been on screen before the sheet covers
+ * any of it; only then does it stay put, and GCC's curves start from there.
  */
 function initHeroPin() {
   const hero = document.querySelector<HTMLElement>('.hero-home');
   if (!hero) return;
 
-  let pinned = false;
+  let vh = 0;
+  let overflow = 0;
   let frame = 0;
 
   const update = () => {
     frame = 0;
-    // GCC's curves: the text and tint run out by 55% of a screen scrolled,
-    // the zoom by a full screen.
-    const y = Math.max(0, window.scrollY);
-    const vh = window.innerHeight;
+    // GCC's curves, counted from where the hero pins: the text and tint run
+    // out by 55% of a screen scrolled, the zoom by a full screen.
+    const y = Math.max(0, window.scrollY - overflow);
     hero.style.setProperty('--hero-f', Math.min(1, y / (0.55 * vh)).toFixed(4));
     hero.style.setProperty('--hero-g', Math.min(1, y / vh).toFixed(4));
   };
 
-  const setPinned = (next: boolean) => {
-    if (next === pinned) return;
-    pinned = next;
-    hero.classList.toggle('is-pinned', next);
-    if (next) {
-      update();
-    } else {
-      hero.style.removeProperty('--hero-f');
-      hero.style.removeProperty('--hero-g');
-    }
-  };
-
-  // The hero is at least one small viewport tall (its min-height); it is taller
-  // only when its content does not fit.
   const measure = () => {
-    const screen = parseFloat(getComputedStyle(hero).minHeight);
-    setPinned(hero.offsetHeight <= screen + 1);
+    vh = window.innerHeight;
+    overflow = Math.max(0, hero.offsetHeight - vh);
+    hero.style.setProperty('--hero-top', `${-overflow}px`);
+    update();
   };
 
+  hero.classList.add('is-pinned');
   window.addEventListener(
     'scroll',
     () => {
-      if (pinned && !frame) frame = requestAnimationFrame(update);
+      if (!frame) frame = requestAnimationFrame(update);
     },
     { passive: true },
   );
@@ -185,12 +175,12 @@ function initHeroPin() {
   if ('ResizeObserver' in window) new ResizeObserver(measure).observe(hero);
   measure();
 
-  // A pinned hero stays behind the sheet once it is scrolled over, so keyboard
-  // focus can land on a control the reader cannot see. Bring the top of the
-  // page back when it does.
+  // The pinned hero stays behind the sheet once it is scrolled over, so
+  // keyboard focus can land on a control the reader cannot see. Scroll back to
+  // where the sheet has not yet covered any of the hero when it does.
   hero.addEventListener('focusin', (event) => {
-    if (pinned && window.scrollY > 0 && (event.target as Element).matches(':focus-visible')) {
-      window.scrollTo({ top: 0, behavior: 'instant' });
+    if (window.scrollY > overflow && (event.target as Element).matches(':focus-visible')) {
+      window.scrollTo({ top: overflow, behavior: 'instant' });
     }
   });
 }

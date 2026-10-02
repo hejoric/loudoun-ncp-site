@@ -45,6 +45,10 @@ const widths = image ? [640, 960, 1280, 1600, 2048].filter((w) => w < image.widt
     {eyebrow && <p class="hero-eyebrow">{eyebrow}</p>}
     <h1 id="page-title" class="hero-title">{title}</h1>
     {lead && <p class="hero-sub">{lead}</p>}
-    <slot />
+    {Astro.slots.has('default') && (
+      <div class="hero-cta">
+        <slot />
+      </div>
+    )}
   </div>
 </section>
