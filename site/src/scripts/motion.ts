@@ -1,7 +1,8 @@
 /**
  * Site motion, taken from GCC Cornell's: section reveals, the stat count-up,
  * and the home hero that stays pinned while the page slides over it. (The
- * page-title entrance is CSS only, in global.css.)
+ * page-title entrance is CSS, in global.css; this only replays it after Back
+ * or Forward.)
  *
  * Every effect is progressive enhancement. The HTML is always the final,
  * fully visible page; this script only adds the hidden starting state, so with
@@ -187,7 +188,28 @@ function initHeroPin() {
   });
 }
 
+/**
+ * Page-title entrance on a Back/Forward return. A page restored from the
+ * browser's back/forward cache is the same document, so its CSS entrance has
+ * already run; start it over so the title rises in on this visit too.
+ */
+function initTitleReplay() {
+  window.addEventListener('pageshow', (event) => {
+    if (!event.persisted) return;
+    const lines = document.querySelectorAll<HTMLElement>(
+      '.hero .hero-eyebrow, .hero .hero-title, .hero .hero-sub, .hero .hero-cta',
+    );
+    // A finished entrance leaves no animation behind to restart, so it is
+    // switched off and on again, with a layout read between so the browser
+    // sees it stop before it starts.
+    lines.forEach((el) => (el.style.animationName = 'none'));
+    void document.body.offsetWidth;
+    lines.forEach((el) => el.style.removeProperty('animation-name'));
+  });
+}
+
 if (!reduced) {
+  initTitleReplay();
   initReveals();
   initCountUp();
   initHeroPin();

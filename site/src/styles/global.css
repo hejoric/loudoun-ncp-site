@@ -267,7 +267,7 @@
     grid-area: 1 / 1;
   }
   .stat-value.is-counting .stat-final {
-    color: transparent;
+    opacity: 0;
   }
   .stat-live {
     width: 0;
@@ -438,7 +438,7 @@
   }
   /* The home sheet slides over a pinned hero, so its leading edge casts GCC's
      soft upward shadow, in the site's forest shade. */
-  .hero-home + .sheet {
+  .hero.hero-home + .sheet {
     box-shadow:
       0 -24px 60px rgb(15 22 17 / 0.18),
       0 30px 60px -30px rgb(15 22 17 / 0.35);
@@ -572,8 +572,9 @@
 }
 
 /* Page-title entrance, GCC's heroRise: each hero line rises in on every page
-   load (these are full page loads, so the animation replays each visit). Backwards
-   fill keeps a line hidden through its delay. Nothing animates for a visitor who
+   load, and scripts/motion.ts replays it when Back or Forward restores a page
+   from the browser's cache, so it runs on each visit. Backwards fill keeps a
+   line hidden through its delay. Nothing animates for a visitor who
    asked for reduced motion, and the animation never leaves a style behind. */
 @media (prefers-reduced-motion: no-preference) {
   @keyframes heroRise {
@@ -681,7 +682,7 @@
     display: none;
   }
   .stat-value.is-counting .stat-final {
-    color: inherit;
+    opacity: 1;
   }
 }
 
