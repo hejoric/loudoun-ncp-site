@@ -26,6 +26,17 @@ const doiId = pub.doi?.replace(/^https?:\/\/(dx\.)?doi\.org\//, '');
 
 const canonical = `${SITE_URL}/research/${slug}/`;
 
+const LNCP_AFFILIATION = 'Research Division, Loudoun Nature Conservation Project';
+
+// Authors outside LNCP carry their own affiliation; everyone else is LNCP.
+const outsideAffiliations = new Map(pub.authorAffiliations.map((a) => [a.name, a.affiliation]));
+for (const name of outsideAffiliations.keys()) {
+  if (!pub.authors.includes(name)) {
+    throw new Error(`Publication "${slug}": authorAffiliations entry "${name}" matches no name in authors.`);
+  }
+}
+const authorAffiliations = pub.authors.map((name) => outsideAffiliations.get(name));
+
 // Authors get stable @ids so the article's author list and the standalone
 // Person nodes resolve to the same entities instead of duplicating them.
 const authorRefs = pub.authors.map((name) => ({
@@ -36,7 +47,7 @@ const personJsonLd = pub.authors.map((name, i) => ({
   '@type': 'Person',
   '@id': authorRefs[i]['@id'],
   name,
-  affiliation: { '@id': ORG_ID },
+  affiliation: authorAffiliations[i] ? { '@type': 'Organization', name: authorAffiliations[i] } : { '@id': ORG_ID },
 }));
 
 const articleJsonLd = {
@@ -120,11 +131,15 @@ const articleJsonLd = {
         <section aria-labelledby="authors-heading">
           <h2 id="authors-heading" class="kicker mb-4">Authors</h2>
           <ul class="border-t border-ink" role="list">
-            {pub.authors.map((author) => (
-              <li class="py-3 border-b border-ink">{author}</li>
+            {pub.authors.map((author, i) => (
+              <li class="py-3 border-b border-ink">{author}{outsideAffiliations.size > 0 && (
+                <span class="block text-[0.9375rem] text-ink-soft mt-0.5">{authorAffiliations[i] ?? LNCP_AFFILIATION}</span>
+              )}</li>
             ))}
           </ul>
-          <p class="text-[0.9375rem] text-ink-soft mt-4">Research Division, Loudoun Nature Conservation Project</p>
+          {outsideAffiliations.size === 0 && (
+            <p class="text-[0.9375rem] text-ink-soft mt-4">{LNCP_AFFILIATION}</p>
+          )}
         </section>
 
         {pub.doi && (

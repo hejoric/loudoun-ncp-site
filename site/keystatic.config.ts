@@ -151,6 +151,24 @@ export default config({
           fields.text({ label: 'Author Name' }),
           { label: 'Authors', itemLabel: (props) => props.value || 'Author' }
         ),
+        authorAffiliations: fields.array(
+          fields.object({
+            name: fields.text({
+              label: 'Author Name (exactly as listed in Authors)',
+              validation: { isRequired: true, length: { min: 1 } },
+            }),
+            affiliation: fields.text({
+              label: 'Affiliation (e.g. "Chinese Academy of Sciences")',
+              validation: { isRequired: true, length: { min: 1 } },
+            }),
+          }),
+          {
+            label: 'Outside Author Affiliations (optional)',
+            description:
+              'Only for authors outside LNCP. Every author not listed here is shown as Research Division, Loudoun Nature Conservation Project.',
+            itemLabel: (props) => props.fields.name.value || 'Author',
+          }
+        ),
         date: fields.date({ label: 'Publication Date' }),
         abstract: fields.text({ label: 'Abstract', multiline: true }),
         seoDescription: fields.text({
