@@ -21,6 +21,8 @@ const displayDate = pub.date
   : '';
 const pdfHref = pub.pdfFile ?? pub.pdfLink;
 
+const doiId = pub.doi?.replace(/^https?:\/\/(dx\.)?doi\.org\//, '');
+
 const canonical = `${SITE_URL}/research/${slug}/`;
 
 // Authors get stable @ids so the article's author list and the standalone
@@ -48,8 +50,14 @@ const articleJsonLd = {
   ...(pub.date ? { datePublished: pub.date, dateModified: pub.date } : {}),
   description: pub.abstract,
   abstract: pub.abstract,
-  publisher: { '@id': ORG_ID },
+  publisher: pub.publishedIn ? { '@type': 'Organization', name: pub.publishedIn } : { '@id': ORG_ID },
   sourceOrganization: { '@id': ORG_ID },
+  ...(pub.doi
+    ? {
+        sameAs: pub.doi,
+        identifier: { '@type': 'PropertyValue', propertyID: 'DOI', value: doiId },
+      }
+    : {}),
   inLanguage: 'en-US',
   isAccessibleForFree: true,
   learningResourceType: 'Research paper',
@@ -91,7 +99,7 @@ const articleJsonLd = {
         {pdfHref && (
           <div class="on-dark rounded-card bg-forest-900 text-paper p-7">
             <p class="font-display text-[1.75rem] leading-tight">Full Paper (PDF)</p>
-            <p class="text-paper/80 text-[0.9375rem] mt-1.5">Self-published, Loudoun Nature Conservation Project</p>
+            <p class="text-paper/80 text-[0.9375rem] mt-1.5">{pub.publishedIn ? `Published on ${pub.publishedIn}` : 'Self-published, Loudoun Nature Conservation Project'}</p>
             <a
               href={pdfHref}
               class="btn btn-light mt-6"
@@ -117,6 +125,13 @@ const articleJsonLd = {
           </ul>
           <p class="text-[0.9375rem] text-ink-soft mt-4">Research Division, Loudoun Nature Conservation Project</p>
         </section>
+
+        {pub.doi && (
+          <section aria-labelledby="doi-heading">
+            <h2 id="doi-heading" class="kicker mb-4">DOI</h2>
+            <a href={pub.doi} class="text-link break-all text-[0.9375rem]" target="_blank" rel="noopener noreferrer">{pub.doi}</a>
+          </section>
+        )}
 
         <a href="/research/" class="text-link inline-block text-[0.9375rem]">
           <span aria-hidden="true">&larr;</span> All Publications

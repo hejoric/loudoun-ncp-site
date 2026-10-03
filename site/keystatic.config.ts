@@ -169,6 +169,14 @@ export default config({
           label: 'External PDF Link (use this OR PDF Upload)',
           validation: { isRequired: false },
         }),
+        publishedIn: fields.text({
+          label: 'Published in (optional, e.g. EcoEvoRxiv) - leave blank for LNCP self-published papers',
+          validation: { isRequired: false },
+        }),
+        doi: fields.url({
+          label: 'DOI link (optional, full https://doi.org/... URL)',
+          validation: { isRequired: false },
+        }),
       },
     }),
 
