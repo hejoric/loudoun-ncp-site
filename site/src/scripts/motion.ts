@@ -2,7 +2,7 @@
  * Site motion, taken from GCC Cornell's: section reveals, the stat count-up,
  * and the home hero that stays pinned while the page slides over it. (The
  * page-title entrance is CSS, in global.css; this only replays it after Back
- * or Forward.)
+ * or Forward.) Beyond GCC's, it also starts the home seedling's sway.
  *
  * Every effect is progressive enhancement. The HTML is always the final,
  * fully visible page; this script only adds the hidden starting state, so with
@@ -208,9 +208,28 @@ function initTitleReplay() {
   });
 }
 
+/**
+ * Home seedling sway. Each time the seedling comes into view it gets
+ * `is-swaying`, which runs one 4.8s gust in CSS; when the sway ends the class
+ * comes off, so the plant rests until it has left the viewport and come back.
+ */
+function initSeedlingSway() {
+  const seedling = document.querySelector<SVGSVGElement>('.seedling');
+  const sway = seedling?.querySelector('.seedling-sway');
+  if (!seedling || !sway || !hasObserver) return;
+
+  sway.addEventListener('animationend', (event) => {
+    if (event.target === sway) seedling.classList.remove('is-swaying');
+  });
+  new IntersectionObserver((entries) => {
+    if (entries.some((entry) => entry.isIntersecting)) seedling.classList.add('is-swaying');
+  }).observe(seedling);
+}
+
 if (!reduced) {
   initTitleReplay();
   initReveals();
   initCountUp();
   initHeroPin();
+  initSeedlingSway();
 }

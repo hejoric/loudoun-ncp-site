@@ -355,8 +355,9 @@ const pressJsonLd = pressItems.map((p) => ({
     </div>
   </div>
 
-  <!-- Hand-drawn seedling, in the place GCC keeps its node motif. It sways in a
-       light wind (CSS only, see .seedling in global.css). -->
+  <!-- Hand-drawn seedling, in the place GCC keeps its node motif. It sways once
+       in a light wind each time it comes into view (scripts/motion.ts starts it;
+       see .seedling in global.css). -->
   <div class="grid place-items-center pt-(--section) text-ink" aria-hidden="true">
     <svg class="seedling w-[132px] h-auto" viewBox="0 0 132 120" fill="none">
       <g class="seedling-sway">

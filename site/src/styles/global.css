@@ -609,44 +609,46 @@
   }
 }
 
-/* Seedling wind sway (home). The whole plant leans about its foot on a slow
-   loop with uneven stops, so it reads as gusts rather than a metronome, and each
-   leaf adds a small flutter about the point where it meets the stem, each on its
-   own period so nothing moves in lockstep. Transforms only, so nothing in the
-   layout moves; overflow is visible so a turned leaf is never clipped by the
-   svg's box. Without the media query (reduced motion) and in print the plant
-   stays exactly as drawn. */
+/* Seedling wind sway (home). scripts/motion.ts adds .is-swaying each time the
+   plant comes into view, for one gust: the whole plant leans about its foot
+   with uneven stops, so it reads as wind rather than a metronome, and each leaf
+   adds a small flutter about the point where it meets the stem, each on its own
+   period so nothing moves in lockstep. Every part ends at rest when the 4.8s
+   sway does, and the script then takes the class off, so the plant settles as
+   drawn; motion that stops within five seconds needs no pause control (WCAG
+   2.2.2). Transforms only, so nothing in the layout moves; overflow is visible
+   so a turned leaf is never clipped by the svg's box. Without JavaScript, under
+   reduced motion, and in print the plant stays exactly as drawn. */
 .seedling {
   overflow: visible;
 }
 @media (prefers-reduced-motion: no-preference) {
-  .seedling-sway,
-  .seedling-leaf {
+  .is-swaying .seedling-sway,
+  .is-swaying .seedling-leaf {
     transform-box: view-box;
     animation-timing-function: ease-in-out;
-    animation-iteration-count: infinite;
   }
-  .seedling-sway {
+  .is-swaying .seedling-sway {
     transform-origin: 66px 116px;
     animation-name: seedling-sway;
-    animation-duration: 6.6s;
+    animation-duration: 4.8s;
   }
-  .seedling-leaf-1 {
+  .is-swaying .seedling-leaf-1 {
     transform-origin: 66.4px 62px;
     animation-name: seedling-flutter-a;
-    animation-duration: 3.7s;
+    animation-duration: 2.4s;
+    animation-iteration-count: 2;
   }
-  .seedling-leaf-2 {
+  .is-swaying .seedling-leaf-2 {
     transform-origin: 67px 46px;
     animation-name: seedling-flutter-b;
-    animation-duration: 4.9s;
-    animation-delay: -1.3s;
+    animation-duration: 4.8s;
   }
-  .seedling-leaf-3 {
+  .is-swaying .seedling-leaf-3 {
     transform-origin: 66.6px 26px;
     animation-name: seedling-flutter-c;
-    animation-duration: 3.1s;
-    animation-delay: -2.2s;
+    animation-duration: 1.6s;
+    animation-iteration-count: 3;
   }
   @keyframes seedling-sway {
     0%,
