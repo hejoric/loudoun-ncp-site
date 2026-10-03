@@ -77,7 +77,11 @@ export const GET: APIRoute = async () => {
     lines.push(`- URL: ${SITE_URL}/research/${pub.slug}/`);
     lines.push(`- Authors: ${pub.entry.authors.join(', ')}`);
     lines.push(`- Published: ${formatDate(pub.entry.date)}`);
-    lines.push('- Publisher: Loudoun Nature Conservation Project (self-published)');
+    lines.push(
+      pub.entry.preprintServer
+        ? `- Publisher: ${pub.entry.preprintServer} (preprint)`
+        : '- Publisher: Loudoun Nature Conservation Project (self-published)',
+    );
     const pdf = pub.entry.pdfFile ?? pub.entry.pdfLink;
     if (pdf) {
       lines.push(`- PDF: ${pdf.startsWith('http') ? pdf : `${SITE_URL}${pdf}`}`);

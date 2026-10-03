@@ -173,7 +173,22 @@ authors:
 date: '2026-01-01'
 abstract: Full abstract text.
 pdfFile: /research/filename.pdf
-pdfLink: null   # or external DOI URL
+pdfLink: null   # or an external PDF URL, instead of pdfFile
+```
+
+Optional fields:
+
+- `preprintServer: EcoEvoRxiv` - for a paper posted as a preprint. The page
+  reads "Preprint on EcoEvoRxiv" and names the server, not LNCP, as publisher.
+- `doi: https://doi.org/...` - the full DOI URL, linked on the paper page.
+- `authorAffiliations` - only for co-authors outside LNCP; every author not
+  listed is shown under Research Division, Loudoun Nature Conservation Project.
+  Each `name` must match an entry in `authors` exactly, or the build fails:
+
+```yaml
+authorAffiliations:
+  - name: First Last
+    affiliation: Chinese Academy of Sciences
 ```
 
 ## Asset Specifications
