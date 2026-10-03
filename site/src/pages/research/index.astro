@@ -3,7 +3,7 @@ import Base from '@/layouts/Base.astro';
 import PageHero from '@/components/PageHero.astro';
 import PublicationCard from '@/components/PublicationCard.astro';
 import heroPhoto from '@/assets/photos/river.jpg';
-import { getPublications } from '@/lib/publications';
+import { getPublications, publisherNode } from '@/lib/publications';
 import { ORG_ID, SITE_URL, truncate } from '@/lib/seo';
 
 const sorted = await getPublications();
@@ -29,7 +29,7 @@ const publicationListJsonLd = {
       author: pub.entry.authors.map((name) => ({ '@type': 'Person', name })),
       ...(pub.entry.date ? { datePublished: pub.entry.date } : {}),
       description: truncate(pub.entry.abstract, 300),
-      publisher: { '@id': ORG_ID },
+      publisher: publisherNode(pub.entry),
       isAccessibleForFree: true,
     },
   })),

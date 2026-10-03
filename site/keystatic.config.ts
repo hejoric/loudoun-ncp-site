@@ -169,8 +169,8 @@ export default config({
           label: 'External PDF Link (use this OR PDF Upload)',
           validation: { isRequired: false },
         }),
-        publishedIn: fields.text({
-          label: 'Published in (optional, e.g. EcoEvoRxiv) - leave blank for LNCP self-published papers',
+        preprintServer: fields.text({
+          label: 'Preprint server (optional), for example EcoEvoRxiv',
           validation: { isRequired: false },
         }),
         doi: fields.url({

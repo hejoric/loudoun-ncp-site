@@ -1,6 +1,7 @@
 ---
 import Base from '@/layouts/Base.astro';
 import PageHero from '@/components/PageHero.astro';
+import { publisherNode } from '@/lib/publications';
 import reader from '@/lib/reader';
 import { ORG_ID, SITE_URL, absoluteUrl, truncate } from '@/lib/seo';
 
@@ -50,7 +51,7 @@ const articleJsonLd = {
   ...(pub.date ? { datePublished: pub.date, dateModified: pub.date } : {}),
   description: pub.abstract,
   abstract: pub.abstract,
-  publisher: pub.publishedIn ? { '@type': 'Organization', name: pub.publishedIn } : { '@id': ORG_ID },
+  publisher: publisherNode(pub),
   sourceOrganization: { '@id': ORG_ID },
   ...(pub.doi
     ? {
@@ -99,7 +100,7 @@ const articleJsonLd = {
         {pdfHref && (
           <div class="on-dark rounded-card bg-forest-900 text-paper p-7">
             <p class="font-display text-[1.75rem] leading-tight">Full Paper (PDF)</p>
-            <p class="text-paper/80 text-[0.9375rem] mt-1.5">{pub.publishedIn ? `Published on ${pub.publishedIn}` : 'Self-published, Loudoun Nature Conservation Project'}</p>
+            <p class="text-paper/80 text-[0.9375rem] mt-1.5">{pub.preprintServer ? `Preprint on ${pub.preprintServer}` : 'Self-published, Loudoun Nature Conservation Project'}</p>
             <a
               href={pdfHref}
               class="btn btn-light mt-6"
