@@ -1,6 +1,7 @@
 ---
 import Base from '@/layouts/Base.astro';
 import PageHero from '@/components/PageHero.astro';
+import { publisherNode } from '@/lib/publications';
 import reader from '@/lib/reader';
 import { ORG_ID, SITE_URL, absoluteUrl, truncate } from '@/lib/seo';
 
@@ -21,7 +22,20 @@ const displayDate = pub.date
   : '';
 const pdfHref = pub.pdfFile ?? pub.pdfLink;
 
+const doiId = pub.doi?.replace(/^https?:\/\/(dx\.)?doi\.org\//, '');
+
 const canonical = `${SITE_URL}/research/${slug}/`;
+
+const LNCP_AFFILIATION = 'Research Division, Loudoun Nature Conservation Project';
+
+// Authors outside LNCP carry their own affiliation; everyone else is LNCP.
+const outsideAffiliations = new Map(pub.authorAffiliations.map((a) => [a.name, a.affiliation]));
+for (const name of outsideAffiliations.keys()) {
+  if (!pub.authors.includes(name)) {
+    throw new Error(`Publication "${slug}": authorAffiliations entry "${name}" matches no name in authors.`);
+  }
+}
+const authorAffiliations = pub.authors.map((name) => outsideAffiliations.get(name));
 
 // Authors get stable @ids so the article's author list and the standalone
 // Person nodes resolve to the same entities instead of duplicating them.
@@ -33,7 +47,7 @@ const personJsonLd = pub.authors.map((name, i) => ({
   '@type': 'Person',
   '@id': authorRefs[i]['@id'],
   name,
-  affiliation: { '@id': ORG_ID },
+  affiliation: authorAffiliations[i] ? { '@type': 'Organization', name: authorAffiliations[i] } : { '@id': ORG_ID },
 }));
 
 const articleJsonLd = {
@@ -48,8 +62,14 @@ const articleJsonLd = {
   ...(pub.date ? { datePublished: pub.date, dateModified: pub.date } : {}),
   description: pub.abstract,
   abstract: pub.abstract,
-  publisher: { '@id': ORG_ID },
+  publisher: publisherNode(pub),
   sourceOrganization: { '@id': ORG_ID },
+  ...(pub.doi
+    ? {
+        sameAs: pub.doi,
+        identifier: { '@type': 'PropertyValue', propertyID: 'DOI', value: doiId },
+      }
+    : {}),
   inLanguage: 'en-US',
   isAccessibleForFree: true,
   learningResourceType: 'Research paper',
@@ -91,7 +111,7 @@ const articleJsonLd = {
         {pdfHref && (
           <div class="on-dark rounded-card bg-forest-900 text-paper p-7">
             <p class="font-display text-[1.75rem] leading-tight">Full Paper (PDF)</p>
-            <p class="text-paper/80 text-[0.9375rem] mt-1.5">Self-published, Loudoun Nature Conservation Project</p>
+            <p class="text-paper/80 text-[0.9375rem] mt-1.5">{pub.preprintServer ? `Preprint on ${pub.preprintServer}` : 'Self-published, Loudoun Nature Conservation Project'}</p>
             <a
               href={pdfHref}
               class="btn btn-light mt-6"
@@ -111,12 +131,23 @@ const articleJsonLd = {
         <section aria-labelledby="authors-heading">
           <h2 id="authors-heading" class="kicker mb-4">Authors</h2>
           <ul class="border-t border-ink" role="list">
-            {pub.authors.map((author) => (
-              <li class="py-3 border-b border-ink">{author}</li>
+            {pub.authors.map((author, i) => (
+              <li class="py-3 border-b border-ink">{author}{outsideAffiliations.size > 0 && (
+                <span class="block text-[0.9375rem] text-ink-soft mt-0.5">{authorAffiliations[i] ?? LNCP_AFFILIATION}</span>
+              )}</li>
             ))}
           </ul>
-          <p class="text-[0.9375rem] text-ink-soft mt-4">Research Division, Loudoun Nature Conservation Project</p>
+          {outsideAffiliations.size === 0 && (
+            <p class="text-[0.9375rem] text-ink-soft mt-4">{LNCP_AFFILIATION}</p>
+          )}
         </section>
+
+        {pub.doi && (
+          <section aria-labelledby="doi-heading">
+            <h2 id="doi-heading" class="kicker mb-4">DOI</h2>
+            <a href={pub.doi} class="text-link break-all text-[0.9375rem]" target="_blank" rel="noopener noreferrer">{pub.doi}</a>
+          </section>
+        )}
 
         <a href="/research/" class="text-link inline-block text-[0.9375rem]">
           <span aria-hidden="true">&larr;</span> All Publications
