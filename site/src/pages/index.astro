@@ -16,6 +16,7 @@ import riverStill from '@/assets/photos/river.jpg';
 import fairPhoto from '@/assets/photos/fair.jpg';
 import FlipCard from '@/components/FlipCard.astro';
 import JoinSection from '@/components/JoinSection.astro';
+import StatList from '@/components/StatList.astro';
 import reader from '@/lib/reader';
 import { getWhatWeDo } from '@/lib/about';
 import { resolveAffiliations } from '@/lib/affiliations';
@@ -24,6 +25,7 @@ import { getPublications } from '@/lib/publications';
 import { PHOTO_QUALITY, resolveImage, responsive } from '@/lib/images';
 import { ORG_ID, truncate } from '@/lib/seo';
 import { VOLUNTEER_CARD_BODY } from '@/lib/volunteer';
+import { statFromNumber } from '@/lib/stats';
 import {
   getPressItems,
   buildPressStrip,
@@ -206,10 +208,10 @@ const heroHeadline = home?.heroHeadline ?? 'Youth unite for Earth; inspire chang
 const heroHeadlineParts = heroHeadline.split(';').map((p) => p.trim()).filter(Boolean);
 
 const stats = [
-  { value: home?.statsAcresCleaned?.toLocaleString() ?? '3,122', label: 'Acres Cleaned' },
-  { value: home?.statsMembers?.toLocaleString() ?? '310', label: 'Members' },
-  { value: `${home?.statsImpressions?.toLocaleString() ?? '900,000'}+`, label: 'Impressions' },
-  { value: home?.statsBranches?.toLocaleString() ?? '10', label: 'Branches' },
+  statFromNumber(home?.statsAcresCleaned ?? 3122, 'Acres Cleaned'),
+  statFromNumber(home?.statsMembers ?? 310, 'Members'),
+  statFromNumber(home?.statsImpressions ?? 900000, 'Impressions', '+'),
+  statFromNumber(home?.statsBranches ?? 10, 'Branches'),
 ];
 
 // No Organization node here: Base emits the canonical one (with a stable @id)
@@ -275,7 +277,10 @@ const pressJsonLd = pressItems.map((p) => ({
       </video>
     </div>
 
-    <div class="max-w-6xl mx-auto">
+    <!-- Paler as the sheet slides over the pinned hero (see motion.ts). -->
+    <div class="hero-dim" aria-hidden="true"></div>
+
+    <div class="hero-content max-w-6xl mx-auto">
       <p class="hero-eyebrow">Loudoun County, Virginia</p>
       <h1 id="hero-title" class="hero-title">
         {heroHeadlineParts.map((part, i) => (
@@ -285,7 +290,7 @@ const pressJsonLd = pressItems.map((p) => ({
       <p class="hero-sub max-w-[52ch]">
         {home?.heroSubtext ?? 'Made by Students, for Students. Young hearts, green minds, hands-on action - empowering youth, restoring nature, and fostering community through non-profit (501c3) environmental stewardship in Loudoun County, Virginia.'}
       </p>
-      <div class="mt-9 flex flex-col items-center gap-4">
+      <div class="hero-cta mt-9 flex flex-col items-center gap-4">
         <a href="/volunteer/" class="btn btn-action btn-lg">Volunteer with us</a>
         <p class="text-sm font-medium text-white/95 [text-shadow:0_1px_12px_rgb(15_22_17/0.5)]">
           We're coming back, Loudoun. New school branches announced for the upcoming year.{' '}
@@ -350,14 +355,25 @@ const pressJsonLd = pressItems.map((p) => ({
     </div>
   </div>
 
-  <!-- Hand-drawn seedling, in the place GCC keeps its node motif. -->
+  <!-- Hand-drawn seedling, in the place GCC keeps its node motif. It sways once
+       in a light wind each time it comes into view (scripts/motion.ts starts it;
+       see .seedling in global.css). -->
   <div class="grid place-items-center pt-(--section) text-ink" aria-hidden="true">
-    <svg class="w-[132px] h-auto" viewBox="0 0 132 120" fill="none">
-      <path d="M66 116c.6-10-1.4-19 .4-29 1.6-9.2-.8-17 .6-26 1-6.4-.4-12 .2-18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-      <path d="M66.4 62c-6-12-19-17.6-31-16.4-6.8.8-12 3-15.4 6.4 5 9.6 13.4 16.8 24.6 18.4 9.2 1.4 16.4-2.2 21.8-8.4Z" fill="var(--color-ember)"/>
-      <path d="M67 46c4.4-12.8 16.8-21 29.6-21.4 7-.2 12.6 1.4 16.4 4.2-3.6 10.4-11.2 18.4-22.4 21.4-9.2 2.4-16.8-.2-23.6-4.2Z" fill="var(--color-ember)"/>
-      <path d="M66.6 26c-3.6-7.4-3-15.6 1.6-22 3.8 2.6 6.4 7.8 6.6 13.2.2 5.4-3.2 8.6-8.2 8.8Z" fill="var(--color-ember)"/>
-      <path d="M24 55c10 2.2 24 5.4 42 7M110 29c-12 5.6-27 12-43 17" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" opacity=".55"/>
+    <svg class="seedling w-[132px] h-auto" viewBox="0 0 132 120" fill="none">
+      <g class="seedling-sway">
+        <path d="M66 116c.6-10-1.4-19 .4-29 1.6-9.2-.8-17 .6-26 1-6.4-.4-12 .2-18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        <g class="seedling-leaf seedling-leaf-1">
+          <path d="M66.4 62c-6-12-19-17.6-31-16.4-6.8.8-12 3-15.4 6.4 5 9.6 13.4 16.8 24.6 18.4 9.2 1.4 16.4-2.2 21.8-8.4Z" fill="var(--color-ember)"/>
+          <path d="M24 55c10 2.2 24 5.4 42 7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" opacity=".55"/>
+        </g>
+        <g class="seedling-leaf seedling-leaf-2">
+          <path d="M67 46c4.4-12.8 16.8-21 29.6-21.4 7-.2 12.6 1.4 16.4 4.2-3.6 10.4-11.2 18.4-22.4 21.4-9.2 2.4-16.8-.2-23.6-4.2Z" fill="var(--color-ember)"/>
+          <path d="M110 29c-12 5.6-27 12-43 17" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" opacity=".55"/>
+        </g>
+        <g class="seedling-leaf seedling-leaf-3">
+          <path d="M66.6 26c-3.6-7.4-3-15.6 1.6-22 3.8 2.6 6.4 7.8 6.6 13.2.2 5.4-3.2 8.6-8.2 8.8Z" fill="var(--color-ember)"/>
+        </g>
+      </g>
       <path d="M46 116c14-3 26-3 40 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
     </svg>
   </div>
@@ -368,7 +384,7 @@ const pressJsonLd = pressItems.map((p) => ({
       <h2 id="work-heading" class="section-title">What we do</h2>
       <a href="/about/#what-we-do" class="text-link text-[0.9375rem]">Our work</a>
     </div>
-    <ol class="grid lg:grid-cols-3 gap-x-12 gap-y-10 mt-12 md:mt-16" role="list">
+    <ol class="grid lg:grid-cols-3 gap-x-12 gap-y-10 mt-12 md:mt-16" role="list" data-stagger>
       {whatWeDo.map((item, i) => (
         <li>
           <span class="text-[0.8125rem] tracking-[0.04em] text-ink-soft tabular-nums">{String(i + 1).padStart(2, '0')}</span>
@@ -378,15 +394,7 @@ const pressJsonLd = pressItems.map((p) => ({
       ))}
     </ol>
 
-    <dl class="grid grid-cols-2 sm:flex sm:flex-wrap gap-x-[clamp(1.5rem,6vw,6rem)] gap-y-12 mt-(--section)" aria-label="Impact statistics">
-      {stats.map(({ value, label }) => (
-        <div>
-          <dt class="sr-only">{label}</dt>
-          <dd class="stat-value">{value}</dd>
-          <dd class="mt-4 text-[1.0625rem]">{label}</dd>
-        </div>
-      ))}
-    </dl>
+    <StatList stats={stats} label="Impact statistics" />
   </section>
 
   <!-- From the field: the research band -->
@@ -831,6 +839,14 @@ const pressJsonLd = pressItems.map((p) => ({
 
   <JoinSection />
 
+  <!-- Marks where the hero's bottom edge sits (the sheet's top, plus the
+       2.5rem it overlaps the hero by). The pinned hero never leaves the
+       viewport, so "the hero is gone" is read from this instead of from the
+       hero: it is true once the sheet has slid fully over the hero, and also
+       once an unpinned hero has scrolled away. Absolutely placed so it is not
+       the sheet's first child (which .section:first-child depends on). -->
+  <div class="absolute inset-x-0 top-10 h-0 pointer-events-none" data-hero-edge aria-hidden="true"></div>
+
   <!-- Phones: the one action follows the reader once the hero's own button has
        scrolled away, and steps aside again from the join section down so it
        never covers the real button or the footer. -->
@@ -840,6 +856,16 @@ const pressJsonLd = pressItems.map((p) => ({
 </Base>
 
 <script>
+  // Whether the hero is out of sight: scrolled away, or (once pinned) fully
+  // covered by the sheet. Drives the phone dock and the hero video, which each
+  // check it again whenever the page scrolls or resizes.
+  const heroEdge = document.querySelector<HTMLElement>('[data-hero-edge]');
+  const heroGone = () => !!heroEdge && heroEdge.getBoundingClientRect().top < 0;
+  const onViewChange = (listener: () => void) => {
+    window.addEventListener('scroll', listener, { passive: true });
+    window.addEventListener('resize', listener);
+  };
+
   // Hero video: attach the sources after the load event (see the markup
   // comment). Visitors who asked for reduced motion, and visitors with
   // Save-Data on, never get sources attached: they see the poster still, and
@@ -856,11 +882,29 @@ const pressJsonLd = pressItems.map((p) => ({
     if (document.readyState === 'complete') attach();
     else window.addEventListener('load', attach, { once: true });
 
+    // The video also pauses by itself while the hero is out of sight, and
+    // resumes when it is back. Those pauses are not the visitor's: they leave
+    // the button's icon and label alone, and never override a pause the visitor
+    // chose (a video they paused stays paused).
+    let autoPaused = false;
+    const syncAuto = () => {
+      const gone = heroGone();
+      if (gone && !heroVideo.paused) {
+        autoPaused = true;
+        heroVideo.pause();
+      } else if (!gone && autoPaused) {
+        autoPaused = false;
+        heroVideo.play().catch(() => {});
+      }
+    };
+    onViewChange(syncAuto);
+
     const toggle = document.querySelector<HTMLButtonElement>('[data-hero-video-toggle]');
     if (toggle) {
       const pauseIcon = toggle.querySelector<SVGElement>('[data-icon="pause"]')!;
       const playIcon = toggle.querySelector<SVGElement>('[data-icon="play"]')!;
       const sync = () => {
+        if (autoPaused) return;
         const paused = heroVideo.paused;
         toggle.setAttribute('aria-label', paused ? 'Play background video' : 'Pause background video');
         pauseIcon.classList.toggle('hidden', paused);
@@ -869,6 +913,8 @@ const pressJsonLd = pressItems.map((p) => ({
       heroVideo.addEventListener('play', () => {
         toggle.hidden = false;
         sync();
+        // Autoplay can begin after the hero is already out of sight.
+        syncAuto();
       });
       heroVideo.addEventListener('pause', sync);
       toggle.addEventListener('click', () => {
@@ -921,24 +967,15 @@ const pressJsonLd = pressItems.map((p) => ({
   // section down. While hidden it is inert, so it is never an invisible tab
   // stop or a stray link for a screen reader.
   const dock = document.querySelector<HTMLElement>('[data-dock]');
-  const hero = document.querySelector<HTMLElement>('.hero-home');
   const join = document.getElementById('join');
-  if (dock && hero && join) {
-    let heroGone = false;
-    let pastJoin = false;
+  if (dock && join) {
     const sync = () => {
-      const on = heroGone && !pastJoin;
+      const on = heroGone() && join.getBoundingClientRect().top >= window.innerHeight;
       dock.toggleAttribute('data-on', on);
       dock.inert = !on;
     };
-    new IntersectionObserver(([entry]) => {
-      heroGone = !entry.isIntersecting;
-      sync();
-    }).observe(hero);
-    new IntersectionObserver(([entry]) => {
-      pastJoin = entry.isIntersecting || entry.boundingClientRect.top < 0;
-      sync();
-    }).observe(join);
+    onViewChange(sync);
+    sync();
   }
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

@@ -1,0 +1,235 @@
+/**
+ * Site motion, taken from GCC Cornell's: section reveals, the stat count-up,
+ * and the home hero that stays pinned while the page slides over it. (The
+ * page-title entrance is CSS, in global.css; this only replays it after Back
+ * or Forward.) Beyond GCC's, it also starts the home seedling's sway.
+ *
+ * Every effect is progressive enhancement. The HTML is always the final,
+ * fully visible page; this script only adds the hidden starting state, so with
+ * JavaScript off, in print, or for a visitor who asked for reduced motion,
+ * nothing is hidden and nothing moves. Reduced motion is checked once, here,
+ * and turns all of it off.
+ */
+
+const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const hasObserver = 'IntersectionObserver' in window;
+
+/** GCC's ease-out cubic. */
+const easeOut = (k: number) => 1 - (1 - k) ** 3;
+
+/** A malformed escape in a URL fragment must not stop the page's motion. */
+function safeDecode(value: string) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+/**
+ * Trigger-once rise. `.rise` is the marker in the markup; each one starts
+ * hidden and gets `is-in` when it clears the lower 12% of the viewport.
+ * Children of a `[data-stagger]` container follow one after another.
+ */
+function initReveals() {
+  document.querySelectorAll<HTMLElement>('[data-stagger]').forEach((group) => {
+    Array.from(group.children).forEach((child, i) => (child as HTMLElement).style.setProperty('--i', String(i)));
+  });
+
+  const targets = document.querySelectorAll<HTMLElement>('.rise');
+  // The section a link's #fragment points at is never hidden: the browser has
+  // already scrolled to its resting place, and starting it 24px low would land
+  // it 24px off once it rose.
+  const linked = document.getElementById(safeDecode(location.hash.slice(1)));
+  targets.forEach((el) => {
+    el.classList.add('js-reveal');
+    if (linked && el.contains(linked)) el.classList.add('is-in');
+  });
+
+  if (!hasObserver) {
+    targets.forEach((el) => el.classList.add('is-in'));
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        // A target already scrolled past (an anchor jump, a fast fling) is
+        // shown too, so nothing is left hidden above the reader.
+        if (!entry.isIntersecting && entry.boundingClientRect.top >= 0) continue;
+        entry.target.classList.add('is-in');
+        observer.unobserve(entry.target);
+      }
+    },
+    { rootMargin: '0px 0px -12% 0px' },
+  );
+  targets.forEach((el) => {
+    if (!el.classList.contains('is-in')) observer.observe(el);
+  });
+}
+
+/**
+ * Stat count-up. The markup holds the final value (`.stat-final`) and the
+ * integer target (`data-count`). Here a live figure is stacked over it in the
+ * same grid cell: the final value keeps the width, so nothing shifts while
+ * the digits change, and it stays the text a screen reader gets, since the
+ * live figure is aria-hidden. When the group comes into view every figure
+ * counts from 0 to its target, then the live figure is dropped and only the
+ * markup's own final value remains.
+ */
+function initCountUp() {
+  if (!hasObserver) return;
+
+  const DURATION = 900;
+  const number = new Intl.NumberFormat('en-US');
+
+  document.querySelectorAll<HTMLElement>('[data-stats]').forEach((group) => {
+    const figures = Array.from(group.querySelectorAll<HTMLElement>('[data-count]'))
+      .map((el) => {
+        const target = Number(el.dataset.count);
+        if (!Number.isSafeInteger(target) || target < 0) return null;
+        const prefix = el.dataset.prefix ?? '';
+        const suffix = el.dataset.suffix ?? '';
+        const live = document.createElement('span');
+        live.className = 'stat-live';
+        live.setAttribute('aria-hidden', 'true');
+        const show = (value: number) => (live.textContent = `${prefix}${number.format(value)}${suffix}`);
+        show(0);
+        el.append(live);
+        el.classList.add('is-counting');
+        return { el, live, target, show };
+      })
+      .filter((figure) => figure !== null);
+    if (!figures.length) return;
+
+    const finish = () => figures.forEach(({ el, live }) => (live.remove(), el.classList.remove('is-counting')));
+
+    const run = () => {
+      const start = performance.now();
+      const tick = (now: number) => {
+        const k = Math.min(1, (now - start) / DURATION);
+        if (k >= 1) return finish();
+        figures.forEach(({ target, show }) => show(Math.round(target * easeOut(k))));
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting && entry.boundingClientRect.top >= 0) return;
+        observer.disconnect();
+        // Scrolled past without ever being seen: no one to count for.
+        if (entry.isIntersecting) run();
+        else finish();
+      },
+      { rootMargin: '0px 0px -20% 0px' },
+    );
+    observer.observe(group);
+  });
+}
+
+/**
+ * Home hero, pinned like GCC's: it stays put while the paper sheet slides up
+ * over it, and as it goes the hero text fades and lifts, the video zooms, and
+ * the frame pales toward paper.
+ *
+ * It is pinned by its bottom edge. A hero taller than the viewport (a phone, a
+ * short laptop screen) first scrolls like any other until its bottom reaches
+ * the viewport's, so all its text has been on screen before the sheet covers
+ * any of it; only then does it stay put, and GCC's curves start from there.
+ * "The viewport" is the small one the hero's min-height is sized from, so the
+ * pin holds still while a phone's toolbars slide in and out.
+ */
+function initHeroPin() {
+  const hero = document.querySelector<HTMLElement>('.hero-home');
+  if (!hero) return;
+
+  let vh = 0;
+  let overflow = 0;
+  let frame = 0;
+
+  const update = () => {
+    frame = 0;
+    // GCC's curves, counted from where the hero pins: the text and tint run
+    // out by 55% of a screen scrolled, the zoom by a full screen.
+    const y = Math.max(0, window.scrollY - overflow);
+    hero.style.setProperty('--hero-f', Math.min(1, y / (0.55 * vh)).toFixed(4));
+    hero.style.setProperty('--hero-g', Math.min(1, y / vh).toFixed(4));
+  };
+
+  const measure = () => {
+    vh = parseFloat(getComputedStyle(hero).minHeight);
+    overflow = Math.max(0, hero.offsetHeight - vh);
+    hero.style.setProperty('--hero-top', `${-overflow}px`);
+    update();
+  };
+
+  hero.classList.add('is-pinned');
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    },
+    { passive: true },
+  );
+  window.addEventListener('resize', measure);
+  // Content size changes after load too (web fonts swap in).
+  if ('ResizeObserver' in window) new ResizeObserver(measure).observe(hero);
+  measure();
+
+  // The pinned hero stays behind the sheet once it is scrolled over, so
+  // keyboard focus can land on a control the reader cannot see. Scroll back to
+  // where the sheet has not yet covered any of the hero when it does.
+  hero.addEventListener('focusin', (event) => {
+    if (window.scrollY > overflow && (event.target as Element).matches(':focus-visible')) {
+      window.scrollTo({ top: overflow, behavior: 'instant' });
+    }
+  });
+}
+
+/**
+ * Page-title entrance on a Back/Forward return. A page restored from the
+ * browser's back/forward cache is the same document, so its CSS entrance has
+ * already run; start it over so the title rises in on this visit too.
+ */
+function initTitleReplay() {
+  window.addEventListener('pageshow', (event) => {
+    if (!event.persisted) return;
+    const lines = document.querySelectorAll<HTMLElement>(
+      '.hero .hero-eyebrow, .hero .hero-title, .hero .hero-sub, .hero .hero-cta',
+    );
+    // A finished entrance leaves no animation behind to restart, so it is
+    // switched off and on again, with a layout read between so the browser
+    // sees it stop before it starts.
+    lines.forEach((el) => (el.style.animationName = 'none'));
+    void document.body.offsetWidth;
+    lines.forEach((el) => el.style.removeProperty('animation-name'));
+  });
+}
+
+/**
+ * Home seedling sway. Each time the seedling comes into view it gets
+ * `is-swaying`, which runs one 4.8s gust in CSS; when the sway ends the class
+ * comes off, so the plant rests until it has left the viewport and come back.
+ */
+function initSeedlingSway() {
+  const seedling = document.querySelector<SVGSVGElement>('.seedling');
+  const sway = seedling?.querySelector('.seedling-sway');
+  if (!seedling || !sway || !hasObserver) return;
+
+  sway.addEventListener('animationend', (event) => {
+    if (event.target === sway) seedling.classList.remove('is-swaying');
+  });
+  new IntersectionObserver((entries) => {
+    if (entries.some((entry) => entry.isIntersecting)) seedling.classList.add('is-swaying');
+  }).observe(seedling);
+}
+
+if (!reduced) {
+  initTitleReplay();
+  initReveals();
+  initCountUp();
+  initHeroPin();
+  initSeedlingSway();
+}

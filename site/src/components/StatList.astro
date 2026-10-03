@@ -1,0 +1,39 @@
+---
+import type { Stat } from '@/lib/stats';
+
+interface Props {
+  stats: Stat[];
+  /** Accessible name for the list. */
+  label: string;
+  /** The smaller numeral size used on inner pages. */
+  small?: boolean;
+}
+
+const { stats, label, small = false } = Astro.props;
+---
+
+<!-- Impact numerals. The HTML always holds the final value; scripts/motion.ts
+     counts up to data-count when the list scrolls into view. The list is its
+     own reveal target (rise) so the numbers move when they themselves arrive,
+     not when the section around them does. -->
+<dl
+  class="rise grid grid-cols-2 sm:flex sm:flex-wrap gap-x-[clamp(1.5rem,6vw,6rem)] gap-y-12 mt-(--section)"
+  aria-label={label}
+  data-stagger
+  data-stats
+>
+  {stats.map((stat) => (
+    <div>
+      <dt class="sr-only">{stat.label}</dt>
+      <dd
+        class:list={['stat-value', small && 'stat-value-sm']}
+        data-count={stat.count}
+        data-prefix={stat.count !== undefined && stat.prefix ? stat.prefix : undefined}
+        data-suffix={stat.count !== undefined && stat.suffix ? stat.suffix : undefined}
+      >
+        <span class="stat-final">{stat.text}</span>
+      </dd>
+      <dd class="mt-4 text-[1.0625rem]">{stat.label}</dd>
+    </div>
+  ))}
+</dl>
