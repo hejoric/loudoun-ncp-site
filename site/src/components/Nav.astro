@@ -21,10 +21,11 @@ const isActive = (href: string) => pathname.startsWith(href);
 <!-- Floats over each page's hero. On a photo hero it sits straight on the photo
      in white type with a soft shadow (no paper wash); on a plain paper hero it
      keeps ink type. From lg up it is fixed and takes a frosted paper ground
-     with ink type once the page scrolls; on smaller screens it scrolls away
-     with the hero, so it never costs a phone a permanent strip of the viewport
-     and stays transparent with light type until it leaves. Every link stays
-     visible at every width - there is no hamburger to hide Volunteer behind. -->
+     with ink type once the content sheet reaches it (on a plain hero, once the
+     page scrolls); on smaller screens it scrolls away with the hero, so it
+     never costs a phone a permanent strip of the viewport and stays
+     transparent with light type until it leaves. Every link stays visible at
+     every width - there is no hamburger to hide Volunteer behind. -->
 <header class="site-nav absolute lg:fixed inset-x-0 top-0 z-50" data-site-nav>
   <nav
     class="grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto_1fr] items-center gap-x-6 gap-y-4 px-(--gutter) pt-4 pb-3 lg:py-4"
@@ -58,20 +59,21 @@ const isActive = (href: string) => pathname.startsWith(href);
 </header>
 
 <style>
+  /* Type colour for the wordmark, links and bullets. Ink by default; white
+     over a photo hero (found with :has, so no page has to say so). There the
+     ground and the type switch in the same frame, with no fade, so white type
+     never shows on paper and ink never shows on the photo. */
   .site-nav {
+    --nav-fg: var(--color-ink);
+    --nav-shadow: none;
     transition:
       background-color 0.3s,
       box-shadow 0.3s;
   }
-  /* Type colour for the wordmark, links and bullets. Ink by default; white
-     over a photo hero (found with :has, so no page has to say so). */
-  .site-nav {
-    --nav-fg: var(--color-ink);
-    --nav-shadow: none;
-  }
   :global(body:has(.hero-media)) .site-nav {
     --nav-fg: var(--color-paper);
     --nav-shadow: 0 1px 12px rgb(15 22 17 / 0.5), 0 0 2px rgb(15 22 17 / 0.35);
+    transition: none;
   }
   /* The site's forest focus ring would vanish on the photo; it stays light
      whenever the type is light (stuck only counts from lg up). */
@@ -86,20 +88,20 @@ const isActive = (href: string) => pathname.startsWith(href);
   /* Only from lg up is the nav fixed, so only there does it take the frosted
      ground (and return to ink). Below lg it scrolls off with the hero. */
   @media (min-width: 1024px) {
-    .site-nav[data-stuck],
+    .site-nav[data-stuck] {
+      background: rgb(245 244 239 / 0.88);
+      -webkit-backdrop-filter: saturate(1.4) blur(14px);
+      backdrop-filter: saturate(1.4) blur(14px);
+      box-shadow: 0 1px 0 var(--hairline);
+    }
     :global(body:has(.hero-media)) .site-nav[data-stuck] {
       --nav-fg: var(--color-ink);
       --nav-shadow: none;
-      background: rgb(245 244 239 / 0.88);
-      backdrop-filter: saturate(1.4) blur(14px);
-      -webkit-backdrop-filter: saturate(1.4) blur(14px);
-      box-shadow: 0 1px 0 var(--hairline);
     }
   }
   .nav-brand {
     color: var(--nav-fg);
     text-shadow: var(--nav-shadow);
-    transition: color 0.3s;
   }
 
   /* GCC's bulleted link cluster: three short columns, read top to bottom. */
@@ -119,9 +121,7 @@ const isActive = (href: string) => pathname.startsWith(href);
     font: 500 0.875rem/1.2 var(--font-body);
     color: var(--nav-fg);
     text-shadow: var(--nav-shadow);
-    transition:
-      transform 0.2s var(--ease-out),
-      color 0.3s;
+    transition: transform 0.2s var(--ease-out);
   }
   .nav-cluster a::before {
     content: '';
@@ -148,10 +148,20 @@ const isActive = (href: string) => pathname.startsWith(href);
 </style>
 
 <script>
+  // Over a photo hero the nav is stuck once the content sheet's top edge
+  // reaches its bottom edge, so the photo never gets a paper bar; the sheet is
+  // measured, not the hero, because the home hero is pinned while the sheet
+  // slides over it. Every other page is stuck after a short scroll.
   const nav = document.querySelector<HTMLElement>('[data-site-nav]');
   if (nav) {
-    const sync = () => nav.toggleAttribute('data-stuck', window.scrollY > 24);
+    const sheet = document.querySelector('.hero-media') && document.querySelector('.sheet');
+    const sync = () =>
+      nav.toggleAttribute(
+        'data-stuck',
+        sheet ? sheet.getBoundingClientRect().top <= nav.getBoundingClientRect().bottom : window.scrollY > 24,
+      );
     window.addEventListener('scroll', sync, { passive: true });
+    window.addEventListener('resize', sync);
     sync();
   }
 </script>
