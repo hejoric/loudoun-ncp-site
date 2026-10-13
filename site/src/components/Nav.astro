@@ -81,7 +81,7 @@ const isActive = (href: string) => pathname.startsWith(href);
   :global(body:has(.hero-media)) .site-nav:not([data-stuck]) :focus-visible {
     outline-color: var(--color-paper);
   }
-  @media (max-width: 1023px) {
+  @media (width < 64rem) {
     :global(body:has(.hero-media)) .site-nav :focus-visible {
       outline-color: var(--color-paper);
     }
@@ -89,7 +89,7 @@ const isActive = (href: string) => pathname.startsWith(href);
   /* Only from lg up, and only once the script below has run, is the nav fixed,
      so only there does it take the frosted ground (and return to ink). Below
      lg, or without the script, it scrolls off with the hero. */
-  @media (min-width: 1024px) {
+  @media (width >= 64rem) {
     .site-nav[data-fixed] {
       position: fixed;
     }
@@ -145,7 +145,7 @@ const isActive = (href: string) => pathname.startsWith(href);
     }
   }
   /* On a phone the three columns share the width evenly under the logo row. */
-  @media (max-width: 1023px) {
+  @media (width < 64rem) {
     .nav-cluster {
       grid-template-columns: repeat(3, minmax(0, auto));
     }

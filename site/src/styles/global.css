@@ -411,7 +411,7 @@
     color: var(--color-ink-soft);
     text-shadow: none;
   }
-  @media (max-width: 1023px) {
+  @media (width < 64rem) {
     .hero {
       --hero-top-shade: linear-gradient(to bottom, rgb(15 22 17 / 0.6) 0, rgb(15 22 17 / 0.55) 140px, rgb(15 22 17 / 0) 230px);
       padding-top: 210px;
