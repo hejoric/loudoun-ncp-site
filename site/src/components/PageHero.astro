@@ -23,10 +23,11 @@ const widths = image ? [640, 960, 1280, 1600, 2048].filter((w) => w < image.widt
 ---
 
 <!-- Interior page opener, the GCC About pattern: a full-bleed photo band with
-     a serif headline, faded to paper at the top so the navigation sits on light
-     ground. Base.astro sets the page body on the sheet that overlaps its bottom
-     edge. The photo is decorative (the headline says what the page is), and it
-     is the page's largest paint, so it loads at high priority. -->
+     a serif headline under a near-neutral shade. The photo runs to the top edge
+     and the navigation floats over it in white type. Base.astro sets the page
+     body on the sheet that overlaps its bottom edge. The photo is decorative
+     (the headline says what the page is), and it is the page's largest paint,
+     so it loads at high priority. -->
 <section class:list={['hero', image ? 'hero-page' : 'hero-plain']} aria-labelledby="page-title">
   {image && (
     <div class="hero-media" aria-hidden="true">

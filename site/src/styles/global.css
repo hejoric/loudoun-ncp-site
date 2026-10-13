@@ -311,11 +311,13 @@
     height: 100%;
     object-fit: cover;
   }
-  /* Two layers: a fade from paper at the top, so the navigation sits on light
-     ground the way GCC's does, and a near-neutral shade under the white type.
-     The shade never drops below ~30%, because the brightest stills (grey sky
-     over the river, sunlit rock) otherwise leave the white subtitle under AA. */
+  /* Two near-neutral layers, with no paper wash, so the photo shows through to
+     the top edge: a short top shade under the navigation's white type (see
+     Nav.astro), and a shade under the hero's own white type. That one never
+     drops below ~30%, because the brightest stills (grey sky over the river,
+     sunlit rock) otherwise leave the white subtitle under AA. */
   .hero {
+    --hero-top-shade: linear-gradient(to bottom, rgb(15 22 17 / 0.5) 0, rgb(15 22 17 / 0.45) 110px, rgb(15 22 17 / 0) 190px);
     --hero-shade: linear-gradient(to bottom, rgb(15 22 17 / 0.3) 25%, rgb(15 22 17 / 0.45) 50%, rgb(15 22 17 / 0.58) 75%, rgb(15 22 17 / 0.66) 100%);
   }
   .hero::before {
@@ -324,9 +326,7 @@
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    background:
-      linear-gradient(to bottom, rgb(245 244 239 / 0.96) 0, rgb(245 244 239 / 0.55) 90px, rgb(245 244 239 / 0) 190px),
-      var(--hero-shade);
+    background: var(--hero-top-shade), var(--hero-shade);
   }
   /* The intro fills the first screen top to bottom, as GCC's does, so the
      content sheet begins where the screen ends. svh (the small viewport) keeps
@@ -411,13 +411,9 @@
     color: var(--color-ink-soft);
     text-shadow: none;
   }
-  @media (max-width: 1023px) {
-    .hero::before {
-      background:
-        linear-gradient(to bottom, rgb(245 244 239 / 0.97) 0, rgb(245 244 239 / 0.88) 128px, rgb(245 244 239 / 0) 250px),
-        var(--hero-shade);
-    }
+  @media (width < 64rem) {
     .hero {
+      --hero-top-shade: linear-gradient(to bottom, rgb(15 22 17 / 0.6) 0, rgb(15 22 17 / 0.55) 140px, rgb(15 22 17 / 0) 230px);
       padding-top: 210px;
     }
     .hero-plain {
