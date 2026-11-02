@@ -163,12 +163,11 @@ recapLink: null
 ```
 
 Times must be 24-hour `HH:MM` (`11:00`, not `11am`); anything else fails the
-build. An event stays under "Upcoming Events" until it ends (its `endTime`, or
-the end of its date when it has none, both in Eastern time) and moves to "Past
-Events" on the next build after that. Once it ends, a visitor's browser
-shows the card as "Event over" (grayed out, Sign Up button removed) without a
-redeploy, and it moves to "Past Events" at the next nightly rebuild (or any
-deploy).
+build. An event stays under "Upcoming Events" until it ends: its `endTime`, or
+11 PM on its date when it has none, both in New York time. Once it ends, a
+visitor's browser shows the card as "Event over" (grayed out, Sign Up button
+removed) without a redeploy, and it moves to "Past Events" at the nightly
+rebuild at 11:17 PM New York time (or any earlier deploy).
 
 A blank line in `description` starts a new paragraph, and email addresses in it
 become links. In a hand-written `>-` block that takes two blank lines between

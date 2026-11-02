@@ -20,7 +20,7 @@ const instagram = await getSocialLink('instagramUrl');
 
 const events = await reader.collections.events.all();
 const now = new Date();
-// An event stays upcoming until it ends (its end time, else the end of its day,
+// An event stays upcoming until it ends (its end time, else 11 PM on its date,
 // both in New York), so a date-only event does not flip to past the evening before.
 const upcoming = events
   .filter((e) => e.entry.date && eventEnd(e.entry) >= now)
@@ -228,29 +228,20 @@ const eventJsonLd = await Promise.all([
   // The upcoming/past split is fixed at build time, so a card whose event has
   // since ended is marked in the browser: "Event over" label, grayed styling,
   // no Sign Up link. Without JavaScript the card simply stays as built.
-  const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-event-end]'));
+  const pending = new Set(document.querySelectorAll<HTMLElement>('[data-event-end]'));
 
-  if (cards.length > 0) {
-    const pending = new Set(cards);
+  const check = () => {
+    for (const card of pending) {
+      if (Date.now() < Date.parse(card.dataset.eventEnd!)) continue;
+      card.setAttribute('data-ended', '');
+      card.querySelector('[data-event-over]')?.removeAttribute('hidden');
+      // The Sign Up link is removed.
+      card.querySelector('[data-event-signup]')?.remove();
+      pending.delete(card);
+    }
+    if (pending.size === 0) window.clearInterval(timer);
+  };
 
-    const check = () => {
-      for (const card of pending) {
-        const end = Date.parse(card.dataset.eventEnd ?? '');
-        if (Number.isNaN(end)) {
-          pending.delete(card);
-          continue;
-        }
-        if (Date.now() < end) continue;
-        card.setAttribute('data-ended', '');
-        card.querySelector('[data-event-over]')?.removeAttribute('hidden');
-        // Removed, not hidden: .btn sets display, which would beat [hidden].
-        card.querySelector('[data-event-signup]')?.remove();
-        pending.delete(card);
-      }
-      if (pending.size === 0) window.clearInterval(timer);
-    };
-
-    const timer = window.setInterval(check, 60_000);
-    check();
-  }
+  const timer = window.setInterval(check, 60_000);
+  check();
 </script>

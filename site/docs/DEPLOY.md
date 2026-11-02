@@ -55,9 +55,14 @@ would stay under Upcoming until the next code change. (In the meantime the
 browser marks an ended card "Event over" and removes its Sign Up button, see
 `events.astro`.)
 
-**Schedule:** `17 6 * * *` UTC, which is 1:17 AM EST or 2:17 AM EDT in New York.
-The odd minute is deliberate, because GitHub delays top-of-hour schedules. An
-event ending in the evening therefore moves to Past shortly after midnight.
+**Schedule:** 11:17 PM New York time, every night. An event with no end time
+counts as ended at 11 PM on its date (`eventEnd` in `src/lib/events.ts`), so the
+rebuild moves every event of the day to Past. GitHub cron runs in UTC, so the
+workflow has two schedules: `17 3 * * *` (11:17 PM EDT) and `17 4 * * *`
+(11:17 PM EST). Each scheduled run checks whether New York is on EDT or EST and
+deploys only if its schedule is the matching one; the other run logs a notice
+and exits without deploying. The odd minute is deliberate, because GitHub delays
+top-of-hour schedules.
 
 **One-time setup** (the workflow fails with a clear error until it is done):
 
@@ -68,7 +73,8 @@ event ending in the evening therefore moves to Past shortly after midnight.
    `VERCEL_DEPLOY_HOOK_URL`. The URL is a credential: anyone with it can trigger
    deploys, so never paste it into a workflow file or a log.
 
-**Run it manually:** the Actions tab, "Nightly rebuild", **Run workflow**, or
+**Run it manually** (a manual run always deploys): the Actions tab, "Nightly
+rebuild", **Run workflow**, or
 
 ```sh
 gh workflow run nightly-rebuild.yml --repo hejoric/loudoun-ncp-site
