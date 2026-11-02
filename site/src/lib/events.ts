@@ -22,7 +22,6 @@ const offsetFormat = new Intl.DateTimeFormat('en-US', {
 
 interface TimedEntry {
   date: string | null;
-  startTime?: string | null;
   endTime?: string | null;
 }
 
@@ -106,4 +105,18 @@ export function paragraphs(text?: string | null): string[] {
     .split(/\n\s*\n/)
     .map((p) => p.trim())
     .filter(Boolean);
+}
+
+const EMAIL_RE = /([\w.+-]+@[\w-]+(?:\.[\w-]+)+)/;
+
+/**
+ * Split a paragraph around the email addresses in it, so each can be rendered
+ * as a link: plain text stays a string, an address becomes its two halves.
+ */
+export function emailParts(text: string): (string | { local: string; domain: string })[] {
+  return text.split(EMAIL_RE).map((part, i) => {
+    if (i % 2 === 0) return part;
+    const at = part.indexOf('@');
+    return { local: part.slice(0, at), domain: part.slice(at + 1) };
+  });
 }

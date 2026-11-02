@@ -2,18 +2,19 @@
 import { Image, getImage } from 'astro:assets';
 import Base from '@/layouts/Base.astro';
 import PageHero from '@/components/PageHero.astro';
+import EventDescription from '@/components/EventDescription.astro';
 import heroPhoto from '@/assets/photos/8-people-cleanup-done.jpg';
 import reader from '@/lib/reader';
 import { getSocialLink } from '@/lib/social';
 import { ORG_ID, SITE_URL, absoluteUrl } from '@/lib/seo';
-import { eventEnd, formatTimeRange, paragraphs, zonedIso } from '@/lib/events';
+import { eventEnd, formatTimeRange, zonedIso } from '@/lib/events';
 import { resolveImage, responsive } from '@/lib/images';
 
 // Photos in a past event's grid: two columns on phones, three from 640px, in a
 // row capped at max-w-5xl (64rem) less the 11rem date column and 1.5rem gap,
 // and the page gutter.
 const EVENT_PHOTO_WIDTHS = [240, 360, 480, 640, 800];
-const EVENT_PHOTO_SIZES = '(min-width: 1024px) 220px, (min-width: 640px) 28vw, 46vw';
+const EVENT_PHOTO_SIZES = '(min-width: 1072px) 270px, (min-width: 640px) calc(33vw - 80px), calc(50vw - 24px)';
 
 const instagram = await getSocialLink('instagramUrl');
 
@@ -114,9 +115,7 @@ const eventJsonLd = await Promise.all([
                   <p class="text-ink-soft text-[0.9375rem] mt-1.5">
                     {meta}
                   </p>
-                  {paragraphs(event.entry.description).map((text, i) => (
-                    <p class:list={['text-ink-soft leading-relaxed break-words', i === 0 ? 'mt-3' : 'mt-2']}>{text}</p>
-                  ))}
+                  <EventDescription text={event.entry.description} />
                   {event.entry.signupLink && (
                     <a
                       href={event.entry.signupLink}
@@ -173,14 +172,12 @@ const eventJsonLd = await Promise.all([
             const date = new Date(event.entry.date!);
             const displayDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
             return (
-              <li class="grid sm:grid-cols-[11rem_minmax(0,1fr)] gap-x-6 gap-y-1 py-5 border-b border-ink">
+              <li class="grid grid-cols-[minmax(0,1fr)] sm:grid-cols-[11rem_minmax(0,1fr)] gap-x-6 gap-y-1 py-5 border-b border-ink">
                 <time class="text-[0.9375rem] text-ink-soft">{displayDate}</time>
                 <div>
                   <p class="font-medium">{event.entry.title}</p>
                   {event.entry.location && <p class="text-[0.9375rem] text-ink-soft mt-0.5">{event.entry.location}</p>}
-                  {paragraphs(event.entry.description).map((text, i) => (
-                    <p class:list={['text-ink-soft leading-relaxed break-words max-w-[60ch]', i === 0 ? 'mt-3' : 'mt-2']}>{text}</p>
-                  ))}
+                  <EventDescription text={event.entry.description} class="max-w-[60ch]" />
                   {event.entry.photos.length > 0 && (
                     <ul class="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-4" role="list">
                       {event.entry.photos.map((photo) => {
