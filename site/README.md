@@ -167,6 +167,10 @@ build. An event stays under "Upcoming Events" until it ends (its `endTime`, or
 the end of its date when it has none, both in Eastern time) and moves to "Past
 Events" on the next build after that.
 
+A blank line in `description` starts a new paragraph, and email addresses in it
+become links. In a hand-written `>-` block that takes two blank lines between
+paragraphs (with one, they run together), which is how Keystatic saves it.
+
 `photos` and `recapLink` are shown on past events only. Each photo is a file
 under `src/assets/events/` plus its alt text, and `recapLink` is usually the
 Instagram post:
