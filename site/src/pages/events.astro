@@ -1,32 +1,55 @@
 ---
+import { Image, getImage } from 'astro:assets';
 import Base from '@/layouts/Base.astro';
 import PageHero from '@/components/PageHero.astro';
 import heroPhoto from '@/assets/photos/8-people-cleanup-done.jpg';
 import reader from '@/lib/reader';
 import { getSocialLink } from '@/lib/social';
 import { ORG_ID, SITE_URL, absoluteUrl } from '@/lib/seo';
+import { eventEnd, formatTimeRange, paragraphs, zonedIso } from '@/lib/events';
+import { resolveImage, responsive } from '@/lib/images';
+
+// Photos in a past event's grid: two columns on phones, three from 640px, in a
+// row capped at max-w-5xl (64rem) less the 11rem date column and 1.5rem gap,
+// and the page gutter.
+const EVENT_PHOTO_WIDTHS = [240, 360, 480, 640, 800];
+const EVENT_PHOTO_SIZES = '(min-width: 1024px) 220px, (min-width: 640px) 28vw, 46vw';
 
 const instagram = await getSocialLink('instagramUrl');
 
 const events = await reader.collections.events.all();
 const now = new Date();
+// An event stays upcoming until it ends (its end time, else the end of its day,
+// both in New York), so a date-only event does not flip to past the evening before.
 const upcoming = events
-  .filter((e) => e.entry.date && new Date(e.entry.date) >= now)
-  .sort((a, b) => new Date(a.entry.date!).getTime() - new Date(b.entry.date!).getTime());
+  .filter((e) => e.entry.date && eventEnd(e.entry) >= now)
+  .sort((a, b) => a.entry.date!.localeCompare(b.entry.date!));
 const past = events
-  .filter((e) => e.entry.date && new Date(e.entry.date) < now)
-  .sort((a, b) => new Date(b.entry.date!).getTime() - new Date(a.entry.date!).getTime());
+  .filter((e) => e.entry.date && eventEnd(e.entry) < now)
+  .sort((a, b) => b.entry.date!.localeCompare(a.entry.date!));
 
-// Event schema for both upcoming and past events. The CMS stores a date with no
-// time component, so `startDate` is date-only - valid per schema.org, and
-// honest about the precision we actually have.
-function eventNode(event: (typeof events)[number], isPast: boolean) {
+// Event schema for both upcoming and past events. The CMS stores a date plus
+// optional start and end times (read as New York time). With a start time,
+// `startDate` is a zoned datetime and `endDate` follows when there is an end
+// time; with none it stays date-only, which is valid per schema.org and honest
+// about the precision we have. `image` lists the optimized photo files the page
+// serves, as absolute URLs.
+async function eventNode(event: (typeof events)[number], isPast: boolean) {
+  const { date, startTime, endTime, photos } = event.entry;
+  const photoUrls = await Promise.all(
+    photos.map(async (photo) => {
+      const image = resolveImage(photo.image);
+      const { src } = await getImage({ src: image, ...responsive(image, EVENT_PHOTO_WIDTHS, EVENT_PHOTO_SIZES) });
+      return absoluteUrl(src);
+    }),
+  );
   const slug = event.slug ?? event.entry.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
   return {
     '@type': 'Event',
     '@id': `${SITE_URL}/events/#${slug}`,
     name: event.entry.title,
-    startDate: event.entry.date,
+    startDate: startTime ? zonedIso(date!, startTime) : date,
+    ...(startTime && endTime ? { endDate: zonedIso(date!, endTime) } : {}),
     eventStatus: 'https://schema.org/EventScheduled',
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     organizer: { '@id': ORG_ID },
@@ -34,6 +57,7 @@ function eventNode(event: (typeof events)[number], isPast: boolean) {
       ? { location: { '@type': 'Place', name: event.entry.location } }
       : {}),
     ...(event.entry.description ? { description: event.entry.description } : {}),
+    ...(photoUrls.length ? { image: photoUrls } : {}),
     ...(!isPast && event.entry.signupLink
       ? {
           offers: {
@@ -48,10 +72,15 @@ function eventNode(event: (typeof events)[number], isPast: boolean) {
   };
 }
 
-const eventJsonLd = [
+function recapLabel(url: string) {
+  const host = new URL(url).hostname.replace(/^www\./, '');
+  return host === 'instagram.com' ? 'See the post on Instagram' : 'See the recap';
+}
+
+const eventJsonLd = await Promise.all([
   ...upcoming.map((e) => eventNode(e, false)),
   ...past.map((e) => eventNode(e, true)),
-];
+]);
 ---
 
 <Base
@@ -67,25 +96,27 @@ const eventJsonLd = [
       <h2 id="upcoming-heading" class="section-title mb-10">Upcoming Events</h2>
 
       {upcoming.length > 0 ? (
-        <ol class="grid gap-4 max-w-5xl" role="list">
+        <ol class="grid grid-cols-[minmax(0,1fr)] gap-4 max-w-5xl" role="list">
           {upcoming.map((event) => {
             const date = new Date(event.entry.date!);
             const displayDate = date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+            const meta = [displayDate, formatTimeRange(event.entry.startTime, event.entry.endTime), event.entry.location]
+              .filter(Boolean)
+              .join(' · ');
             return (
               <li class="panel p-6 sm:p-8 flex flex-col sm:flex-row gap-6">
                 <div class="shrink-0 text-center rounded-control bg-forest-900 text-paper p-3 w-18 h-fit">
                   <p class="text-xs uppercase tracking-wide">{date.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' })}</p>
                   <p class="font-display text-4xl leading-none mt-1">{date.getUTCDate()}</p>
                 </div>
-                <div class="flex-1">
+                <div class="flex-1 min-w-0">
                   <h3 class="text-[1.875rem] leading-tight">{event.entry.title}</h3>
                   <p class="text-ink-soft text-[0.9375rem] mt-1.5">
-                    {displayDate}
-                    {event.entry.location && ` · ${event.entry.location}`}
+                    {meta}
                   </p>
-                  {event.entry.description && (
-                    <p class="text-ink-soft mt-3 leading-relaxed">{event.entry.description}</p>
-                  )}
+                  {paragraphs(event.entry.description).map((text, i) => (
+                    <p class:list={['text-ink-soft leading-relaxed break-words', i === 0 ? 'mt-3' : 'mt-2']}>{text}</p>
+                  ))}
                   {event.entry.signupLink && (
                     <a
                       href={event.entry.signupLink}
@@ -147,6 +178,34 @@ const eventJsonLd = [
                 <div>
                   <p class="font-medium">{event.entry.title}</p>
                   {event.entry.location && <p class="text-[0.9375rem] text-ink-soft mt-0.5">{event.entry.location}</p>}
+                  {paragraphs(event.entry.description).map((text, i) => (
+                    <p class:list={['text-ink-soft leading-relaxed break-words max-w-[60ch]', i === 0 ? 'mt-3' : 'mt-2']}>{text}</p>
+                  ))}
+                  {event.entry.photos.length > 0 && (
+                    <ul class="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-4" role="list">
+                      {event.entry.photos.map((photo) => {
+                        const image = resolveImage(photo.image);
+                        return (
+                          <li>
+                            <Image
+                              src={image}
+                              alt={photo.alt}
+                              {...responsive(image, EVENT_PHOTO_WIDTHS, EVENT_PHOTO_SIZES)}
+                              class="w-full aspect-[3/4] object-cover rounded-control"
+                              loading="lazy"
+                            />
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                  {event.entry.recapLink && (
+                    <p class="mt-4">
+                      <a href={event.entry.recapLink} class="text-link text-[0.9375rem]" target="_blank" rel="noopener noreferrer">
+                        {recapLabel(event.entry.recapLink)}
+                      </a>
+                    </p>
+                  )}
                 </div>
               </li>
             );

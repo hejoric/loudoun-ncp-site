@@ -212,6 +212,43 @@ export default config({
           label: 'Sign-up / RSVP Link',
           validation: { isRequired: false },
         }),
+        // Times are Eastern (America/New_York); src/lib/events.ts validates the
+        // HH:MM shape again at build time.
+        startTime: fields.text({
+          label: 'Start time (24-hour, e.g. 11:00)',
+          validation: {
+            isRequired: false,
+            pattern: { regex: /^(?:([01]\d|2[0-3]):[0-5]\d)?$/, message: 'Use 24-hour HH:MM, for example 11:00' },
+          },
+        }),
+        endTime: fields.text({
+          label: 'End time (24-hour, e.g. 13:00)',
+          validation: {
+            isRequired: false,
+            pattern: { regex: /^(?:([01]\d|2[0-3]):[0-5]\d)?$/, message: 'Use 24-hour HH:MM, for example 13:00' },
+          },
+        }),
+        // Photos stay under src/assets so astro:assets optimizes them;
+        // src/lib/images.ts maps the stored path back to the imported asset.
+        photos: fields.array(
+          fields.object({
+            image: fields.image({
+              label: 'Photo (portrait works best)',
+              directory: 'src/assets/events',
+              publicPath: '/src/assets/events/',
+              validation: { isRequired: true },
+            }),
+            alt: fields.text({ label: 'Alt text', validation: { isRequired: true, length: { min: 1 } } }),
+          }),
+          {
+            label: 'Photos',
+            itemLabel: (props) => props.fields.alt.value,
+          },
+        ),
+        recapLink: fields.url({
+          label: 'Recap post link (e.g. the Instagram post) - shown on past events',
+          validation: { isRequired: false },
+        }),
       },
     }),
   },

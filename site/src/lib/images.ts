@@ -17,7 +17,7 @@
 import type { ImageMetadata } from 'astro';
 
 const CONTENT_IMAGES = import.meta.glob<{ default: ImageMetadata }>(
-  '/src/assets/{team,branches,affiliations,press}/**/*.{jpg,jpeg,png,webp,avif,svg}',
+  '/src/assets/{team,branches,affiliations,press,events}/**/*.{jpg,jpeg,png,webp,avif,svg}',
   { eager: true },
 );
 
@@ -30,7 +30,7 @@ export function resolveImage(path: string | null | undefined): ImageMetadata | n
     const dir = path.slice(0, path.lastIndexOf('/') + 1);
     const siblings = Object.keys(CONTENT_IMAGES).filter((key) => key.slice(0, key.lastIndexOf('/') + 1) === dir);
     throw new Error(
-      `Image "${path}" does not match a file in src/assets/{team,branches,affiliations,press}. ` +
+      `Image "${path}" does not match a file in src/assets/{team,branches,affiliations,press,events}. ` +
         (siblings.length
           ? `Files in ${dir}: ${siblings.join(', ')}.`
           : `Content images must live there so astro:assets can optimize them.`),
