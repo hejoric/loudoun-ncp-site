@@ -47,8 +47,8 @@ function newYorkOffsetMinutes(instant: number): number {
 }
 
 /** Offset in force at a New York wall-clock time, and the instant it names. */
-function zoned(year: number, month: number, day: number, hour: number, minute: number, second: number) {
-  const wall = Date.UTC(year, month - 1, day, hour, minute, second);
+function zoned(year: number, month: number, day: number, hour: number, minute: number) {
+  const wall = Date.UTC(year, month - 1, day, hour, minute);
   // The offset at the wall-clock time read as UTC is off by at most the offset
   // itself, which only matters within hours of a clock change; re-reading it at
   // the resulting instant settles that.
@@ -69,19 +69,21 @@ function formatOffset(offset: number): string {
 export function zonedIso(date: string, time: string): string {
   const [year, month, day] = parseDate(date);
   const [hour, minute] = parseTime(time, 'time');
-  const { offset } = zoned(year, month, day, hour, minute, 0);
+  const { offset } = zoned(year, month, day, hour, minute);
   const pad = (n: number) => String(n).padStart(2, '0');
   return `${year}-${pad(month)}-${pad(day)}T${pad(hour)}:${pad(minute)}:00${formatOffset(offset)}`;
 }
 
 /**
- * The instant an event ends: its end time when set, otherwise the end of its
- * date (23:59:59) in New York. An event is upcoming while this is not past.
+ * The instant an event ends: its end time when set, otherwise 23:00 on its
+ * date, both in New York. An event is upcoming while this is not past. The
+ * 23:00 fallback comes before the 11:17 PM nightly rebuild, so that build moves
+ * every event of the day to Past.
  */
 export function eventEnd(entry: TimedEntry): Date {
   const [year, month, day] = parseDate(entry.date!);
-  const [hour, minute, second] = entry.endTime ? [...parseTime(entry.endTime, 'endTime'), 0] : [23, 59, 59];
-  return new Date(zoned(year, month, day, hour, minute, second).instant);
+  const [hour, minute]: [number, number] = entry.endTime ? parseTime(entry.endTime, 'endTime') : [23, 0];
+  return new Date(zoned(year, month, day, hour, minute).instant);
 }
 
 /** "11:00" -> "11 AM", "09:30" -> "9:30 AM", "13:00" -> "1 PM". */

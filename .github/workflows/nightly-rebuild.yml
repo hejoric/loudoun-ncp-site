@@ -1,0 +1,44 @@
+name: Nightly rebuild
+
+# The site is fully static, so the upcoming/past split on /events/ is computed
+# at build time. Triggering a Vercel deploy every night at 11:17 PM New York
+# time moves the day's events to Past Events without a code change (an event
+# with no end time counts as ended at 11 PM). Cron runs in UTC, so there is one
+# entry per New York offset: 03:17 UTC is 11:17 PM EDT and 04:17 UTC is
+# 11:17 PM EST. Each scheduled run deploys only when its schedule matches the
+# offset New York is on that day; the other one logs a notice and exits. The
+# off-the-hour minute avoids GitHub's delays on top-of-hour schedules.
+on:
+  schedule:
+    - cron: '17 3 * * *'
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  rebuild:
+    name: rebuild
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger Vercel deploy hook
+        env:
+          URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+          SCHEDULE: ${{ github.event.schedule }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = schedule ]; then
+            zone=$(TZ=America/New_York date +%Z)
+            case "$zone/$SCHEDULE" in
+              'EDT/17 3 * * *' | 'EST/17 4 * * *') ;;
+              *)
+                echo "::notice::Skipped: the '$SCHEDULE' run is not 11:17 PM in New York while it is on $zone."
+                exit 0
+                ;;
+            esac
+          fi
+          if [ -z "$URL" ]; then
+            echo "::error::The VERCEL_DEPLOY_HOOK_URL repository secret is empty or missing. See site/docs/DEPLOY.md, Nightly rebuild."
+            exit 1
+          fi
+          curl -fsS -X POST "$URL"

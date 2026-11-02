@@ -20,7 +20,7 @@ const instagram = await getSocialLink('instagramUrl');
 
 const events = await reader.collections.events.all();
 const now = new Date();
-// An event stays upcoming until it ends (its end time, else the end of its day,
+// An event stays upcoming until it ends (its end time, else 11 PM on its date,
 // both in New York), so a date-only event does not flip to past the evening before.
 const upcoming = events
   .filter((e) => e.entry.date && eventEnd(e.entry) >= now)
@@ -105,13 +105,23 @@ const eventJsonLd = await Promise.all([
               .filter(Boolean)
               .join(' · ');
             return (
-              <li class="panel p-6 sm:p-8 flex flex-col sm:flex-row gap-6">
-                <div class="shrink-0 text-center rounded-control bg-forest-900 text-paper p-3 w-18 h-fit">
+              <li
+                class="group panel p-6 sm:p-8 flex flex-col sm:flex-row gap-6 data-[ended]:bg-paper"
+                data-event-end={eventEnd(event.entry).toISOString()}
+              >
+                <div class="shrink-0 text-center rounded-control bg-forest-900 text-paper p-3 w-18 h-fit group-data-[ended]:bg-paper-2 group-data-[ended]:text-ink-soft">
                   <p class="text-xs uppercase tracking-wide">{date.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' })}</p>
                   <p class="font-display text-4xl leading-none mt-1">{date.getUTCDate()}</p>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <h3 class="text-[1.875rem] leading-tight">{event.entry.title}</h3>
+                  <p
+                    class="kicker block w-fit mb-2 px-2.5 py-1 rounded-control bg-paper-2 text-ink"
+                    data-event-over
+                    hidden
+                  >
+                    Event over
+                  </p>
+                  <h3 class="text-[1.875rem] leading-tight group-data-[ended]:text-ink-soft">{event.entry.title}</h3>
                   <p class="text-ink-soft text-[0.9375rem] mt-1.5">
                     {meta}
                   </p>
@@ -120,6 +130,7 @@ const eventJsonLd = await Promise.all([
                     <a
                       href={event.entry.signupLink}
                       class="btn btn-action mt-5"
+                      data-event-signup
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -212,3 +223,25 @@ const eventJsonLd = await Promise.all([
     </section>
   )}
 </Base>
+
+<script>
+  // The upcoming/past split is fixed at build time, so a card whose event has
+  // since ended is marked in the browser: "Event over" label, grayed styling,
+  // no Sign Up link. Without JavaScript the card simply stays as built.
+  const pending = new Set(document.querySelectorAll<HTMLElement>('[data-event-end]'));
+
+  const check = () => {
+    for (const card of pending) {
+      if (Date.now() < Date.parse(card.dataset.eventEnd!)) continue;
+      card.setAttribute('data-ended', '');
+      card.querySelector('[data-event-over]')?.removeAttribute('hidden');
+      // The Sign Up link is removed.
+      card.querySelector('[data-event-signup]')?.remove();
+      pending.delete(card);
+    }
+    if (pending.size === 0) window.clearInterval(timer);
+  };
+
+  const timer = window.setInterval(check, 60_000);
+  check();
+</script>
