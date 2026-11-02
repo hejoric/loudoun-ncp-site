@@ -241,7 +241,7 @@ export default config({
             alt: fields.text({ label: 'Alt text', validation: { isRequired: true, length: { min: 1 } } }),
           }),
           {
-            label: 'Photos',
+            label: 'Photos - shown on past events',
             itemLabel: (props) => props.fields.alt.value,
           },
         ),
