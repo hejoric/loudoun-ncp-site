@@ -1,0 +1,28 @@
+name: Nightly rebuild
+
+# The site is fully static, so the upcoming/past split on /events/ is computed
+# at build time. Triggering a Vercel deploy every night moves ended events to
+# Past Events without a code change. 06:17 UTC is 1:17 AM EST / 2:17 AM EDT; the
+# off-the-hour minute avoids GitHub's delays on top-of-hour schedules.
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  rebuild:
+    name: rebuild
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger Vercel deploy hook
+        env:
+          URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$URL" ]; then
+            echo "::error::The VERCEL_DEPLOY_HOOK_URL repository secret is empty or missing. See site/docs/DEPLOY.md, Nightly rebuild."
+            exit 1
+          fi
+          curl -fsS -X POST "$URL"

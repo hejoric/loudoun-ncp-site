@@ -46,6 +46,38 @@ Preview deployments are protected by Vercel SSO and will answer `302` to
 redirect bug - to smoke-test redirects and headers with curl you need the
 production alias, or the deployment protection turned off for that deploy.
 
+## Nightly rebuild
+
+`.github/workflows/nightly-rebuild.yml` triggers a production deploy every night
+by calling a Vercel deploy hook. The site is static, so the Upcoming/Past split
+on `/events/` is computed at build time; without a nightly build an ended event
+would stay under Upcoming until the next code change. (In the meantime the
+browser marks an ended card "Event over" and removes its Sign Up button, see
+`events.astro`.)
+
+**Schedule:** `17 6 * * *` UTC, which is 1:17 AM EST or 2:17 AM EDT in New York.
+The odd minute is deliberate, because GitHub delays top-of-hour schedules. An
+event ending in the evening therefore moves to Past shortly after midnight.
+
+**One-time setup** (the workflow fails with a clear error until it is done):
+
+1. Create the deploy hook: Vercel project, **Settings**, **Git**, **Deploy
+   Hooks**, name it `nightly-rebuild`, branch `main`, and copy the URL.
+2. Store it as a repository secret: GitHub repo, **Settings**, **Secrets and
+   variables**, **Actions**, **New repository secret**, name
+   `VERCEL_DEPLOY_HOOK_URL`. The URL is a credential: anyone with it can trigger
+   deploys, so never paste it into a workflow file or a log.
+
+**Run it manually:** the Actions tab, "Nightly rebuild", **Run workflow**, or
+
+```sh
+gh workflow run nightly-rebuild.yml --repo hejoric/loudoun-ncp-site
+```
+
+**Caveat:** GitHub disables scheduled workflows in a public repository after 60
+days without repository activity. If the nightly builds stop, re-enable the
+workflow from the Actions tab.
+
 ## What vercel.json does
 
 `site/vercel.json` replaces the old `public/_redirects`, which was Cloudflare
