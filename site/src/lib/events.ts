@@ -67,19 +67,12 @@ function formatOffset(offset: number): string {
  * ISO 8601 datetime for `date` (YYYY-MM-DD) at `time` (HH:MM, New York), with
  * the offset for that date: 2026-11-07 11:00 -> "2026-11-07T11:00:00-05:00".
  */
-export function zonedIso(date: string, time: string, second = 0): string {
+export function zonedIso(date: string, time: string): string {
   const [year, month, day] = parseDate(date);
   const [hour, minute] = parseTime(time, 'time');
-  const { offset } = zoned(year, month, day, hour, minute, second);
+  const { offset } = zoned(year, month, day, hour, minute, 0);
   const pad = (n: number) => String(n).padStart(2, '0');
-  return `${year}-${pad(month)}-${pad(day)}T${pad(hour)}:${pad(minute)}:${pad(second)}${formatOffset(offset)}`;
-}
-
-/** The instant an event starts: its start time, or the start of its date. */
-export function eventStart(entry: TimedEntry): Date {
-  const [year, month, day] = parseDate(entry.date!);
-  const [hour, minute] = entry.startTime ? parseTime(entry.startTime, 'startTime') : [0, 0];
-  return new Date(zoned(year, month, day, hour, minute, 0).instant);
+  return `${year}-${pad(month)}-${pad(day)}T${pad(hour)}:${pad(minute)}:00${formatOffset(offset)}`;
 }
 
 /**
