@@ -1,8 +1,8 @@
 /**
  * Content images: map a path Keystatic stored back to the imported asset.
  *
- * Every editor-managed image (headshots, school and college logos, press
- * photos) lives under src/assets rather than public/, so astro:assets can
+ * Every editor-managed image (headshots, school and college logos, press and
+ * event photos) lives under src/assets rather than public/, so astro:assets can
  * resize it to what the page actually paints and serve a modern format. Public
  * files are copied into the build verbatim, which is how a 3000px school logo
  * once shipped to fill a 28px badge.
