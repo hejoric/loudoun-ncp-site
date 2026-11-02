@@ -153,12 +153,34 @@ Create `src/content/events/event-slug.yaml`:
 ```yaml
 title: Event Title
 date: '2026-08-01'
+startTime: '11:00'   # optional, 24-hour HH:MM, Eastern time
+endTime: '13:00'     # optional, 24-hour HH:MM, Eastern time
 location: Park Name, Ashburn VA
 description: Short description for the listing.
 signupLink: https://forms.google.com/...
+photos: []
+recapLink: null
 ```
 
-Past events (date < today) automatically move to the "Past Events" section.
+Times must be 24-hour `HH:MM` (`11:00`, not `11am`); anything else fails the
+build. An event stays under "Upcoming Events" until it ends (its `endTime`, or
+the end of its date when it has none, both in Eastern time) and moves to "Past
+Events" on the next build after that.
+
+A blank line in `description` starts a new paragraph, and email addresses in it
+become links. In a hand-written `>-` block that takes two blank lines between
+paragraphs (with one, they run together), which is how Keystatic saves it.
+
+`photos` and `recapLink` are shown on past events only. Each photo is a file
+under `src/assets/events/` plus its alt text, and `recapLink` is usually the
+Instagram post:
+
+```yaml
+photos:
+  - image: /src/assets/events/event-slug/photos/0/image.jpg
+    alt: What the photo shows.
+recapLink: https://www.instagram.com/p/.../
+```
 
 ## Adding a Research Publication
 
@@ -198,6 +220,7 @@ authorAffiliations:
 | Team headshots | `src/assets/team/` | WebP written by `npm run headshots` |
 | School logos | `src/assets/branches/` | Square transparent PNG, at least 200x200px |
 | College logos | `src/assets/affiliations/` | Square, trimmed of margins, at least 200x200px |
+| Event photos | `src/assets/events/` | JPEG saved upright (convert HEIC first), portrait 3:4, at least 800px wide |
 | Page photos | `src/assets/photos/` | JPEG, at least 1600px wide |
 | Hero video | `public/assets/hero-2026.mp4` | Landscape-only loop (no people or city scenes), 1280px wide, H.264, no audio |
 | Hero video (AV1) | `public/assets/hero-2026-av1.mp4` | Same clip in AV1, served first to browsers that decode it |

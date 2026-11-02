@@ -1,0 +1,22 @@
+---
+import { emailParts, paragraphs } from '@/lib/events';
+
+interface Props {
+  text?: string | null;
+  class?: string;
+}
+
+const { text, class: className } = Astro.props;
+---
+
+<!-- An event description, split into paragraphs on blank lines, with email
+     addresses as mailto links that wrap only after the @. -->
+{paragraphs(text).map((para, i) => (
+  <p class:list={['text-ink-soft leading-relaxed break-words', i === 0 ? 'mt-3' : 'mt-2', className]}>
+    {emailParts(para).map((part) =>
+      typeof part === 'string' ? part : (
+        <a href={`mailto:${part.local}@${part.domain}`} class="text-link">{part.local}@<wbr />{part.domain}</a>
+      ),
+    )}
+  </p>
+))}
