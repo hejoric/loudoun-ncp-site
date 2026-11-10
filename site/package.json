@@ -27,7 +27,7 @@
     "@fontsource/instrument-serif": "^5.3.0",
     "@keystatic/astro": "^6.0.0",
     "@keystatic/core": "^0.6.9",
-    "@tailwindcss/vite": "^4.3.3",
+    "@tailwindcss/vite": "^4.3.5",
     "astro": "^7.4.2",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
