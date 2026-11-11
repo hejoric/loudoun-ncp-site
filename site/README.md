@@ -278,8 +278,9 @@ path (Keystatic GitHub mode) if that ever becomes necessary.
 
 ## URL Redirects
 
-The `redirects` in `vercel.json` handle old WordPress paths (see
-[docs/DEPLOY.md](docs/DEPLOY.md) for the trailing-slash rule they depend on).
+The `redirects` in `vercel.json` handle old WordPress paths and renamed or
+replaced research papers (see [docs/DEPLOY.md](docs/DEPLOY.md) for the full
+list and the trailing-slash rule they depend on).
 Query-string URLs from the old WordPress site (`/?page_id=NNN`) are not
 redirected.
 

@@ -93,6 +93,7 @@ Pages syntax and is ignored by Vercel.
 |---|---|
 | `/history/`, `/our-history/` | 308 to `/about/` |
 | `/wp-content/*`, `/wp-includes/*`, `/xmlrpc.php` | 308 to `/` |
+| Renamed or replaced research papers (old `/research/*.pdf` files and paper pages) | 308 to the current paper's PDF or page |
 | Trailing slashes | `trailingSlash: true`, matching Astro's directory output and every internal link |
 | Caching | `_astro/*` 1y immutable (content-hashed); `assets/*` and `favicon.ico` 1 week; HTML revalidates |
 | Security | `nosniff`, `Referrer-Policy`, `X-Frame-Options`, HSTS, COOP, `Permissions-Policy`, and a CSP limited to `frame-ancestors`, `base-uri`, `object-src` and `upgrade-insecure-requests` |
@@ -103,7 +104,10 @@ slash.** Vercel applies `trailingSlash` normalization *before* matching
 redirects, so a source of `/history` never matches - the request has already
 become `/history/`. Writing it without the slash silently turns the legacy
 WordPress URLs into 404s, which is exactly the failure this file exists to
-prevent. Verified against a real deploy, not inferred.
+prevent. Verified against a real deploy, not inferred. Per Vercel's
+`trailingSlash` docs, paths with a file extension (`/xmlrpc.php`, the old
+`.pdf` paths) are not slash-normalized, so those sources take no trailing
+slash.
 
 ## Verify after deploying
 
