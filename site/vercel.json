@@ -17,7 +17,17 @@
     },
     {
       "source": "/research/Nitrate_Research__Copy_-2.pdf",
-      "destination": "/research/ai_research.pdf",
+      "destination": "/research/silicon-streams-concrete-forests-entitled-capacity-scale-mismatch.pdf",
+      "permanent": true
+    },
+    {
+      "source": "/research/ai_research.pdf",
+      "destination": "/research/silicon-streams-concrete-forests-entitled-capacity-scale-mismatch.pdf",
+      "permanent": true
+    },
+    {
+      "source": "/research/silicon-streams-and-concrete-forests-data-center-expansion/",
+      "destination": "/research/silicon-streams-and-concrete-forests-entitled-capacity-scale-mismatch/",
       "permanent": true
     },
     {
