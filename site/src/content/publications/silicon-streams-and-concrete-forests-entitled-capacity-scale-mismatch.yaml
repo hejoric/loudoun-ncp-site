@@ -1,0 +1,37 @@
+title: "Silicon Streams and Concrete Forests: Entitled Capacity, Resource Demand, and the Scale Mismatch in Northern Virginia Data Center Governance"
+authors:
+  - Ryan S. Nisay
+  - Christian S. Shire
+  - Karthik Uppalapati
+  - Enzo Garcia-Eguiluz
+  - Nawaf Shehzad
+  - Daniela Morales
+  - Tyler Gorthy
+  - Evan Giglotti
+  - Shray Vij
+  - Jose R. Herrera
+date: '2026-11-10'
+seoDescription: Entitled data center land in Loudoun and Prince William could draw 11,781 MW and up to 14.7 MGD of water, a scale no single review covers.
+abstract: >-
+  Northern Virginia has the largest concentration of data centers in the world,
+  and debate over whether it can keep growing usually runs on forecasts of
+  future demand. We instead built a facility-level inventory from county GIS
+  records of legally entitled land, which measures the upper-bound potential of
+  what can be built rather than a construction forecast. Loudoun and Prince
+  William Counties have entitled 147 million square feet of data center floor
+  area, having built approximately 49 million. At the load intensity implied by
+  the state's own audit, the entitled total corresponds to 11,781 megawatts,
+  2.3 times the current load of every data center in Virginia, and to 13.2 to
+  14.7 million gallons of water per day, 2.3 to 2.6 times current statewide
+  data center use. The jobs most often cited as the industry's economic benefit
+  are primarily construction jobs that end with buildout, while resource demand
+  lasts for each facility's life. PJM's independent market monitor attributes
+  $16.6 billion in capacity market cost increases across two auctions to data
+  center load. We find that data center siting regulations are active: Loudoun
+  ended by-right data center development in 2025, and Prince William cut its
+  data center overlay district by more than half in 2026. Every siting and
+  water instrument in the region still applies to a single parcel or utility,
+  and no venue evaluates the entitled total, so expansion at the entitled scale
+  cannot be reconciled with governance as it is currently structured.
+pdfFile: /research/silicon-streams-concrete-forests-entitled-capacity-scale-mismatch.pdf
+pdfLink: null
