@@ -69,13 +69,6 @@
     "faceCenterX": 0.4918,
     "eyeLine": 0.3915
   },
-  "loudoun-county-branch": {
-    "file": "loudoun-county-branch.jpeg",
-    "faceTop": 0.2540,
-    "faceHeight": 0.3532,
-    "faceCenterX": 0.4999,
-    "eyeLine": 0.3557
-  },
   "nawaf-shehzad": {
     "file": "nawaf-shehzad.jpg",
     "faceTop": 0.3467,
